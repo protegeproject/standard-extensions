@@ -1,6 +1,6 @@
 <?xml version = "1.0" encoding = "UTF-8"?>
-<project name = "standard_extensions" default = "usage" basedir = ".">
-	<property name = "project.name" value = "standard_extensions"/>
+<project name = "standard-extensions" default = "usage" basedir = ".">
+	<property name = "project.name" value = "standard-extensions"/>
 	<property name = "Name" value = "Standard Extensions"/>
 	<property name = "build.dir" value = "./build"/>
 	<property name = "build.src" value = "${build.dir}/src"/>
@@ -122,19 +122,19 @@
 	
 	<!-- =================================================================== -->
 	<target name = "dist" depends = "init">
-		<zip zipfile = "${dist.dir}/${project.name}_src.${version}.zip" update = "no">
+		<zip zipfile = "${dist.dir}/${project.name}-src-${version}.zip" update = "no">
 			<zipfileset dir = "${build.src}" prefix = "${Name}/src"/>
 			<zipfileset dir = "${build.javadoc}" prefix = "${Name}/docs/apidocs"/>
 		</zip>
-		<zip zipfile = "${dist.dir}/${project.name}_bin.${version}.zip" update = "no">
-			<zipfileset dir = "${dist.dir}" includes = "standard_extensions.jar" prefix = "edu.stanford.smi.protegex.standard_extensions"/>
-			<zipfileset dir = "${lib.dir}" includes = "JGo.jar" prefix = "edu.stanford.smi.protegex.standard_extensions"/>
-			<zipfileset dir = "${lib.dir}" includes = "JGoLayout.jar" prefix = "edu.stanford.smi.protegex.standard_extensions"/>
-			<zipfileset dir = "${docs.dir}" includes = "plugin.properties" prefix = "edu.stanford.smi.protegex.standard_extensions"/>
-			<zipfileset dir = "${examples.dir}" includes = "**/*" prefix = "edu.stanford.smi.protegex.standard_extensions/examples"/>
-			<zipfileset dir = "${protege_web_drive}/doc/tutorial/graph_widget" excludes = "**/_vti_cnf/**" prefix = "edu.stanford.smi.protegex.standard_extensions/doc/graph widget"/>
-			<zipfileset dir = "${protege_web_drive}/doc/tutorial/tables" excludes = "**/_vti_cnf/**" prefix = "edu.stanford.smi.protegex.standard_extensions/doc/table widget"/>
-			<zipfileset dir = "${text.files}" includes = "readme" prefix = "edu.stanford.smi.protegex.standard_extensions"/>
+		<zip zipfile = "${dist.dir}/${project.name}-bin-${version}.zip" update = "no">
+			<zipfileset dir = "${dist.dir}" includes = "${project.name}.jar" prefix = "edu.stanford.smi.protegex.standard-extensions"/>
+			<zipfileset dir = "${lib.dir}" includes = "JGo.jar" prefix = "edu.stanford.smi.protegex.standard-extensions"/>
+			<zipfileset dir = "${lib.dir}" includes = "JGoLayout.jar" prefix = "edu.stanford.smi.protegex.standard-extensions"/>
+			<zipfileset dir = "${docs.dir}" includes = "plugin.properties" prefix = "edu.stanford.smi.protegex.standard-extensions"/>
+			<zipfileset dir = "${examples.dir}" includes = "**/*" prefix = "edu.stanford.smi.protegex.standard-extensions/examples"/>
+			<zipfileset dir = "${protege_web_drive}/doc/tutorial/graph_widget" excludes = "**/_vti_cnf/**" prefix = "edu.stanford.smi.protegex.standard-extensions/doc/graph widget"/>
+			<zipfileset dir = "${protege_web_drive}/doc/tutorial/tables" excludes = "**/_vti_cnf/**" prefix = "edu.stanford.smi.protegex.standard-extensions/doc/table widget"/>
+			<zipfileset dir = "${text.files}" includes = "readme" prefix = "edu.stanford.smi.protegex.standard-extensions"/>
 		</zip>
 	</target>
 	<!-- =================================================================== -->
