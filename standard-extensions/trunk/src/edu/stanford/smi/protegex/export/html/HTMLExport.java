@@ -60,7 +60,7 @@ public class HTMLExport {
         	System.out.println(e.getMessage());
         }
 
-        ArrayList rootClasses = config.rootClasses;
+        ArrayList rootClasses = config.getRootClasses();
         int size = rootClasses.size();
         for (int i = 0; i < size; i++) {
             Cls cls = (Cls) rootClasses.get(i);
@@ -75,18 +75,23 @@ public class HTMLExport {
         }
     }
 
-	public void export() {
-    	copyImageFiles();
-        copyCSSFile();
+	public void export() throws HTMLExportException {
+    	try {
+        	copyImageFiles();
+            copyCSSFile();
 
-		// Generate the class hierarchy page.
-		exportHierarchyPage(config.rootClasses);
+            // Generate the class hierarchy page.
+            exportHierarchyPage(config.getRootClasses());
 
-		// Generate individual class pages.
-        Iterator i = classesToExport.iterator();
-        while (i.hasNext()) {
-            Cls cls = (Cls) i.next();
-            generateClassPage(cls);
+            // Generate individual class pages.
+            Iterator i = classesToExport.iterator();
+            while (i.hasNext()) {
+            	Cls cls = (Cls) i.next();
+                generateClassPage(cls);
+            }
+        } catch(Exception e) {
+        	HTMLExportException htmlexp = (HTMLExportException) e;
+            throw htmlexp;
         }
     }
 
@@ -98,7 +103,7 @@ public class HTMLExport {
         int size = classes.size();
         if (classes.size() == 0) return;
 
-        String pathname = config.outputDir + File.separator + "index.html";
+        String pathname = config.getOutputDir() + File.separator + "index.html";
         File f = new File(pathname);
         try {
             PrintWriter pw = new PrintWriter(new FileOutputStream(f));
@@ -107,7 +112,7 @@ public class HTMLExport {
             printTop(pw, properties.getProperty(CLASS_HIERARCHY));
 
             // Print page title
-            pw.println("<span class=\"pageTitle\">" + config.project.getName() + " " + properties.getProperty(CLASS_HIERARCHY) + "</span><br><br>");
+            pw.println("<span class=\"pageTitle\">" + config.getProject().getName() + " " + properties.getProperty(CLASS_HIERARCHY) + "</span><br><br>");
             pw.println("<div class=\"heirarchyBorder\">");
 
             // Print class hierarchy
@@ -123,7 +128,7 @@ public class HTMLExport {
             pw.println("</div><br>");
             pw.println("<span class=\"generalContentBold\">Generated: " + buildDateString() + "</span><br><br>");
 
-            insertCustomHTML(pw, config.footerPath);
+            insertCustomHTML(pw, config.getFooterPath());
 
             pw.close();
         } catch (java.io.IOException e) {
@@ -138,7 +143,7 @@ public class HTMLExport {
 
         String listItem = "<li class=\"" + style + "\"><a href=\"" + href + "\">" + cls.getBrowserText() + "</a>";
 
-        if ((config.showInstances) && (cls.getDirectInstanceCount() > 0)) {
+        if ((config.getShowInstances()) && (cls.getDirectInstanceCount() > 0)) {
             int numInstances = cls.getDirectInstanceCount();
             String s = properties.getProperty(INSTANCE_LOWERCASE_PLURAL);
             if (numInstances == 1) {
@@ -164,7 +169,7 @@ public class HTMLExport {
     private void generateClassPage(Cls cls) {
         String clsName = cls.getName();
         clsName = stripIllegalChars(clsName);
-        String pathname = config.outputDir + File.separator + clsName + ".html";
+        String pathname = config.getOutputDir() + File.separator + clsName + ".html";
         File f = new File(pathname);
 
         try {
@@ -191,7 +196,7 @@ public class HTMLExport {
             pw.println("<span class=\"sectionTitle\">" + properties.getProperty(TYPE_PLURAL) + "</span>");
             printClsIconList(pw, cls.getDirectTypes());
 
-            if ((config.showInstances) && (cls.getDirectInstanceCount() > 0)) {
+            if ((config.getShowInstances()) && (cls.getDirectInstanceCount() > 0)) {
                 int numInstances = cls.getDirectInstanceCount();
                 pw.println("<span class=\"sectionTitle\"><a href=\"#direct_instances\">" + properties.getProperty(INSTANCE_UPPERCASE_PLURAL) + " (" + numInstances + ")</a></span><br><br>");
             }
@@ -206,8 +211,8 @@ public class HTMLExport {
             printOwnSlots(pw, cls);
 
             // Print list of instances
-            if ((config.showInstances) && (cls.getDirectInstanceCount() > 0)) {
-                if (!config.useNumbering) {
+            if ((config.getShowInstances()) && (cls.getDirectInstanceCount() > 0)) {
+                if (!config.getUseNumbering()) {
                     pw.println("<br>");
                 }
 
@@ -215,7 +220,7 @@ public class HTMLExport {
 
                 /** @todo don't print any of this if there aren't any instances? */
                 Collection directInstances = cls.getDirectInstances();
-                if (!config.useNumbering) {
+                if (!config.getUseNumbering()) {
                     pw.println("<span class=\"sectionTitle\">" + properties.getProperty(INSTANCE_UPPERCASE_PLURAL) + "</span>");
                     printInstanceIconList(pw, directInstances);
                 } else {
@@ -239,7 +244,7 @@ public class HTMLExport {
             }
 
             printBottom(pw, true);
-            insertCustomHTML(pw, config.footerPath);
+            insertCustomHTML(pw, config.getFooterPath());
 
             pw.close();
 
@@ -263,7 +268,7 @@ public class HTMLExport {
 
         String slotName = slot.getName();
         slotName = stripIllegalChars(slotName);
-        String pathname = config.outputDir + File.separator + slotName + ".html";
+        String pathname = config.getOutputDir() + File.separator + slotName + ".html";
         File f = new File(pathname);
 
         try {
@@ -301,7 +306,7 @@ public class HTMLExport {
             pw.println("<br>");
 
             printBottom(pw, true);
-            insertCustomHTML(pw, config.footerPath);
+            insertCustomHTML(pw, config.getFooterPath());
 
             pw.close();
             framesGenerated.add(slot.getName());
@@ -326,7 +331,7 @@ public class HTMLExport {
     private void generateInstancePage(Instance instance) {
         String instanceName = instance.getName();
         instanceName = stripIllegalChars(instanceName);
-        String pathname = config.outputDir + File.separator + instanceName + ".html";
+        String pathname = config.getOutputDir() + File.separator + instanceName + ".html";
         File f = new File(pathname);
 
         try {
@@ -347,7 +352,7 @@ public class HTMLExport {
             pw.println("<br>");
 
             printBottom(pw, true);
-            insertCustomHTML(pw, config.footerPath);
+            insertCustomHTML(pw, config.getFooterPath());
 
             pw.close();
         } catch (java.io.FileNotFoundException e) {
@@ -361,7 +366,7 @@ public class HTMLExport {
         pw.println("");
         pw.println("<head>");
 
-        String pageTitleText = config.project.getName() + " Project: " + frameName;
+        String pageTitleText = config.getProjectName() + " Project: " + frameName;
         pw.println("<title>" + pageTitleText + "</title>");
 
         pw.println("<meta http-equiv=\"content-type\" content=\"text/html; charset=iso-8859-1\"/>");
@@ -377,7 +382,7 @@ public class HTMLExport {
 
         // Insert custom header content
         pw.println("");
-        insertCustomHTML(pw, config.headerPath);
+        insertCustomHTML(pw, config.getHeaderPath());
         pw.println("");
     }
 
@@ -522,7 +527,8 @@ public class HTMLExport {
         pw.println("<table width=\"100%\" border=\"1\" cellpadding=\"3\" cellspacing=\"0\" class=\"mozillaTableHack\">");
 
         // Table header
-        int numColumns = config.facetsToDisplay.size() + 3;
+        ArrayList facetsToDisplay = config.getFacetsToDisplay();
+        int numColumns = facetsToDisplay.size() + 3;
         pw.println("\t<th align=\"left\" bgcolor=\"#C4DAE5\" colspan=\"" + numColumns + "\" class=\"mozillaTableHack\">Template " + properties.getProperty(this.SLOT_PLURAL) + "</th>");
 
         // Table row that contains column titles.
@@ -531,34 +537,33 @@ public class HTMLExport {
         pw.println("\t\t<td class=\"mozillaTableHack\">" + properties.getProperty(SLOT) + " Name</td>");
         pw.println("\t\t<td class=\"mozillaTableHack\">" + properties.getProperty(DOCUMENTATION) + "</td>");
 
-        ArrayList columnTitles = config.facetsToDisplay;
         boolean showType = false;
         boolean showCardinality = false;
         boolean showNumeric = false;
         boolean showDefaultVals = false;
         boolean showTemplateVals = false;
 
-        if (config.facetsToDisplay.contains("Value Type")) {
+        if (facetsToDisplay.contains("Value Type")) {
             showType = true;
             pw.println("\t\t<td class=\"mozillaTableHack\">" + properties.getProperty(TYPE) + "</td>");
         }
 
-        if (config.facetsToDisplay.contains("Cardinality")) {
+        if (facetsToDisplay.contains("Cardinality")) {
             showCardinality = true;
             pw.println("\t\t<td class=\"mozillaTableHack\">" + properties.getProperty(CARDINALITY) + "</td>");
         }
 
-        if (config.facetsToDisplay.contains("Numeric Minimum & Maximum")) {
+        if (facetsToDisplay.contains("Numeric Minimum & Maximum")) {
             showNumeric = true;
             pw.println("\t\t<td class=\"mozillaTableHack\">" + properties.getProperty(MIN_MAX) + "</td>");
         }
 
-        if (config.facetsToDisplay.contains("Default Values")) {
+        if (facetsToDisplay.contains("Default Values")) {
             showDefaultVals = true;
             pw.println("\t\t<td class=\"mozillaTableHack\">" + properties.getProperty(DEFAULT) + "</td>");
         }
 
-        if (config.facetsToDisplay.contains("Template Value")) {
+        if (facetsToDisplay.contains("Template Value")) {
             showTemplateVals = true;
             pw.println("\t\t<td class=\"mozillaTableHack\">" + properties.getProperty(TEMPLATE_VALUE) + "</td>");
         }
@@ -573,7 +578,7 @@ public class HTMLExport {
             String slotName = slot.getName();
             ValueType valueType = cls.getTemplateSlotValueType(slot);
 
-            if (config.slotsToDisplay.contains(slotName)) {
+            if (config.getSlotsToDisplay().contains(slotName)) {
                 // Start row
                 pw.println("<tr>");
 
@@ -744,7 +749,7 @@ public class HTMLExport {
             Slot ownSlot = (Slot) i.next();
             String ownSlotName = ownSlot.getName();
 
-            if (config.slotsToDisplay.contains(ownSlotName)) {
+            if (config.getSlotsToDisplay().contains(ownSlotName)) {
                 // Start row
                 pw.println("<tr>");
 
@@ -866,7 +871,7 @@ public class HTMLExport {
     private String getDestinationDir() {
         String destDir = "";
 
-        destDir = config.outputDir + File.separator;
+        destDir = config.getOutputDir() + File.separator;
 
         File f = new File(destDir);
         if (!f.exists()) {
@@ -877,7 +882,7 @@ public class HTMLExport {
     }
 
     private String getCSSFileName() {
-        String fileName = config.cssPath;
+        String fileName = config.getCSSPath();
 
 	int index = fileName.lastIndexOf(File.separator) + 1;
         fileName = fileName.substring(index, fileName.length());
