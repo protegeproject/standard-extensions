@@ -11,9 +11,9 @@ import edu.stanford.smi.protege.widget.*;
 import edu.stanford.smi.protegex.widget.abstracttable.*;
 
 /**
- *  Description of the Class
- *
- * @author    William Grosso <grosso@smi.stanford.edu>
+ * Description of the Class
+ * 
+ * @author William Grosso <grosso@smi.stanford.edu>
  */
 public class InstanceTableWidget extends AbstractSlotWidget {
 
@@ -78,7 +78,8 @@ public class InstanceTableWidget extends AbstractSlotWidget {
     }
 
     protected void buildTableComponents() {
-        _state = new InstanceTableWidgetState(getPropertyList(), getAllowedClses(), getKnowledgeBase());
+        _state = new InstanceTableWidgetState(getPropertyList(), getAllowedClses(),
+                getKnowledgeBase());
         _values = new ArrayList();
         _tableModel = new InstanceTableModel(null, _values, _state);
         _displayTable = new InstanceTable(_tableModel, _state.isHighlightSelectedRow());
@@ -95,7 +96,8 @@ public class InstanceTableWidget extends AbstractSlotWidget {
 
     public WidgetConfigurationPanel createWidgetConfigurationPanel() {
         // hack to make sure our state is consistent with the plist.
-        _state = new InstanceTableWidgetState(getPropertyList(), getAllowedClses(), getKnowledgeBase());
+        _state = new InstanceTableWidgetState(getPropertyList(), getAllowedClses(),
+                getKnowledgeBase());
         return new InstanceTableConfigurationPanel(this);
     }
 
@@ -118,7 +120,8 @@ public class InstanceTableWidget extends AbstractSlotWidget {
     public void initialize() {
         buildTableComponents();
         setTableColumnWidths();
-        LabeledComponent centerPiece = new LabeledComponent(getLabel(), ComponentFactory.createScrollPane(_displayTable));
+        LabeledComponent centerPiece = new LabeledComponent(getLabel(), ComponentFactory
+                .createScrollPane(_displayTable));
         addActionButtonsToComponent(centerPiece);
         JComponent warnings = InstanceTableConfigurationChecks.getShortWarning(getCls(), getSlot());
         if (null != warnings) {
@@ -149,12 +152,20 @@ public class InstanceTableWidget extends AbstractSlotWidget {
         newIndex = Math.max(newIndex, 0);
         newIndex = Math.min(newIndex, _values.size() - 1);
         if (oldIndex != newIndex) {
-            _values.remove(oldIndex);
-            _values.add(newIndex, value);
-            _tableModel.setValues(_values);
-            _displayTable.setRowSelectionInterval(newIndex, newIndex);
-            valueChanged();
+            moveValueInternal(value, oldIndex, newIndex);
         }
+    }
+
+    /*
+     * subclasses might want to wrap this method with begin/endTransaction to get a better undo name that does not list
+     * the new value
+     */
+    protected void moveValueInternal(Instance value, int oldIndex, int newIndex) {
+        _values.remove(oldIndex);
+        _values.add(newIndex, value);
+        _tableModel.setValues(_values);
+        _displayTable.setRowSelectionInterval(newIndex, newIndex);
+        valueChanged();
     }
 
     public void removeValue(Instance value) {
