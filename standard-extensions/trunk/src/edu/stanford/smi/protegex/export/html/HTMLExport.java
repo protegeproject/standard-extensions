@@ -1,12 +1,12 @@
 package edu.stanford.smi.protegex.export.html;
 
 import java.io.*;
-import java.text.*;
+import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.regex.*;
+import java.util.regex.Pattern;
 
 import edu.stanford.smi.protege.model.*;
-import edu.stanford.smi.protege.plugin.*;
+import edu.stanford.smi.protege.plugin.PluginUtilities;
 import edu.stanford.smi.protege.ui.FrameComparator;
 
 /**
@@ -18,8 +18,47 @@ public class HTMLExport {
     private HashSet classesToExport = new HashSet();
     private HashSet framesGenerated = new HashSet();
 
+    private final Properties properties = new Properties();
+    private final String ABSTRACT_CLASS = "abstract.class";
+    private final String ABSTRACT_METACLASS = "abstract.metaclass";
+    private final String CARDINALITY = "cardinality";
+    private final String CLASS = "class";
+    private final String CLASS_HIERARCHY = "class.hierarchy";
+    private final String DEFAULT = "default";
+    private final String DOCUMENTATION = "documentation";
+    private final String INSTANCE_LOWERCASE = "instance.lowercase";
+    private final String INSTANCE_LOWERCASE_PLURAL = "instance.lowercase.plural";
+    private final String INSTANCE_UPPERCASE = "instance.uppercase";
+    private final String INSTANCE_UPPERCASE_PLURAL = "instance.uppercase.plural";
+    private final String MIN_MAX = "min.max";
+    private final String METACLASS = "metaclass";
+    private final String SLOT = "slot";
+    private final String SLOT_PLURAL = "slot.plural";
+    private final String SUBCLASSES = "subclasses";
+    private final String SUBSLOTS = "subslots";
+    private final String SUPERCLASSES = "superclasses";
+    private final String SUPERSLOTS = "superslots";
+    private final String TEMPLATE_VALUE = "template.value";
+    private final String TYPE = "type";
+    private final String TYPE_PLURAL = "type.plural";
+    private final String VALUE = "value";
+
     public HTMLExport(ExportConfiguration config) {
         this.config = config;
+
+        String path = PluginUtilities.getPluginsDirectory().getPath() +
+                                                       File.separator +
+                      "edu.stanford.smi.protegex.standard_extensions" +
+													   File.separator +
+                                                   		"html_export" +
+                                                       File.separator +
+                                               "htmlexport.properties";
+
+        try {
+            properties.load(new FileInputStream(path));
+        } catch (IOException e) {
+        	System.out.println(e.getMessage());
+        }
 
         ArrayList rootClasses = config.rootClasses;
         int size = rootClasses.size();
@@ -36,14 +75,14 @@ public class HTMLExport {
         }
     }
 
-    public void export() {
-        copyImageFiles();
+	public void export() {
+    	copyImageFiles();
         copyCSSFile();
 
-	// Generate the class hierarchy page
-        exportHierarchyPage(config.rootClasses);
+		// Generate the class hierarchy page.
+		exportHierarchyPage(config.rootClasses);
 
-	// Generate individual class pages
+		// Generate individual class pages.
         Iterator i = classesToExport.iterator();
         while (i.hasNext()) {
             Cls cls = (Cls) i.next();
@@ -65,10 +104,10 @@ public class HTMLExport {
             PrintWriter pw = new PrintWriter(new FileOutputStream(f));
 
             // Print generic stuff at top of page, including custom header
-            printTop(pw, "Class Hierarchy");
+            printTop(pw, properties.getProperty(CLASS_HIERARCHY));
 
             // Print page title
-            pw.println("<span class=\"pageTitle\">" + config.project.getName() + " class hierarchy</span><br><br>");
+            pw.println("<span class=\"pageTitle\">" + config.project.getName() + " " + properties.getProperty(CLASS_HIERARCHY) + "</span><br><br>");
             pw.println("<div class=\"heirarchyBorder\">");
 
             // Print class hierarchy
@@ -101,9 +140,9 @@ public class HTMLExport {
 
         if ((config.showInstances) && (cls.getDirectInstanceCount() > 0)) {
             int numInstances = cls.getDirectInstanceCount();
-            String s = "instances";
+            String s = properties.getProperty(INSTANCE_LOWERCASE_PLURAL);
             if (numInstances == 1) {
-                s = "instance";
+                s = properties.getProperty(INSTANCE_LOWERCASE);
             }
             listItem += "&nbsp;&nbsp;<a href=\"" + href + "#direct_instances\" class=\"instancesLink\">(" + numInstances + " " + s + ")</a></li>";
         } else {
@@ -141,20 +180,20 @@ public class HTMLExport {
             printDocumentation(pw, cls);
 
             // Print list of superclasses
-            pw.println("<span class=\"sectionTitle\">Superclasses</span>");
+            pw.println("<span class=\"sectionTitle\">" + properties.getProperty(SUPERCLASSES) + "</span>");
             printClsIconList(pw, cls.getDirectSuperclasses());
 
             // Print list of subclasses
-            pw.println("<span class=\"sectionTitle\">Subclasses</span>");
+            pw.println("<span class=\"sectionTitle\">" + properties.getProperty(SUBCLASSES) + "</span>");
             printClsIconList(pw, cls.getDirectSubclasses());
 
             // Print list of direct types
-            pw.println("<span class=\"sectionTitle\">Types</span>");
+            pw.println("<span class=\"sectionTitle\">" + properties.getProperty(TYPE_PLURAL) + "</span>");
             printClsIconList(pw, cls.getDirectTypes());
 
             if ((config.showInstances) && (cls.getDirectInstanceCount() > 0)) {
                 int numInstances = cls.getDirectInstanceCount();
-                pw.println("<span class=\"sectionTitle\"><a href=\"#direct_instances\">Instances (" + numInstances + ")</a></span><br><br>");
+                pw.println("<span class=\"sectionTitle\"><a href=\"#direct_instances\">" + properties.getProperty(INSTANCE_UPPERCASE_PLURAL) + " (" + numInstances + ")</a></span><br><br>");
             }
 
             // Print template slots table.
@@ -177,13 +216,11 @@ public class HTMLExport {
                 /** @todo don't print any of this if there aren't any instances? */
                 Collection directInstances = cls.getDirectInstances();
                 if (!config.useNumbering) {
-                    /** @todo The word Instances should be read out of config
-                     * file here - user wants this customizable. */
-                    pw.println("<span class=\"sectionTitle\">Instances</span>");
+                    pw.println("<span class=\"sectionTitle\">" + properties.getProperty(INSTANCE_UPPERCASE_PLURAL) + "</span>");
                     printInstanceIconList(pw, directInstances);
                 } else {
                     pw.println("<dl>");
-                    pw.println("<dt class=\"sectionTitle\">Instances</dt>");
+                    pw.println("<dt class=\"sectionTitle\">" + properties.getProperty(INSTANCE_UPPERCASE_PLURAL) + "</dt>");
                     pw.println("<dd>");
                     printNumberedInstanceList(pw, directInstances);
                     pw.println("</dd>");
@@ -235,7 +272,7 @@ public class HTMLExport {
             // Generic stuff at top of page
             String slotBrowserText = slot.getBrowserText();
             printTop(pw, slotBrowserText);
-            pw.println("<span class=\"pageTitle\">Slot: " + slotBrowserText + "</span><br><br>");
+            pw.println("<span class=\"pageTitle\">" + properties.getProperty(SLOT) + ": " + slotBrowserText + "</span><br><br>");
             pw.println("<div class=\"slotBorder\">");
 
             // Print slot documentation
@@ -244,19 +281,19 @@ public class HTMLExport {
             // Print list of superslots
             Collection superslots = slot.getSuperslots();
             if (superslots.size() > 0) {
-                pw.println("<span class=\"sectionTitle\">Superslots</span>");
+                pw.println("<span class=\"sectionTitle\">" + properties.getProperty(SUPERSLOTS) + "</span>");
                 printSlotIconList(pw, superslots);
             }
 
             // Print list of subslots
             Collection subslots = slot.getSubslots();
             if (subslots.size() > 0) {
-                pw.println("<span class=\"sectionTitle\">Subslots</span>");
+                pw.println("<span class=\"sectionTitle\">" + properties.getProperty(SUBSLOTS) + "</span>");
                 printSlotIconList(pw, slot.getSubslots());
             }
 
             // Print list of direct types
-            pw.println("<span class=\"sectionTitle\">Types</span>");
+            pw.println("<span class=\"sectionTitle\">" + properties.getProperty(TYPE_PLURAL) + "</span>");
             printClsIconList(pw, slot.getDirectTypes());
 
             // Print own slots table
@@ -297,11 +334,11 @@ public class HTMLExport {
 
             // Generic stuff at top of page
             printTop(pw, instance.getBrowserText());
-            pw.println("<span class=\"pageTitle\">Instance: " + instance.getBrowserText() + "</span><br><br>");
+            pw.println("<span class=\"pageTitle\">" + properties.getProperty(INSTANCE_UPPERCASE) + ": " + instance.getBrowserText() + "</span><br><br>");
             pw.println("<div class=\"instanceBorder\">");
 
             // Print list of direct types
-            pw.println("<span class=\"sectionTitle\">Types</span>");
+            pw.println("<span class=\"sectionTitle\">" + properties.getProperty(TYPE_PLURAL) + "</span>");
             printClsIconList(pw, instance.getDirectTypes());
 
             // Print own slots table
@@ -349,7 +386,7 @@ public class HTMLExport {
         pw.println("</div><br>");
 
         if (hierarchyLink) {
-            pw.println("<span class=\"generalContentBold\">Return to <a href=\"index.html\" target=\"_self\">Class Hierarchy</a></span><br><br>");
+            pw.println("<span class=\"generalContentBold\">Return to <a href=\"index.html\" target=\"_self\">" + properties.getProperty(CLASS_HIERARCHY) + "</a></span><br><br>");
         }
 
         pw.println("<span class=\"generalContentBold\">Generated: " + buildDateString() + "</span><br><br>");
@@ -362,7 +399,7 @@ public class HTMLExport {
         if (frame == null) return;
 
         Collection docs = frame.getDocumentation();
-        String doc = "<span class=\"sectionTitle\">Documentation:</span> ";
+        String doc = "<span class=\"sectionTitle\">" + properties.getProperty(DOCUMENTATION) + ":</span> ";
         Iterator i = docs.iterator();
         while (i.hasNext()) {
             doc += (String) i.next();
@@ -376,13 +413,13 @@ public class HTMLExport {
         pw.println("<table width=\"100%\" border=\"1\" cellpadding=\"3\" cellspacing=\"0\" class=\"mozillaTableHack\">");
 
         // Table header
-        pw.println("\t<th align=\"left\" bgcolor=\"#C4DAE5\" colspan=\"3\" class=\"mozillaTableHack\">Own Slots</th>");
+        pw.println("\t<th align=\"left\" bgcolor=\"#C4DAE5\" colspan=\"3\" class=\"mozillaTableHack\">Own " + properties.getProperty(SLOT_PLURAL) + "</th>");
 
         // Table row that contains column titles.
         pw.println("\t<tr class=\"sectionTitle\">");
         pw.println("\t\t<td class=\"mozillaTableHack\">&nbsp;</td>");
-        pw.println("\t\t<td class=\"mozillaTableHack\">Slot Name</td>");
-        pw.println("\t\t<td class=\"mozillaTableHack\">Value</td>");
+        pw.println("\t\t<td class=\"mozillaTableHack\">" + properties.getProperty(SLOT) + " Name</td>");
+        pw.println("\t\t<td class=\"mozillaTableHack\">" + properties.getProperty(VALUE) + "</td>");
         pw.println("\t</tr>");
     }
 
@@ -486,13 +523,13 @@ public class HTMLExport {
 
         // Table header
         int numColumns = config.facetsToDisplay.size() + 3;
-        pw.println("\t<th align=\"left\" bgcolor=\"#C4DAE5\" colspan=\"" + numColumns + "\" class=\"mozillaTableHack\">Template Slots</th>");
+        pw.println("\t<th align=\"left\" bgcolor=\"#C4DAE5\" colspan=\"" + numColumns + "\" class=\"mozillaTableHack\">Template " + properties.getProperty(this.SLOT_PLURAL) + "</th>");
 
         // Table row that contains column titles.
         pw.println("\t<tr class=\"sectionTitle\">");
         pw.println("\t\t<td class=\"mozillaTableHack\">&nbsp;</td>");
-        pw.println("\t\t<td class=\"mozillaTableHack\">Slot Name</td>");
-        pw.println("\t\t<td class=\"mozillaTableHack\">Documentation</td>");
+        pw.println("\t\t<td class=\"mozillaTableHack\">" + properties.getProperty(SLOT) + " Name</td>");
+        pw.println("\t\t<td class=\"mozillaTableHack\">" + properties.getProperty(DOCUMENTATION) + "</td>");
 
         ArrayList columnTitles = config.facetsToDisplay;
         boolean showType = false;
@@ -503,27 +540,27 @@ public class HTMLExport {
 
         if (config.facetsToDisplay.contains("Value Type")) {
             showType = true;
-            pw.println("\t\t<td class=\"mozillaTableHack\">Type</td>");
+            pw.println("\t\t<td class=\"mozillaTableHack\">" + properties.getProperty(TYPE) + "</td>");
         }
 
         if (config.facetsToDisplay.contains("Cardinality")) {
             showCardinality = true;
-            pw.println("\t\t<td class=\"mozillaTableHack\">Cardinality</td>");
+            pw.println("\t\t<td class=\"mozillaTableHack\">" + properties.getProperty(CARDINALITY) + "</td>");
         }
 
         if (config.facetsToDisplay.contains("Numeric Minimum & Maximum")) {
             showNumeric = true;
-            pw.println("\t\t<td class=\"mozillaTableHack\">Min/Max</td>");
+            pw.println("\t\t<td class=\"mozillaTableHack\">" + properties.getProperty(MIN_MAX) + "</td>");
         }
 
         if (config.facetsToDisplay.contains("Default Values")) {
             showDefaultVals = true;
-            pw.println("\t\t<td class=\"mozillaTableHack\">Default</td>");
+            pw.println("\t\t<td class=\"mozillaTableHack\">" + properties.getProperty(DEFAULT) + "</td>");
         }
 
         if (config.facetsToDisplay.contains("Template Value")) {
             showTemplateVals = true;
-            pw.println("\t\t<td class=\"mozillaTableHack\">Template Value</td>");
+            pw.println("\t\t<td class=\"mozillaTableHack\">" + properties.getProperty(TEMPLATE_VALUE) + "</td>");
         }
 
         pw.println("\t</tr>");
@@ -766,21 +803,21 @@ public class HTMLExport {
         return name;
     }
 
-    /** @todo
-     * All of these words need to be configurable by the user.  Need to
-     * put them in the XML config file or in a separate properties file.
-     * */
     private String getClassPageTitle(Cls cls) {
         String title = "";
 
         if (cls.isConcrete() && !cls.isMetaCls()) {
-            title = "Class";
+			// Label for class.
+            title = properties.getProperty(CLASS);
         } else if (cls.isConcrete() && cls.isMetaCls()) {
-            title = "Metaclass";
+			// Label for metclass.
+            title = properties.getProperty(METACLASS);
         } else if (cls.isAbstract() && cls.isMetaCls()) {
-            title = "Abstract Metaclass";
+            // Label for abstract metaclass.
+            title = properties.getProperty(ABSTRACT_METACLASS);
         } else if (cls.isAbstract()) {
-            title = "Abstract Class";
+            // Label for abstract class.
+            title = properties.getProperty(ABSTRACT_CLASS);
         }
 
         return title;
@@ -878,36 +915,13 @@ public class HTMLExport {
         images.add("slot.inherited.overridden.gif");
 
         copyFiles(images, srcPrefix, destPrefix);
-
-        /*int size = images.size();
-        for (int i = 0; i < size; i++) {
-            try {
-                String name = (String) images.get(i);
-                InputStream in = new FileInputStream(new File(srcPrefix + name));
-                OutputStream out = new FileOutputStream(destPrefix + name);
-
-                byte[] buf = new byte[1024];
-                int len;
-                while ((len = in.read(buf)) > 0) {
-                    out.write(buf, 0, len);
-                }
-
-                in.close();
-                out.close();
-
-            } catch (java.io.FileNotFoundException e) {
-                System.out.println(e.getMessage());
-            } catch (java.io.IOException e) {
-                System.out.println(e.getMessage());
-            }
-        }*/
     }
 
     private void copyFiles(ArrayList fileNames, String srcDir, String destDir) {
         if (fileNames == null) return;
         if (fileNames.size() == 0) return;
 
-	Iterator i = fileNames.iterator();
+		Iterator i = fileNames.iterator();
         while (i.hasNext()) {
             String fileName = (String) i.next();
 
