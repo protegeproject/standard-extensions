@@ -33,7 +33,11 @@ public class HTMLExportPlugin implements ExportPlugin {
             if (dialog.okPressed == true) {
                 ExportConfiguration config = dialog.getExportConfiguration();
                 HTMLExport exporter = new HTMLExport(config);
-                exporter.export();
+                try {
+                    exporter.export();
+                } catch (HTMLExportException e) {
+                    System.out.println(e.getMessage());
+                }
             }
         }
     }

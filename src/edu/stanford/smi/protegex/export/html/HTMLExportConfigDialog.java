@@ -515,16 +515,16 @@ public class HTMLExportConfigDialog extends JDialog {
     public ExportConfiguration getExportConfiguration() {
         ExportConfiguration config = new ExportConfiguration();
 
-        config.showInstances = showInstancesCheckbox.isSelected();
-        config.useNumbering = numberInstancesCheckbox.isSelected();
-        config.outputDir = outputDirComponent.getPath();
-        config.headerPath = headerComponent.getPath();
-        config.footerPath = footerComponent.getPath();
-        config.cssPath = cssComponent.getPath();
-        config.project = project;
+		config.setShowInstances(showInstancesCheckbox.isSelected());
+        config.setUseNumbering(numberInstancesCheckbox.isSelected());
+        config.setOutputDir(outputDirComponent.getPath());
+        config.setHeaderPath(headerComponent.getPath());
+        config.setFooterPath(footerComponent.getPath());
+        config.setCSSPath(cssComponent.getPath());
+        config.setProject(project);
 
         ArrayList rootClasses = new ArrayList(ComponentUtilities.getListValues(classesList));
-        config.rootClasses = rootClasses;
+        config.setRootClasses(rootClasses);
 
         ArrayList slots = new ArrayList();
         int size = slotList.getModel().getSize();
@@ -534,7 +534,7 @@ public class HTMLExportConfigDialog extends JDialog {
                 slots.add(fdata.getName());
             }
         }
-        config.slotsToDisplay = slots;
+        config.setSlotsToDisplay(slots);
 
         ArrayList facets = new ArrayList();
         size = facetList.getModel().getSize();
@@ -544,7 +544,7 @@ public class HTMLExportConfigDialog extends JDialog {
                 facets.add(fdata.getName());
             }
         }
-        config.facetsToDisplay = facets;
+        config.setFacetsToDisplay(facets);
 
         return config;
     }
