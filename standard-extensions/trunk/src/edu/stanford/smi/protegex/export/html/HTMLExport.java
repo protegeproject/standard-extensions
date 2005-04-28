@@ -26,6 +26,7 @@ public class HTMLExport {
     private final String CLASS_HIERARCHY = "class.hierarchy";
     private final String DEFAULT = "default";
     private final String DOCUMENTATION = "documentation";
+    private final String FACET = "facet";
     private final String INSTANCE_LOWERCASE = "instance.lowercase";
     private final String INSTANCE_LOWERCASE_PLURAL = "instance.lowercase.plural";
     private final String INSTANCE_UPPERCASE = "instance.uppercase";
@@ -138,8 +139,7 @@ public class HTMLExport {
 
     private void exportHierarchy(PrintWriter pw, Cls cls) {
         String style = getListItemStyle(cls);
-        String clsName = cls.getName();
-        String href = stripIllegalChars(clsName) + ".html";
+        String href = getFrameFileName((Frame) cls);
 
         String listItem = "<li class=\"" + style + "\"><a href=\"" + href + "\">" + cls.getBrowserText() + "</a>";
 
@@ -167,6 +167,8 @@ public class HTMLExport {
     }
 
     private void generateClassPage(Cls cls) {
+        if (framesGenerated.contains(cls.getName())) return;
+
         String clsName = cls.getName();
         clsName = stripIllegalChars(clsName);
         String pathname = config.getOutputDir() + File.separator + clsName + ".html";
@@ -218,11 +220,12 @@ public class HTMLExport {
 
                 pw.println("<a name=\"direct_instances\"></a>");
 
-                /** @todo don't print any of this if there aren't any instances? */
-                Collection directInstances = cls.getDirectInstances();
+                List directInstances = new ArrayList(cls.getDirectInstances());
+                Collections.sort(directInstances, new FrameComparator());
+
                 if (!config.getUseNumbering()) {
                     pw.println("<span class=\"sectionTitle\">" + properties.getProperty(INSTANCE_UPPERCASE_PLURAL) + "</span>");
-                    printInstanceIconList(pw, directInstances);
+                    printFrameIconList(pw, directInstances);
                 } else {
                     pw.println("<dl>");
                     pw.println("<dt class=\"sectionTitle\">" + properties.getProperty(INSTANCE_UPPERCASE_PLURAL) + "</dt>");
@@ -230,14 +233,6 @@ public class HTMLExport {
                     printNumberedInstanceList(pw, directInstances);
                     pw.println("</dd>");
                     pw.println("</dl><br>");
-                }
-
-                // Generate HTML pages for all instances that are listed
-                // for this class.
-                Iterator j = directInstances.iterator();
-                while (j.hasNext()) {
-                    Instance directInstance = (Instance) j.next();
-                    generateInstancePage(directInstance);
                 }
             } else {
                 pw.println("<br>");
@@ -247,7 +242,32 @@ public class HTMLExport {
             insertCustomHTML(pw, config.getFooterPath());
 
             pw.close();
+            framesGenerated.add(cls.getName());
 
+            // Generate pages for all of the direct instances that we
+            // printed on this class page.  The pages that we generate will
+            // depend on the type of the direct instance (i.e. whether
+            // the instance is of type SimpleInstance, Cls, Slot, or Facet).
+            if ((config.getShowInstances()) && (cls.getDirectInstanceCount() > 0)) {
+            	Collection directInstances = cls.getDirectInstances();
+                Iterator i = directInstances.iterator();
+                while (i.hasNext()) {
+                    Instance directInstance = (Instance) i.next();
+                    if (directInstance instanceof SimpleInstance) {
+                        generateInstancePage(directInstance);
+                    } else if (directInstance instanceof Slot) {
+                        generateSlotPage((Slot) directInstance);
+                        framesGenerated.add(directInstance.getName());
+                    } else if (directInstance instanceof Cls) {
+                        generateClassPage((Cls) directInstance);
+                    } else if (directInstance instanceof Facet) {
+                        generateFacetPage((Facet) directInstance);
+                    }
+                }
+            }
+
+            // Generate slot pages for all of the own and template slots
+            // that we printed on this class page.
             Set slotsToExport = new HashSet();
             slotsToExport.addAll(cls.getOwnSlots());
             slotsToExport.addAll(cls.getTemplateSlots());
@@ -360,6 +380,36 @@ public class HTMLExport {
         }
     }
 
+    private void generateFacetPage(Facet facet) {
+        String pathname = config.getOutputDir() + File.separator + getFrameFileName((Frame) facet);
+        File f = new File(pathname);
+
+        try {
+            PrintWriter pw = new PrintWriter(new FileOutputStream(f));
+
+            // Generic stuff at top of page
+            printTop(pw, facet.getBrowserText());
+            pw.println("<span class=\"pageTitle\">" + properties.getProperty(FACET) + ": " + facet.getBrowserText() + "</span><br><br>");
+            pw.println("<div class=\"facetBorder\">");
+
+            // Print list of direct types
+            pw.println("<span class=\"sectionTitle\">" + properties.getProperty(TYPE_PLURAL) + "</span>");
+            printClsIconList(pw, facet.getDirectTypes());
+
+            // Print own slots table
+            printOwnSlots(pw, facet);
+
+            pw.println("<br>");
+
+            printBottom(pw, true);
+            insertCustomHTML(pw, config.getFooterPath());
+
+            pw.close();
+        } catch (java.io.FileNotFoundException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
     private void printTop(PrintWriter pw, String frameName) {
         pw.println("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">");
         pw.println("<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\">");
@@ -456,7 +506,7 @@ public class HTMLExport {
         Iterator i = c.iterator();
         while (i.hasNext()) {
             Slot slot = (Slot) i.next();
-            String slotFileName = stripIllegalChars(slot.getName()) + ".html";
+            String slotFileName = getFrameFileName((Frame) slot);
             pw.println("\t<li class=\"slot\"><a href=\"" + slotFileName + "\">" + slot.getBrowserText() + "</a></li>");
         }
 
@@ -475,7 +525,7 @@ public class HTMLExport {
             Iterator i = c.iterator();
             while (i.hasNext()) {
                 Cls cls = (Cls) i.next();
-                String clsFileName = stripIllegalChars(cls.getName()) + ".html";
+                String clsFileName = getFrameFileName((Frame) cls);
                 String style = getListItemStyle(cls);
 
                 if (classesToExport.contains(cls)) {
@@ -490,16 +540,25 @@ public class HTMLExport {
         pw.println("</ul><br>");
     }
 
-    private void printInstanceIconList(PrintWriter pw, Collection c) {
+    private void printFrameIconList(PrintWriter pw, Collection c) {
         // Open list
         pw.println("<ul class=\"iconList\">");
 
         // Print list items
         Iterator i = c.iterator();
         while (i.hasNext()) {
-            Instance instance = (Instance) i.next();
-            String instanceFileName = stripIllegalChars(instance.getName()) + ".html";
-            pw.println("\t<li class=\"directInstance\"><A HREF=\"" + instanceFileName + "\">" + instance.getBrowserText() + "</A></li>");
+            Frame frame = (Frame) i.next();
+            String fileName = getFrameFileName(frame);
+            if (frame instanceof SimpleInstance) {
+                pw.println("\t<li class=\"directInstance\"><A HREF=\"" + fileName + "\">" + frame.getBrowserText() + "</A></li>");
+            } else if (frame instanceof Cls) {
+                String style = getListItemStyle((Cls) frame);
+                pw.println("\t<li class=\"" + style + "\"><A HREF=\"" + fileName + "\">" + frame.getBrowserText() + "</A></li>");
+            } else if (frame instanceof Slot) {
+                pw.println("\t<li class=\"slot\"><A HREF=\"" + fileName + "\">" + frame.getBrowserText() + "</A></li>");
+            } else if (frame instanceof Facet) {
+            	pw.println("\t<li class=\"facet\"><A HREF=\"" + fileName + "\">" + frame.getBrowserText() + "</A></li>");
+        	}
         }
 
         // Close list
@@ -514,7 +573,7 @@ public class HTMLExport {
         Iterator i = c.iterator();
         while (i.hasNext()) {
             Instance instance = (Instance) i.next();
-            String instanceFileName = stripIllegalChars(instance.getName()) + ".html";
+            String instanceFileName = getFrameFileName((Frame) instance);
             pw.println("\t<li><A HREF=\"" + instanceFileName + "\">" + instance.getBrowserText() + "</A></li>");
         }
 
@@ -587,9 +646,8 @@ public class HTMLExport {
                 pw.println("<td class=\"mozillaTableHack\"><img src=\"images/" + iconName + "\" width=\"16\" height=\"16\" border=\"0\" align=\"middle\"></td>");
 
                 // Column 2 - slot name, always present
-                String fixedSlotName = stripIllegalChars(slotName);
-                fixedSlotName += ".html";
-                pw.println("<td class=\"mozillaTableHack\"><a href=\"" + fixedSlotName + "\">" + slot.getBrowserText() + "</a></td>");
+                String slotFileName = getFrameFileName((Frame) slot);
+                pw.println("<td class=\"mozillaTableHack\"><a href=\"" + slotFileName + "\">" + slot.getBrowserText() + "</a></td>");
 
                 // Column 3 - slot documentation, always present
                 /** @todo Format documentation better */
@@ -610,10 +668,9 @@ public class HTMLExport {
                         Iterator k = allowedValues.iterator();
                         while (k.hasNext()) {
                             Cls allowedValue = (Cls) k.next();
-                            String avName = allowedValue.getName();
                             if (classesToExport.contains(allowedValue)) {
-                                String fixedAVName = stripIllegalChars(avName) + ".html";
-                                stringValueType += "<a href=\"" + fixedAVName + "\">" + allowedValue.getBrowserText() + "</a>";
+                                String fileName = getFrameFileName((Frame) cls);
+                                stringValueType += "<a href=\"" + fileName + "\">" + allowedValue.getBrowserText() + "</a>";
                             } else {
                                 stringValueType += allowedValue.getBrowserText();
                             }
@@ -622,6 +679,17 @@ public class HTMLExport {
                                 stringValueType += ", ";
                             }
                         }
+                    } else if (valueType == ValueType.SYMBOL) {
+                        stringValueType = "{";
+                        Collection allowedValues = cls.getTemplateSlotAllowedValues(slot);
+                        Iterator k = allowedValues.iterator();
+                        while (k.hasNext()) {
+							stringValueType += (String) k.next();
+                        	if (k.hasNext()) {
+                            	stringValueType += ", ";
+                            }
+                        }
+                        stringValueType += "}";
                     } else {
                         stringValueType = valueType.toString();
                     }
@@ -707,6 +775,8 @@ public class HTMLExport {
             retval = "min: " + min.toString();
         } else if ((min == null) && (max != null)) {
             retval = "max: " + max.toString();
+        } else {
+            retval = "&nbsp;";
         }
 
         return retval;
@@ -716,17 +786,23 @@ public class HTMLExport {
         String retval = "";
 
         if (values.size() == 0) {
-            retval = "&nbsp";
+            retval = "&nbsp;";
         }
 
         Iterator i = values.iterator();
         while (i.hasNext()) {
             Object obj = i.next();
             if (obj instanceof Instance) {
-                /** @todo Add an href to this string if an instance page
-                 * was generated for this instance. */
                 Instance instance = (Instance) obj;
-                retval += instance.getBrowserText();
+                Cls directType = instance.getDirectType();
+                if (classesToExport.contains(directType)) {
+                    // Only make this a hyperlink if we generated a page
+                    // for this particular instance.
+                    String instanceFileName = getFrameFileName((Frame) instance);
+                    retval += "<a href=\"" + instanceFileName + "\">" + instance.getBrowserText() + "</a>";
+                } else {
+                    retval += instance.getBrowserText();
+                }
             } else {
                 retval += obj.toString();
             }
@@ -757,9 +833,8 @@ public class HTMLExport {
                 pw.println("<td class=\"mozillaTableHack\"><img src=\"images/slot.gif\" width=\"16\" height=\"16\" border=\"0\" align=\"middle\"></td>");
 
                 // Column 2 - slot name
-                String legalOwnSlotName = stripIllegalChars(ownSlotName);
-                legalOwnSlotName += ".html";
-                pw.println("<td class=\"mozillaTableHack\"><a href=\"" + legalOwnSlotName + "\">" + ownSlot.getBrowserText() + "</a></td>");
+                String ownSlotFileName = getFrameFileName((Frame) ownSlot);
+                pw.println("<td class=\"mozillaTableHack\"><a href=\"" + ownSlotFileName + "\">" + ownSlot.getBrowserText() + "</a></td>");
 
                 // Column 3 - slot value
                 Collection ownSlotValues = frame.getOwnSlotValues(ownSlot);
@@ -846,6 +921,11 @@ public class HTMLExport {
         return retval;
     }
 
+    private String getFrameFileName(Frame frame) {
+        String fname = stripIllegalChars(frame.getName()) + ".html";
+        return fname;
+    }
+
     private String buildDateString() {
         String result = "";
 
@@ -913,6 +993,7 @@ public class HTMLExport {
         images.add("class.gif");
         images.add("class.metaclass.abstract.gif");
         images.add("class.metaclass.gif");
+        images.add("facet.gif");
         images.add("instance.gif");
         images.add("slot.gif");
         images.add("slot.inherited.gif");
