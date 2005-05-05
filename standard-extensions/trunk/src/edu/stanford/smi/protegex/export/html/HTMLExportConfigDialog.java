@@ -1,13 +1,23 @@
 package edu.stanford.smi.protegex.export.html;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.*;
+
 import java.io.*;
+
 import java.util.*;
+
 import javax.swing.*;
-import javax.swing.border.*;
+import javax.swing.border.EmptyBorder;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.*;
 
@@ -33,12 +43,9 @@ public class HTMLExportConfigDialog extends JDialog {
     JButton deleteButton = new JButton("Delete");
     JButton okButton = new JButton("OK", Icons.getOkIcon());
     JButton saveButton = new JButton("Save");
-
     JCheckBox numberInstancesCheckbox = new JCheckBox("Use numbering for instance lists");
     JCheckBox showInstancesCheckbox = new JCheckBox("Show Instances");
-
     JComboBox configNamesComboBox;
-
     JPanel configButtonPanel = new JPanel(new FlowLayout());
     JPanel customCodePanel = new JPanel();
     JPanel facetButtonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -48,19 +55,16 @@ public class HTMLExportConfigDialog extends JDialog {
     JPanel okCancelButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
     JPanel slotButtonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
     JPanel slotsPanel = new JPanel(new BorderLayout(5, 5));
-
     JLabel configNameLabel = new JLabel("Configuration Name:");
     JLabel facetsLabel = new JLabel("Select facets to display");
     JLabel headerLabel = new JLabel("Header:");
     JLabel slotsLabel = new JLabel("Select slots to display");
-
     JList facetList;
     JList slotList;
-
     JScrollPane facetsScrollPane = new JScrollPane();
     JScrollPane slotsScrollPane = new JScrollPane();
-
     JTabbedPane tabbedPane = new JTabbedPane();
+    JTextField configNamesEditor;
 
     boolean okPressed;
     Document document;
@@ -176,9 +180,28 @@ public class HTMLExportConfigDialog extends JDialog {
          * Build general & customization panels
          */
         initConfigNamesComboBox();
-        configNamesComboBox.addActionListener(new ActionListener() {
+    	configNamesComboBox.addItemListener(new ItemListener() {
+        	public void itemStateChanged(ItemEvent ie) {
+            	configNamesComboBox_itemStateChanged(ie);
+            }
+    	});
+
+        configNamesEditor = (JTextField) configNamesComboBox.getEditor().getEditorComponent();
+        configNamesEditor.addKeyListener(new KeyAdapter() {
+            public void keyReleased(KeyEvent e) {
+                configNamesEditor_keyReleased(e);
+            }
+        });
+
+        saveButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                configNamesComboBox_actionPerformed(e);
+                saveButton_actionPerformed(e);
+            }
+        });
+
+        deleteButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                deleteButton_actionPerformed(e);
             }
         });
 
@@ -363,8 +386,7 @@ public class HTMLExportConfigDialog extends JDialog {
         generalPanel.add(configButtonPanel, c);
 
         // Output Directory component
-        /** @todo change middle parameter back to null - or something... */
-        outputDirComponent = new FileField("Output Directory:", "c:\\temp\\htmlexport", "Output Directory");
+        outputDirComponent = new FileField("Output Directory:", null, "Output Directory");
         c.gridx = 0;
         c.gridy = 2;
         c.gridwidth = 2;
@@ -488,8 +510,150 @@ public class HTMLExportConfigDialog extends JDialog {
         setVisible(false);
     }
 
-    public void configNamesComboBox_actionPerformed(ActionEvent ae) {
-        /** @todo implement this method */
+    public void configNamesComboBox_itemStateChanged(ItemEvent ie) {
+        // Shortcut - don't care about deselection.
+        if ((ie.getStateChange()) == (ItemEvent.DESELECTED)) return;
+
+        String configName = (String) configNamesComboBox.getSelectedItem();
+        if (configName == "Protege Default") {
+            restoreDefaultSettings();
+        } else {
+            String xpath = "/html.export.configurations/configuration[name=\"" + configName + "\"]";
+			try {
+        		Node result = XPathAPI.selectSingleNode(document, xpath);
+				// Workaround - since we are using an editable combo box, it's
+            	// possible to get an item selected event for items that have
+                // not yet been saved the to XML config file.  In this case,
+                // we don't want to read settings out of the config file - just
+                // allow user to continue working.
+                if (result != null) {
+                	populateFromConfigFile(configName);
+                }
+            } catch(javax.xml.transform.TransformerException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+    }
+
+    public void configNamesEditor_keyReleased(KeyEvent e) {
+        String s = configNamesEditor.getText();
+        if (s.equals("Protege Default") || (s.length() == 0)) {
+            saveButton.setEnabled(false);
+            deleteButton.setEnabled(false);
+        } else {
+            deleteButton.setEnabled(true);
+            saveButton.setEnabled(true);
+        }
+    }
+
+    public void saveButton_actionPerformed(ActionEvent ae) {
+        org.w3c.dom.Text text;
+        Node root = document.getDocumentElement();
+
+		Node config = document.createElement("configuration");
+        root.appendChild(config);
+
+        Node configName = document.createElement("name");
+        text = document.createTextNode((String)configNamesComboBox.getSelectedItem());
+        configName.appendChild(text);
+        config.appendChild(configName);
+
+        Node outputDir = document.createElement("output.dir");
+        text = document.createTextNode(outputDirComponent.getFilePath().getPath());
+        outputDir.appendChild(text);
+        config.appendChild(outputDir);
+
+        Node header = document.createElement("header");
+        text = document.createTextNode(headerComponent.getFilePath().getPath());
+        header.appendChild(text);
+        config.appendChild(header);
+
+        Node footer = document.createElement("footer");
+        text = document.createTextNode(footerComponent.getFilePath().getPath());
+        footer.appendChild(text);
+        config.appendChild(footer);
+
+        Node stylesheet = document.createElement("stylesheet");
+        text = document.createTextNode(cssComponent.getFilePath().getPath());
+        stylesheet.appendChild(text);
+        config.appendChild(stylesheet);
+
+        Node showInstances = document.createElement("show.instances");
+        Boolean b = new Boolean(showInstancesCheckbox.isSelected());
+      	text = document.createTextNode(b.toString());
+        showInstances.appendChild(text);
+        config.appendChild(showInstances);
+
+        Node useNumbering = document.createElement("use.numbering");
+        b = new Boolean(numberInstancesCheckbox.isSelected());
+        text = document.createTextNode(b.toString());
+        useNumbering.appendChild(text);
+        config.appendChild(useNumbering);
+
+        Node classes = document.createElement("classes");
+        config.appendChild(classes);
+        ArrayList rootClasses = new ArrayList(ComponentUtilities.getListValues(classesList));
+        Iterator iterator = rootClasses.iterator();
+        while (iterator.hasNext()) {
+            Cls cls = (Cls) iterator.next();
+            Node classNode = document.createElement("class");
+            text = document.createTextNode(cls.getName());
+            classNode.appendChild(text);
+            classes.appendChild(classNode);
+        }
+
+        Node slots = document.createElement("slots");
+        config.appendChild(slots);
+        int size = slotList.getModel().getSize();
+        for (int i = 0; i < size; i++) {
+            FrameData fdata = (FrameData) slotList.getModel().getElementAt(i);
+            if (fdata.isSelected()) {
+                Node slot = document.createElement("slot");
+                text = document.createTextNode(fdata.getName());
+                slot.appendChild(text);
+                slots.appendChild(slot);
+            }
+        }
+
+        Node facets = document.createElement("facets");
+        config.appendChild(facets);
+        size = facetList.getModel().getSize();
+        for (int i = 0; i < size; i++) {
+            FrameData fdata = (FrameData) facetList.getModel().getElementAt(i);
+            if (fdata.isSelected()) {
+                Node facet = document.createElement("facet");
+                text = document.createTextNode(fdata.getName());
+                facet.appendChild(text);
+                facets.appendChild(facet);
+            }
+        }
+
+        saveConfigurationFile();
+        configNamesComboBox.addItem(configNamesEditor.getText());
+    }
+
+    public void deleteButton_actionPerformed(ActionEvent ae) {
+		String configName = (String) configNamesComboBox.getSelectedItem();
+
+        // Remove configuration from XML config file.
+        try {
+            Node root = document.getDocumentElement();
+            String xpath = "/html.export.configurations/configuration[name=\"" + configName + "\"]";
+            Node node = XPathAPI.selectSingleNode(root, xpath);
+    		if (node != null) {
+				Node parent = node.getParentNode();
+                parent.removeChild(node);
+                saveConfigurationFile();
+            }
+        } catch (javax.xml.transform.TransformerException e) {
+            System.out.println(e.getMessage());
+        }
+
+        int index = configNamesComboBox.getSelectedIndex();
+        if (index > -1) {
+            configNamesComboBox.setSelectedIndex(index - 1);
+            configNamesComboBox.removeItemAt(index);
+        }
     }
 
     private Action createAddClsAction() {
@@ -547,5 +711,196 @@ public class HTMLExportConfigDialog extends JDialog {
         config.setFacetsToDisplay(facets);
 
         return config;
+    }
+
+	private void saveConfigurationFile() {
+    	try {
+            TransformerFactory tFactory = TransformerFactory.newInstance();
+            Transformer transformer = tFactory.newTransformer();
+            DOMSource source = new DOMSource(document);
+
+            File file = new File(prefix + "HTMLExportConfigurations.xml");
+            StreamResult result = new StreamResult(file);
+            transformer.transform(source, result);
+        } catch (javax.xml.transform.TransformerException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private void restoreDefaultSettings() {
+        deleteButton.setEnabled(false);
+        saveButton.setEnabled(false);
+        showInstancesCheckbox.setSelected(true);
+        numberInstancesCheckbox.setSelected(false);
+        outputDirComponent.setPath(SystemUtilities.getUserDirectory());
+        headerComponent.setPath(prefix + "header.html");
+        footerComponent.setPath(prefix + "footer.html");
+        cssComponent.setPath(prefix + "htmlexport.css");
+
+        // Default classes.
+        Collection values = new ArrayList();
+        Cls cls = project.getKnowledgeBase().getCls(":THING");
+        values.add(cls);
+        ComponentUtilities.setListValues(classesList, values);
+
+        // Default facets.
+        int size = facetList.getModel().getSize();
+        for (int i = 0; i < size; i++) {
+            FrameData fdata = (FrameData) facetList.getModel().getElementAt(i);
+            String name = fdata.getName();
+            if (name.equals("Cardinality") || name.equals("Value Type")) {
+                fdata.setSelected(true);
+            } else {
+                fdata.setSelected(false);
+            }
+        }
+
+        // Default slots.
+        size = slotList.getModel().getSize();
+        for (int i = 0; i < size; i++) {
+            FrameData fdata = (FrameData) slotList.getModel().getElementAt(i);
+            String name = fdata.getName();
+            if (name.equals(Model.Slot.DIRECT_DOMAIN) ||
+                name.equals(Model.Slot.DIRECT_INSTANCES) ||
+                name.equals(Model.Slot.DIRECT_SUBCLASSES) ||
+                name.equals(Model.Slot.DIRECT_SUBSLOTS) ||
+                name.equals(Model.Slot.DIRECT_SUPERCLASSES) ||
+                name.equals(Model.Slot.DIRECT_SUPERSLOTS) ||
+                name.equals(Model.Slot.DIRECT_TEMPLATE_SLOTS) ||
+                name.equals(Model.Slot.DIRECT_TYPES) ||
+                name.equals(Model.Slot.DOCUMENTATION) ||
+                name.equals(Model.Slot.NAME)) {
+                fdata.setSelected(false);
+            } else {
+                fdata.setSelected(true);
+            }
+        }
+    }
+
+    private void populateFromConfigFile(String configName) {
+        String xpath;
+        Node result;
+        XObject value;
+
+        try {
+            deleteButton.setEnabled(true);
+            saveButton.setEnabled(true);
+
+            xpath = "/html.export.configurations/configuration[name=\"" + configName + "\"]/show.instances";
+            result = XPathAPI.selectSingleNode(document, xpath);
+            if (result != null) {
+                value = XPathAPI.eval(result, "string()");
+                if (value.str().equals("true")) {
+                    showInstancesCheckbox.setSelected(true);
+                }
+                else {
+                    showInstancesCheckbox.setSelected(false);
+                }
+            }
+
+            xpath = "/html.export.configurations/configuration[name=\"" + configName + "\"]/use.numbering";
+            result = XPathAPI.selectSingleNode(document, xpath);
+            if (result != null) {
+                value = XPathAPI.eval(result, "string()");
+                if (value.str().equals("true")) {
+                    numberInstancesCheckbox.setSelected(true);
+                }
+                else {
+                    numberInstancesCheckbox.setSelected(false);
+                }
+            }
+
+            xpath = "/html.export.configurations/configuration[name=\"" + configName + "\"]/output.dir";
+            result = XPathAPI.selectSingleNode(document, xpath);
+            if (result != null) {
+                value = XPathAPI.eval(result, "string()");
+                outputDirComponent.setPath(value.str());
+            }
+
+            xpath = "/html.export.configurations/configuration[name=\"" + configName + "\"]/header";
+            result = XPathAPI.selectSingleNode(document, xpath);
+            if (result != null) {
+                value = XPathAPI.eval(result, "string()");
+                headerComponent.setPath(value.str());
+            }
+
+            xpath = "/html.export.configurations/configuration[name=\"" + configName + "\"]/footer";
+            result = XPathAPI.selectSingleNode(document, xpath);
+            if (result != null) {
+                value = XPathAPI.eval(result, "string()");
+                footerComponent.setPath(value.str());
+            }
+
+            xpath = "/html.export.configurations/configuration[name=\"" + configName + "\"]/stylesheet";
+            result = XPathAPI.selectSingleNode(document, xpath);
+            if (result != null) {
+                value = XPathAPI.eval(result, "string()");
+                cssComponent.setPath(value.str());
+            }
+
+            // Set root classes.
+            xpath = "/html.export.configurations/configuration[name=\"" + configName + "\"]/classes/class";
+            NodeList results = XPathAPI.selectNodeList(document, xpath);
+            if ((results != null) && (results.getLength() > 0)) {
+                ArrayList rootClasses = new ArrayList();
+                for (int i = 0; i < results.getLength(); i++) {
+                    result = results.item(i);
+                    value = XPathAPI.eval(result, "string()");
+                    Cls cls = project.getKnowledgeBase().getCls(value.str());
+                    if (cls != null) {
+                        rootClasses.add(cls);
+                    }
+                }
+                ComponentUtilities.setListValues(classesList, rootClasses);
+            }
+
+            // Set slots to export.
+            xpath = "/html.export.configurations/configuration[name=\"" + configName + "\"]/slots/slot";
+            results = XPathAPI.selectNodeList(document, xpath);
+            if (results != null && (results.getLength() > 0)) {
+                ArrayList slotsToExport = new ArrayList();
+                for (int i = 0; i < results.getLength(); i++) {
+                    result = results.item(i);
+                    value = XPathAPI.eval(result, "string()");
+                    slotsToExport.add(value.str());
+                }
+
+                int numItems = slotList.getModel().getSize();
+                for (int i = 0; i < numItems; i++) {
+                    FrameData fdata = (FrameData) slotList.getModel().getElementAt(i);
+                    String slotName = fdata.getName();
+                    if (slotsToExport.contains(slotName)) {
+                        fdata.setSelected(true);
+                    } else {
+                        fdata.setSelected(false);
+                    }
+                }
+            }
+
+            // Set facets to export.
+            xpath = "/html.export.configurations/configuration[name=\"" + configName + "\"]/facets/facet";
+            results = XPathAPI.selectNodeList(document, xpath);
+            if (results != null && (results.getLength() > 0)) {
+                ArrayList facetsToExport = new ArrayList();
+                for (int i = 0; i < results.getLength(); i++) {
+                    result = results.item(i);
+                    value = XPathAPI.eval(result, "string()");
+                    facetsToExport.add(value.str());
+                }
+
+                int numItems = facetList.getModel().getSize();
+                for (int i = 0; i < numItems; i++) {
+                    FrameData fdata = (FrameData) facetList.getModel().getElementAt(i);
+                    String facetName = fdata.getName();
+                    if (facetsToExport.contains(facetName)) {
+                        fdata.setSelected(true);
+                    } else {
+                        fdata.setSelected(false);
+                    }
+                }
+            }
+        } catch (javax.xml.transform.TransformerException e) {
+            System.out.println(e.getMessage());
+        }
     }
 }
