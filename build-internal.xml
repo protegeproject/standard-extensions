@@ -1,5 +1,5 @@
 <?xml version = "1.0" encoding = "UTF-8"?>
-<project name = "standard-extensions" default = "usage" basedir = ".">
+<project name = "standard-extensions" basedir = ".">
 	<property name = "project.name" value = "standard-extensions"/>
 	<property name = "Name" value = "Standard Extensions"/>
 	<property name = "build.dir" value = "./build"/>
@@ -9,6 +9,7 @@
 	<property name = "docs.dir" value = "./docs"/>
 	<property name = "build.javadoc" value = "${docs.dir}/apidocs"/>
 	<property name = "lib.dir" value = "./lib"/>
+	<property name = "image.dir" value = "c:/build_svn/protege-core/build/src/edu/stanford/smi/protege/resource/image"/>
 	<property name = "deprecation" value = "on"/>    
 	<property name = "debug" value = "off"/>
 	<property name = "includeAntRuntime" value = "no"/>
@@ -128,12 +129,29 @@
 		</zip>
 		<zip zipfile = "${dist.dir}/${project.name}-bin-${version}.zip" update = "no">
 			<zipfileset dir = "${dist.dir}" includes = "${project.name}.jar" prefix = "edu.stanford.smi.protegex.standard-extensions"/>
+			<zipfileset dir = "." includes = "standard_extensions_text.properties" prefix = "edu.stanford.smi.protegex.standard-extensions"/>
 			<zipfileset dir = "${lib.dir}" includes = "JGo.jar" prefix = "edu.stanford.smi.protegex.standard-extensions"/>
 			<zipfileset dir = "${lib.dir}" includes = "JGoLayout.jar" prefix = "edu.stanford.smi.protegex.standard-extensions"/>
+			<zipfileset dir = "${lib.dir}" includes = "xalan.jar" prefix = "edu.stanford.smi.protegex.standard-extensions"/>
+			<zipfileset dir = "${lib.dir}" includes = "xercesImpl.jar" prefix = "edu.stanford.smi.protegex.standard-extensions"/>
+			<zipfileset dir = "${lib.dir}" includes = "xml-apis.jar" prefix = "edu.stanford.smi.protegex.standard-extensions"/>
 			<zipfileset dir = "${docs.dir}" includes = "plugin.properties" prefix = "edu.stanford.smi.protegex.standard-extensions"/>
-			<zipfileset dir = "${examples.dir}" includes = "**/*" prefix = "edu.stanford.smi.protegex.standard-extensions/examples"/>
-			<zipfileset dir = "${protege_web_drive}/doc/tutorial/graph_widget" excludes = "**/_vti_cnf/**" prefix = "edu.stanford.smi.protegex.standard-extensions/doc/graph widget"/>
-			<zipfileset dir = "${protege_web_drive}/doc/tutorial/tables" excludes = "**/_vti_cnf/**" prefix = "edu.stanford.smi.protegex.standard-extensions/doc/table widget"/>
+			<zipfileset dir = "${docs.dir}" includes = "footer.html" prefix = "edu.stanford.smi.protegex.standard-extensions/html_export"/>
+			<zipfileset dir = "${docs.dir}" includes = "header.html" prefix = "edu.stanford.smi.protegex.standard-extensions/html_export"/>
+			<zipfileset dir = "${docs.dir}" includes = "htmlexport.css" prefix = "edu.stanford.smi.protegex.standard-extensions/html_export"/>
+			<zipfileset dir = "${docs.dir}" includes = "htmlexport.properties" prefix = "edu.stanford.smi.protegex.standard-extensions/html_export"/>
+			<zipfileset dir = "${docs.dir}" includes = "HTMLExportConfigurations.xml" prefix = "edu.stanford.smi.protegex.standard-extensions/html_export"/>
+			<zipfileset dir = "${docs.dir}" includes = "ProtegeLogo.gif" prefix = "edu.stanford.smi.protegex.standard-extensions/html_export/images"/>
+			<zipfileset dir = "${image.dir}" includes = "class.abstract.gif" prefix = "edu.stanford.smi.protegex.standard-extensions/html_export/images"/>
+			<zipfileset dir = "${image.dir}" includes = "class.gif" prefix = "edu.stanford.smi.protegex.standard-extensions/html_export/images"/>
+			<zipfileset dir = "${image.dir}" includes = "class.metaclass.abstract.gif" prefix = "edu.stanford.smi.protegex.standard-extensions/html_export/images"/>
+			<zipfileset dir = "${image.dir}" includes = "class.metaclass.gif" prefix = "edu.stanford.smi.protegex.standard-extensions/html_export/images"/>
+			<zipfileset dir = "${image.dir}" includes = "facet.gif" prefix = "edu.stanford.smi.protegex.standard-extensions/html_export/images"/>
+			<zipfileset dir = "${image.dir}" includes = "instance.gif" prefix = "edu.stanford.smi.protegex.standard-extensions/html_export/images"/>
+			<zipfileset dir = "${image.dir}" includes = "slot.gif" prefix = "edu.stanford.smi.protegex.standard-extensions/html_export/images"/>
+			<zipfileset dir = "${image.dir}" includes = "slot.inherited.gif" prefix = "edu.stanford.smi.protegex.standard-extensions/html_export/images"/>
+			<zipfileset dir = "${image.dir}" includes = "slot.inherited.overridden.gif" prefix = "edu.stanford.smi.protegex.standard-extensions/html_export/images"/>
+			<zipfileset dir = "${image.dir}" includes = "slot.overridden.gif" prefix = "edu.stanford.smi.protegex.standard-extensions/html_export/images"/>
 			<zipfileset dir = "${text.files}" includes = "readme" prefix = "edu.stanford.smi.protegex.standard-extensions"/>
 		</zip>
 	</target>
