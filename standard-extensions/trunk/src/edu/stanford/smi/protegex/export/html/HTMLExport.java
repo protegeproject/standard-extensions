@@ -4,7 +4,6 @@ import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Pattern;
-
 import edu.stanford.smi.protege.model.*;
 import edu.stanford.smi.protege.plugin.PluginUtilities;
 import edu.stanford.smi.protege.ui.FrameComparator;
@@ -100,8 +99,6 @@ public class HTMLExport {
         ArrayList classes = rootClasses;
 
         if (classes == null) return;
-
-        int size = classes.size();
         if (classes.size() == 0) return;
 
         String pathname = config.getOutputDir() + File.separator + "index.html";
@@ -117,6 +114,7 @@ public class HTMLExport {
             pw.println("<div class=\"heirarchyBorder\">");
 
             // Print class hierarchy
+            int size = classes.size();
             for (int i = 0; i < size; i++) {
                 Cls cls = (Cls) classes.get(i);
                 pw.println("<ul class=\"iconList\">");
@@ -156,7 +154,19 @@ public class HTMLExport {
 
         pw.println(listItem);
 
-        Collection subClses = cls.getDirectSubclasses();
+        List subClses = new ArrayList(cls.getDirectSubclasses());
+        if (config.getSortSubclasses()) {
+            Collections.sort(subClses, new FrameComparator());
+
+            // Hack to put system classes back at the top of the sort.
+            String clsName = cls.getBrowserText();
+            if (clsName.equals(Model.Cls.THING)) {
+                int size = subClses.size();
+                Cls last = (Cls) subClses.get(size-1);
+                subClses.remove(last);
+                subClses.add(0, last);
+            }
+        }
         Iterator i = subClses.iterator();
         while (i.hasNext()) {
             Cls subCls = (Cls) i.next();
@@ -204,10 +214,7 @@ public class HTMLExport {
             }
 
             // Print template slots table.
-            Collection templateSlots = cls.getTemplateSlots();
-            if (templateSlots.size() > 0) {
-                printTemplateSlots(pw, cls);
-            }
+    		printTemplateSlots(pw, cls);
 
             // Print own slots table.
             printOwnSlots(pw, cls);
