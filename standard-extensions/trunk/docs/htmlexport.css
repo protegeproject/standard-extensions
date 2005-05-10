@@ -54,9 +54,22 @@ li.slot {
 	padding-left: 16px;
 }
 
+li.facet {
+	background-image: url("images/facet.gif");
+	background-repeat: no-repeat;
+	padding-left: 16px;
+}
+
 /* Misc. */
 .classBorder {
 	background-color: #F0E6CA; /* protege's class selection color */
+	border: 1px solid;
+	border-color: #BFBCB5; /* medium grey */
+	padding: 2px;
+}
+
+.facetBorder {
+	background-color: #FFE4E1; /* MistyRose */
 	border: 1px solid;
 	border-color: #BFBCB5; /* medium grey */
 	padding: 2px;
