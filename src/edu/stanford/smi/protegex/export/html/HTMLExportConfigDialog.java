@@ -4,14 +4,10 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.*;
-
 import java.io.*;
-
 import java.util.*;
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
@@ -19,13 +15,12 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.w3c.dom.*;
-
 import org.apache.xpath.*;
 import org.apache.xpath.objects.XObject;
+import org.w3c.dom.*;
 
 import edu.stanford.smi.protege.model.*;
-import edu.stanford.smi.protege.plugin.*;
+import edu.stanford.smi.protege.plugin.PluginUtilities;
 import edu.stanford.smi.protege.resource.*;
 import edu.stanford.smi.protege.ui.*;
 import edu.stanford.smi.protege.util.*;
@@ -45,6 +40,7 @@ public class HTMLExportConfigDialog extends JDialog {
     JButton saveButton = new JButton("Save");
     JCheckBox numberInstancesCheckbox = new JCheckBox("Use numbering for instance lists");
     JCheckBox showInstancesCheckbox = new JCheckBox("Show Instances");
+    JCheckBox sortSubclassesCheckbox = new JCheckBox("Sort Subclasses");
     JComboBox configNamesComboBox;
     JPanel configButtonPanel = new JPanel(new FlowLayout());
     JPanel customCodePanel = new JPanel();
@@ -427,8 +423,22 @@ public class HTMLExportConfigDialog extends JDialog {
         c.insets = new Insets(5, 5, 5, 0);
         generalPanel.add(showInstancesCheckbox, c);
 
+	    // sortSubclasses check box
+	    sortSubclassesCheckbox.setSelected(true);
+	    c.gridx = 0;
+	    c.gridy = 5;
+	    c.gridwidth = 1;
+	    c.gridheight = 1;
+	    c.weightx = 0.0; // fill horizontal space
+	    c.weighty = 0.0; // fill vertical space
+	    c.anchor = GridBagConstraints.WEST;
+	    c.fill = GridBagConstraints.NONE;
+	    c.insets = new Insets(0, 5, 5, 0);
+	    generalPanel.add(sortSubclassesCheckbox, c);
+
+		// numberInstances check box
         c.gridx = 0;
-        c.gridy = 5;
+        c.gridy = 6;
         c.gridwidth = 1;
         c.gridheight = 1;
         c.weightx = 0.0; // fill horizontal space
@@ -547,6 +557,20 @@ public class HTMLExportConfigDialog extends JDialog {
     }
 
     public void saveButton_actionPerformed(ActionEvent ae) {
+		// Overwrite existing configurations with the same name.
+		String strConfigName = (String) configNamesComboBox.getSelectedItem();
+        String xpath = "/html.export.configurations/configuration[name=\"" + strConfigName + "\"]";
+        try {
+            NodeList results = XPathAPI.selectNodeList(document, xpath);
+            for (int i = 0; i < results.getLength(); i++) {
+                Node result = (Node) results.item(i);
+                Node parent = result.getParentNode();
+                parent.removeChild(result);
+            }
+        } catch(javax.xml.transform.TransformerException e) {
+        	System.out.println(e.getMessage());
+        }
+
         org.w3c.dom.Text text;
         Node root = document.getDocumentElement();
 
@@ -554,7 +578,7 @@ public class HTMLExportConfigDialog extends JDialog {
         root.appendChild(config);
 
         Node configName = document.createElement("name");
-        text = document.createTextNode((String)configNamesComboBox.getSelectedItem());
+        text = document.createTextNode(strConfigName);
         configName.appendChild(text);
         config.appendChild(configName);
 
@@ -580,9 +604,15 @@ public class HTMLExportConfigDialog extends JDialog {
 
         Node showInstances = document.createElement("show.instances");
         Boolean b = new Boolean(showInstancesCheckbox.isSelected());
-      	text = document.createTextNode(b.toString());
+        text = document.createTextNode(b.toString());
         showInstances.appendChild(text);
         config.appendChild(showInstances);
+
+        Node sortSubclasses = document.createElement("sort.subclasses");
+        b = new Boolean(sortSubclassesCheckbox.isSelected());
+        text = document.createTextNode(b.toString());
+        sortSubclasses.appendChild(text);
+        config.appendChild(sortSubclasses);
 
         Node useNumbering = document.createElement("use.numbering");
         b = new Boolean(numberInstancesCheckbox.isSelected());
@@ -680,6 +710,7 @@ public class HTMLExportConfigDialog extends JDialog {
         ExportConfiguration config = new ExportConfiguration();
 
 		config.setShowInstances(showInstancesCheckbox.isSelected());
+        config.setSortSubclasses(sortSubclassesCheckbox.isSelected());
         config.setUseNumbering(numberInstancesCheckbox.isSelected());
         config.setOutputDir(outputDirComponent.getPath());
         config.setHeaderPath(headerComponent.getPath());
@@ -731,6 +762,7 @@ public class HTMLExportConfigDialog extends JDialog {
         deleteButton.setEnabled(false);
         saveButton.setEnabled(false);
         showInstancesCheckbox.setSelected(true);
+        sortSubclassesCheckbox.setSelected(true);
         numberInstancesCheckbox.setSelected(false);
         outputDirComponent.setPath(SystemUtilities.getUserDirectory());
         headerComponent.setPath(prefix + "header.html");
@@ -795,6 +827,18 @@ public class HTMLExportConfigDialog extends JDialog {
                 }
                 else {
                     showInstancesCheckbox.setSelected(false);
+                }
+            }
+
+            xpath = "/html.export.configurations/configuration[name=\"" + configName + "\"]/sort.subclasses";
+            result = XPathAPI.selectSingleNode(document, xpath);
+            if (result != null) {
+                value = XPathAPI.eval(result, "string()");
+                if (value.str().equals("true")) {
+                    sortSubclassesCheckbox.setSelected(true);
+                }
+                else {
+                    sortSubclassesCheckbox.setSelected(false);
                 }
             }
 

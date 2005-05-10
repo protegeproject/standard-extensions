@@ -8,6 +8,7 @@ import edu.stanford.smi.protege.model.Project;
  */
 public class ExportConfiguration {
     private boolean showInstances = false;
+    private boolean sortSubclasses = false;
     private boolean useNumbering = false;
 
     private ArrayList rootClasses = new ArrayList();
@@ -35,6 +36,14 @@ public class ExportConfiguration {
 
     public boolean getUseNumbering() {
         return useNumbering;
+    }
+
+    public void setSortSubclasses(boolean b) {
+        sortSubclasses = b;
+    }
+
+    public boolean getSortSubclasses() {
+        return sortSubclasses;
     }
 
     public void setRootClasses(ArrayList rc) {
