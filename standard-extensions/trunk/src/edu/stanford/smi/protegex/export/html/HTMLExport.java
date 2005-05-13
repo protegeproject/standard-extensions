@@ -295,7 +295,7 @@ public class HTMLExport {
 
         String slotName = slot.getName();
         slotName = stripIllegalChars(slotName);
-        String pathname = config.getOutputDir() + File.separator + slotName + ".html";
+        String pathname = config.getOutputDir() + File.separator + "slot_" + slotName + ".html";
         File f = new File(pathname);
 
         try {
@@ -676,7 +676,7 @@ public class HTMLExport {
                         while (k.hasNext()) {
                             Cls allowedValue = (Cls) k.next();
                             if (classesToExport.contains(allowedValue)) {
-                                String fileName = getFrameFileName((Frame) cls);
+                                String fileName = getFrameFileName((Frame) allowedValue);
                                 stringValueType += "<a href=\"" + fileName + "\">" + allowedValue.getBrowserText() + "</a>";
                             } else {
                                 stringValueType += allowedValue.getBrowserText();
@@ -929,8 +929,14 @@ public class HTMLExport {
     }
 
     private String getFrameFileName(Frame frame) {
-        String fname = stripIllegalChars(frame.getName()) + ".html";
-        return fname;
+        String name = "";
+
+        if (frame instanceof Slot) {
+            name = "slot_";
+        }
+
+        name += stripIllegalChars(frame.getName()) + ".html";
+        return name;
     }
 
     private String buildDateString() {
