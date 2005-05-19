@@ -48,8 +48,10 @@ public abstract class AbstractTable extends JTable {
 
     public void setPreferredWidthForColumn(int column, int preferredWidth) {
         TableColumnModel columnModel = getColumnModel();
-        TableColumn columnObject = columnModel.getColumn(column);
-        columnObject.setPreferredWidth(preferredWidth);
+        if (column < columnModel.getColumnCount()) {
+            TableColumn columnObject = columnModel.getColumn(column);
+            columnObject.setPreferredWidth(preferredWidth);
+        }
     }
 
     public void stopEditing() {
