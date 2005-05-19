@@ -84,7 +84,7 @@ public class ConfigTable extends JTable {
         int counter = 1;
         TableColumnModel tableColumnModel = getColumnModel();
         Iterator i = (_state.getSlotVisibilityDescriptions()).iterator();
-        while (i.hasNext()) {
+        while (i.hasNext() && counter < tableColumnModel.getColumnCount()) {
             VisibleSlotDescription vsd = (VisibleSlotDescription) i.next();
             TableColumn tableColumn = tableColumnModel.getColumn(counter);
             bind(vsd, tableColumn);
@@ -102,8 +102,10 @@ public class ConfigTable extends JTable {
 
     public void setPreferredWidthForColumn(int column, int preferredWidth) {
         TableColumnModel columnModel = getColumnModel();
-        TableColumn columnObject = columnModel.getColumn(column);
-        columnObject.setPreferredWidth(preferredWidth);
+        if (column < columnModel.getColumnCount()) {
+            TableColumn columnObject = columnModel.getColumn(column);
+            columnObject.setPreferredWidth(preferredWidth);
+        }
     }
 
     private void setTableColumnWidths() {

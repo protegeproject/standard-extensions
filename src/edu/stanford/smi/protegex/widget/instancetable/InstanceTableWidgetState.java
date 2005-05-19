@@ -127,7 +127,11 @@ public class InstanceTableWidgetState extends AbstractTableWidgetState {
     public void moveSlotToIndex(int fromIndex, int toIndex) {
         Slot slot = (Slot) _visibleSlots.remove(fromIndex);
         if (slot != null) {
-            _visibleSlots.add(toIndex, slot);
+            if (toIndex < _visibleSlots.size()) {
+                _visibleSlots.add(toIndex, slot);
+            } else {
+                _visibleSlots.add(slot);
+            }
         }
     }
 
