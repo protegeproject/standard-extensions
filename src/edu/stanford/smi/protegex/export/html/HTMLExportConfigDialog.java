@@ -281,7 +281,7 @@ public class HTMLExportConfigDialog extends JDialog {
         classesList.setCellRenderer(FrameRenderer.createInstance());
 
         Collection values = new ArrayList();
-        Cls cls = project.getKnowledgeBase().getCls(":THING");
+        Cls cls = project.getKnowledgeBase().getRootCls();
         values.add(cls);
         ComponentUtilities.setListValues(classesList, values);
 
