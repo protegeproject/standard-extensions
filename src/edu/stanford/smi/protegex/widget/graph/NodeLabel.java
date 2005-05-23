@@ -6,6 +6,8 @@ import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 // nwoods
 import com.nwoods.jgo.JGoArea;
@@ -20,6 +22,7 @@ import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Model;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.model.ValueType;
+import edu.stanford.smi.protege.resource.Text;
 
 public class NodeLabel extends JGoText {
     private String myOldText;
@@ -111,7 +114,20 @@ public class NodeLabel extends JGoText {
                 KnowledgeBase kb = instance.getKnowledgeBase();
                 if (!kb.containsFrame(getText())) {
                     myDoc.setExternalUpdate(true);
-                    instance.setOwnSlotValue(slot, getText());
+                    try {
+                        instance.setName(getText());
+                    } catch (java.lang.IllegalArgumentException e) {
+                        setText(myOldText);
+                        final String errorMessage = e.getMessage();
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                            	JOptionPane.showMessageDialog(getView(),
+                                        errorMessage,
+                                        Text.getProgramNameAndVersion(),
+                                        JOptionPane.ERROR_MESSAGE);
+                            }
+                        });
+                    }
                     myDoc.setExternalUpdate(false);
                 } else {
                     setText(myOldText);
