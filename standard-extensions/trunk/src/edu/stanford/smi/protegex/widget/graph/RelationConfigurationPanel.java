@@ -194,7 +194,7 @@ public class RelationConfigurationPanel extends JPanel {
     }
 
     private void initSlotListCombo() {
-        Vector slotList = new Vector();
+        TreeSet slotList = new TreeSet();
         Collection templateSlots = cls.getTemplateSlots();
         Iterator i = templateSlots.iterator();
         while (i.hasNext()) {
@@ -206,10 +206,7 @@ public class RelationConfigurationPanel extends JPanel {
                 while (j.hasNext()) {
                     Cls allowedCls = (Cls) j.next();
                     if ((allowedCls.isConcrete() || hasConcreteChildren(allowedCls)) && hasRelationSuperclass(allowedCls)) {
-                        // Store the slot names in a vector for the moment
-                        // so we can sort them before we put them in the
-                        // combo box.
-                        slotList.addElement(templateSlot.getName());
+                        slotList.add(templateSlot.getName());
 
                         // Map slot name in combo box to actual Slot object.
                         relationSlots.put(templateSlot.getName(), templateSlot);
@@ -217,9 +214,11 @@ public class RelationConfigurationPanel extends JPanel {
                 }
             }
         }
-        Collections.sort(slotList);
-        slotList.add(0, GraphTypes.NONE);
-        rrSlotList = new JComboBox(slotList);
+
+        Vector v = new Vector(slotList);
+        Collections.sort(v);
+        v.add(0, GraphTypes.NONE);
+        rrSlotList = new JComboBox(v);
     }
 
     private void initializeTable() {
@@ -349,9 +348,9 @@ public class RelationConfigurationPanel extends JPanel {
             // selected in the combo box.
             Slot slot = (Slot) relationSlots.get(selection);
             if (slot != null) {
-                ArrayList allowedClses = getConcreteAllowedClses(slot);
+                ArrayList allowedClses = new ArrayList(getConcreteAllowedClses(slot));
                 Collections.sort(allowedClses, new ClsComparator());
-                for (int i=0; i<allowedClses.size(); i++) {
+                for (int i = 0; i < allowedClses.size(); i++) {
                     Cls allowedCls = (Cls) allowedClses.get(i);
 
                     // See if we've fetched the properties for this
@@ -406,8 +405,8 @@ public class RelationConfigurationPanel extends JPanel {
         }
     }
 
-    private ArrayList getConcreteAllowedClses(Slot slot) {
-        ArrayList allowedClses = new ArrayList();
+    private TreeSet getConcreteAllowedClses(Slot slot) {
+        TreeSet allowedClses = new TreeSet();
         Collection c = cls.getTemplateSlotAllowedClses(slot);
         Iterator i = c.iterator();
         while (i.hasNext()) {
