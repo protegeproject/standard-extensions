@@ -460,20 +460,23 @@ public class GraphView extends JGoView {
         int rval = fc.showSaveDialog(this);
         if (rval == JFileChooser.APPROVE_OPTION) {
             File file = fc.getSelectedFile();
-
-            Dimension size = widget.getDocument().getDocumentSize();
-            BufferedImage image = new BufferedImage(size.width, size.height,
-                BufferedImage.TYPE_INT_RGB);
-            Graphics2D g2 = image.createGraphics();
-
-            Rectangle clipRect = new Rectangle(0, 0, size.width, size.height);
-            paintView(g2, clipRect);
-
+			BufferedImage image = getImage();
             try {
                 ImageIO.write(image, "jpg", file);
             } catch (java.io.IOException e) {
                 System.out.println(e.getMessage());
             }
         }
+    }
+
+    public BufferedImage getImage() {
+        BufferedImage image;
+        Dimension size = widget.getDocument().getDocumentSize();
+        image = new BufferedImage(size.width, size.height,
+                                  BufferedImage.TYPE_INT_RGB);
+        Graphics2D g2 = image.createGraphics();
+        Rectangle clipRect = new Rectangle(0, 0, size.width, size.height);
+        paintView(g2, clipRect);
+        return image;
     }
 }

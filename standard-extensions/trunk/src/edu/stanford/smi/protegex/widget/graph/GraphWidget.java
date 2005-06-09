@@ -1,47 +1,21 @@
 package edu.stanford.smi.protegex.widget.graph;
 
-import java.awt.BorderLayout;
-import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.io.File;
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.image.BufferedImage;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import javax.swing.ImageIcon;
-import javax.swing.JPanel;
-import javax.swing.JSplitPane;
+import java.util.*;
+import javax.swing.*;
 
-import com.nwoods.jgo.JGoBrush;
-import com.nwoods.jgo.JGoDocument;
-import com.nwoods.jgo.JGoLink;
-import com.nwoods.jgo.JGoListPosition;
-import com.nwoods.jgo.JGoObject;
-import com.nwoods.jgo.JGoPort;
-import com.nwoods.jgo.JGoSelection;
-import com.nwoods.jgo.JGoViewEvent;
-import com.nwoods.jgo.JGoViewListener;
+import com.nwoods.jgo.*;
 import com.nwoods.jgo.layout.JGoLayeredDigraphAutoLayout;
 
-import edu.stanford.smi.protege.event.FrameAdapter;
-import edu.stanford.smi.protege.event.FrameEvent;
-import edu.stanford.smi.protege.event.FrameListener;
-import edu.stanford.smi.protege.model.Cls;
-import edu.stanford.smi.protege.model.Facet;
-import edu.stanford.smi.protege.model.Instance;
-import edu.stanford.smi.protege.model.KnowledgeBase;
-import edu.stanford.smi.protege.model.Slot;
-import edu.stanford.smi.protege.model.ValueType;
+import edu.stanford.smi.protege.event.*;
+import edu.stanford.smi.protege.model.*;
 import edu.stanford.smi.protege.resource.Icons;
 import edu.stanford.smi.protege.ui.DisplayUtilities;
-import edu.stanford.smi.protege.util.AddAction;
-import edu.stanford.smi.protege.util.AllowableAction;
-import edu.stanford.smi.protege.util.CreateAction;
-import edu.stanford.smi.protege.util.LabeledComponent;
-import edu.stanford.smi.protege.util.PropertyList;
-import edu.stanford.smi.protege.widget.AbstractSlotWidget;
-import edu.stanford.smi.protege.widget.WidgetConfigurationPanel;
+import edu.stanford.smi.protege.util.*;
+import edu.stanford.smi.protege.widget.*;
 
 public class GraphWidget extends AbstractSlotWidget {
     private JPanel mainPanel = new JPanel(new BorderLayout(0, 2));
@@ -612,5 +586,9 @@ public class GraphWidget extends AbstractSlotWidget {
         obj = positionMap.get(slotValue.getName());
 
         return obj;
+    }
+
+    public BufferedImage getImage() {
+        return view.getImage();
     }
 }
