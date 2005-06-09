@@ -405,14 +405,14 @@ public class GraphWidget extends AbstractSlotWidget {
         ArrayList allowedClses = new ArrayList(cls.getTemplateSlotAllowedClses(slot));
         for (int i = 0; i < allowedClses.size(); i++) {
             Cls cls = (Cls) allowedClses.get(i);
-            if (cls.isConcrete()) {
+            if (cls.isConcrete() && cls.isVisible()) {
                 nodes.add(cls);
             }
 
             ArrayList subClses = new ArrayList(cls.getSubclasses());
             for (int j = 0; j < subClses.size(); j++) {
                 Cls subCls = (Cls) subClses.get(j);
-                if (subCls.isConcrete()) {
+                if (subCls.isConcrete() && subCls.isVisible()) {
                     nodes.add(subCls);
                 }
             }
@@ -421,9 +421,7 @@ public class GraphWidget extends AbstractSlotWidget {
         for (int i = 0; i < nodes.size(); i++) {
             Cls cls = (Cls) nodes.get(i);
             String clsName = cls.getName();
-
             Node node = makeNewNode(clsName, new Point());
-
             JGoDocument doc = palette.getDocument();
             doc.addObjectAtTail(node);
         }
