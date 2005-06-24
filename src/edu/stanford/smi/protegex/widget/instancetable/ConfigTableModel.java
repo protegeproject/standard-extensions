@@ -26,16 +26,16 @@ public class ConfigTableModel extends AbstractTableModel implements Observer {
             VisibleSlotDescription vsd = _state.getDescriptionForIndex(column - 1);
             return vsd.columnName;
         }
-        return "";
+        return " ";
     }
 
     private String getFirstColumnValue(int row) {
         switch (row) {
-            case 0 :
+            case 0:
                 return "Slot Name";
-            case 1 :
+            case 1:
                 return "Column Name";
-            case 2 :
+            case 2:
                 return "Text Color";
         }
         return null;
@@ -44,16 +44,15 @@ public class ConfigTableModel extends AbstractTableModel implements Observer {
     private Object getRealValues(int row, int column) {
         VisibleSlotDescription vsd = _state.getDescriptionForIndex(column);
         switch (row) {
-            case 0 :
+            case 0:
                 return vsd.slot;
-            case 1 :
+            case 1:
                 return vsd.columnName;
-            case 2 :
+            case 2:
                 return vsd.color;
         }
         return null;
     }
-
 
     public int getRowCount() {
         return 3;

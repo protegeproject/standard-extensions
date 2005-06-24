@@ -78,8 +78,7 @@ public class InstanceTableWidget extends AbstractSlotWidget {
     }
 
     protected void buildTableComponents() {
-        _state = new InstanceTableWidgetState(getPropertyList(), getAllowedClses(),
-                getKnowledgeBase());
+        _state = new InstanceTableWidgetState(getPropertyList(), getAllowedClses(), getKnowledgeBase());
         _values = new ArrayList();
         _tableModel = new InstanceTableModel(null, _values, _state);
         _displayTable = new InstanceTable(_tableModel, _state.isHighlightSelectedRow());
@@ -96,8 +95,7 @@ public class InstanceTableWidget extends AbstractSlotWidget {
 
     public WidgetConfigurationPanel createWidgetConfigurationPanel() {
         // hack to make sure our state is consistent with the plist.
-        _state = new InstanceTableWidgetState(getPropertyList(), getAllowedClses(),
-                getKnowledgeBase());
+        _state = new InstanceTableWidgetState(getPropertyList(), getAllowedClses(), getKnowledgeBase());
         return new InstanceTableConfigurationPanel(this);
     }
 
@@ -120,8 +118,7 @@ public class InstanceTableWidget extends AbstractSlotWidget {
     public void initialize() {
         buildTableComponents();
         setTableColumnWidths();
-        LabeledComponent centerPiece = new LabeledComponent(getLabel(), ComponentFactory
-                .createScrollPane(_displayTable));
+        LabeledComponent centerPiece = new LabeledComponent(getLabel(), new JScrollPane(_displayTable));
         addActionButtonsToComponent(centerPiece);
         JComponent warnings = InstanceTableConfigurationChecks.getShortWarning(getCls(), getSlot());
         if (null != warnings) {
