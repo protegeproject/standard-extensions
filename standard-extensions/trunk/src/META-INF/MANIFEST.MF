@@ -34,9 +34,6 @@ Slot-Widget: True
 Name: edu/stanford/smi/protegex/queries_tab/QueriesTab.class
 Tab-Widget: True
 
-Name: edu/stanford/smi/protegex/htmldoc/HTMLGeneratorExportPlugin.class
-Export-Project-Plugin: True
-
 Name: edu/stanford/smi/protegex/export/html/HTMLExportPlugin.class
 Export-Plugin: True
 
