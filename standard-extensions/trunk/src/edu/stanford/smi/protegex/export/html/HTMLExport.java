@@ -660,6 +660,10 @@ public class HTMLExport {
                 /** @todo Format documentation better */
                 Collection docs = cls.getTemplateSlotDocumentation(slot);
                 String docString = "";
+                if (docs.size() == 0) {
+                    docString = "&nbsp;";
+                }
+
                 Iterator j = docs.iterator();
                 while (j.hasNext()) {
                     docString += (String) j.next();
