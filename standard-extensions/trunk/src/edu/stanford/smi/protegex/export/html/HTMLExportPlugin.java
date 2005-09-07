@@ -2,12 +2,10 @@ package edu.stanford.smi.protegex.export.html;
 
 import java.awt.*;
 import javax.swing.*;
-import java.util.*;
 
 import edu.stanford.smi.protege.model.*;
 import edu.stanford.smi.protege.plugin.*;
 import edu.stanford.smi.protege.ui.*;
-import edu.stanford.smi.protege.util.*;
 
 /**
  *
@@ -28,7 +26,7 @@ public class HTMLExportPlugin implements ExportPlugin {
                 "HTML Export Configuration Options", true, project);
             dialog.setSize(new Dimension(450, 500));
             dialog.setLocationRelativeTo(mainPanel);
-            dialog.show();
+            dialog.setVisible(true);
 
             if (dialog.okPressed == true) {
                 ExportConfiguration config = dialog.getExportConfiguration();
