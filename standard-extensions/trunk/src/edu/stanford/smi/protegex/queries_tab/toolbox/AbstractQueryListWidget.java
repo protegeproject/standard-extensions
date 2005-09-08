@@ -8,17 +8,17 @@ import edu.stanford.smi.protege.ui.*;
 import edu.stanford.smi.protege.util.*;
 import edu.stanford.smi.protegex.queries_tab.*;
 
-public abstract class AbstractQueryListWidget extends JComponent{
-   protected JList itsList;
-   protected LabeledComponent itsLabeledComponent;
+public abstract class AbstractQueryListWidget extends JComponent {
+    protected JList itsList;
+    protected LabeledComponent itsLabeledComponent;
 
-   protected Action itsViewAction, itsSelectAction, itsRemoveAction;
-   protected InstancesQuery query;
+    protected Action itsViewAction, itsSelectAction, itsRemoveAction;
+    protected InstancesQuery query;
 
-   protected String itsName;
-   protected QueriesTab itsTab;
+    protected String itsName;
+    protected QueriesTab itsTab;
 
-   protected QueryListModel itsModel;
+    protected QueryListModel itsModel;
 
     public AbstractQueryListWidget(QueriesTab tab) {
         itsTab = tab;
