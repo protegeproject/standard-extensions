@@ -13,6 +13,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
@@ -21,7 +22,6 @@ import javax.swing.JPopupMenu;
 
 import com.nwoods.jgo.JGoCopyEnvironment;
 import com.nwoods.jgo.JGoDocument;
-import com.nwoods.jgo.JGoDocumentEvent;
 import com.nwoods.jgo.JGoLink;
 import com.nwoods.jgo.JGoListPosition;
 import com.nwoods.jgo.JGoObject;
@@ -33,7 +33,6 @@ import com.nwoods.jgo.JGoView;
 import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.KnowledgeBase;
-import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.model.Slot;
 import edu.stanford.smi.protege.util.ComponentFactory;
 import edu.stanford.smi.protege.util.PropertyList;
@@ -44,8 +43,6 @@ public class GraphView extends JGoView {
 
     private GraphWidget widget;
     private KnowledgeBase kb;
-    private Project project;
-    private Slot currentSlot;
     private PropertyList pList;
 
     private Collection myHighlights;
@@ -68,8 +65,6 @@ public class GraphView extends JGoView {
 
         this.widget = widget;
         this.pList = widget.getPropertyList();
-        this.currentSlot = widget.getSlot();
-        this.project = widget.getProject();
         this.kb = widget.getKnowledgeBase();
 
         setGridHeight(20);
@@ -157,28 +152,6 @@ public class GraphView extends JGoView {
         }
     }
 
-    public void documentChanged(JGoDocumentEvent e) {
-        int flags = e.getFlags();
-        int hint = e.getHint();
-        JGoObject obj;
-        switch(hint) {
-            case JGoDocumentEvent.REMOVED:
-                // Capture this here because links can get automatically
-                // deleted when the node they are attached to is deleted.
-                obj = e.getJGoObject();
-                if ((obj instanceof ComplexLink) && (flags == 0)) {
-                    ComplexLink cl = (ComplexLink) obj;
-                    Instance instance = cl.getInstance();
-                    kb.deleteInstance(instance);
-                }
-                super.documentChanged(e);
-                break;
-            default:
-                super.documentChanged(e);
-	        break;
-        }
-    }
-
     public void onKeyEvent(KeyEvent evt) {
         int keyCode = evt.getKeyCode();
 
@@ -196,6 +169,14 @@ public class GraphView extends JGoView {
                     Node node = (Node) obj;
                     Instance instance = node.getInstance();
                     instances.add(instance);
+
+                    // If the user deletes a node that has complex links either
+                    // coming into it or going out of it, we need to delete
+                    // the instances associated with those links so that we aren't
+                    // left with "dangling" reified relations in the knowledge
+                    // base.
+                    HashSet associatedLinks = widget.resolveComplexLinks(node);
+                    instances.addAll(associatedLinks);
                 } else if (obj instanceof SimpleLink) {
                     // User deleted a simple connector.  This means that the
                     // list of own slot values for the source node's connector
@@ -203,6 +184,10 @@ public class GraphView extends JGoView {
                     SimpleLink sLink = (SimpleLink) obj;
                     GraphDocument doc = (GraphDocument) getDocument();
                     doc.removeValueFromSourceNode(sLink);
+                } else if (obj instanceof ComplexLink) {
+                    ComplexLink cLink = (ComplexLink) obj;
+                    Instance instance = cLink.getInstance();
+                    instances.add(instance);
                 }
 
                 pos = selectedObjects.getNextObjectPosAtTop(pos);

@@ -218,47 +218,32 @@ public class GraphWidget extends AbstractSlotWidget {
                 doc.addObjectAtTail(node);
                 xPos = xPos + 10;
                 yPos = yPos + 10;
-
-                valueChanged();
-
             }
+            valueChanged();
         }
     }
 
     public void handleRemoveSelectedInstances() {
-        JGoSelection selectedObjects = view.getSelection();
-
-        // Shortcut.
-        if (selectedObjects.isEmpty()) return;
-
-        JGoListPosition pos = selectedObjects.getFirstObjectPos();
-        while (pos != null) {
-            JGoObject obj = selectedObjects.getObjectAtPos(pos);
-            if (obj instanceof Node) {
-                Node node = (Node) obj;
-                Instance instance = node.getInstance();
-
-                // Remove references to this node.
-                JGoPort port = (JGoPort) node.getPort();
-                JGoListPosition linkPos = port.getFirstLinkPos();
-                while (linkPos != null) {
-                    JGoLink link = port.getLinkAtPos(linkPos);
-                    JGoPort sourceP = link.getFromPort();
-                    if (port != sourceP) {
-                        if (link instanceof SimpleLink) {
-                            Node sourceN = (Node) link.getFromPort().getParent();
-                            Instance sourceI = sourceN.getInstance();
-                            sourceI.removeOwnSlotValue(sourceN.getConnectorSlot(), instance);
-                        }
-                    }
-                    linkPos = port.getNextLinkPos(linkPos);
-                }
-            }
-            pos = selectedObjects.getNextObjectPosAtTop(pos);
-        }
-
         view.deleteSelection();
         valueChanged();
+    }
+
+    protected HashSet resolveComplexLinks(Node node) {
+        HashSet instances = new HashSet();
+
+        JGoPort port = node.getPort();
+        JGoListPosition pos = port.getFirstLinkPos();
+        while (pos != null) {
+            JGoLink link = port.getLinkAtPos(pos);
+            if (link instanceof ComplexLink) {
+            	ComplexLink cLink = (ComplexLink) link;
+				Instance instance = cLink.getInstance();
+                instances.add(instance);
+            }
+            pos = port.getNextLinkPos(pos);
+        }
+
+        return instances;
     }
 
     public void handleDeleteSelectedInstances() {
@@ -267,7 +252,7 @@ public class GraphWidget extends AbstractSlotWidget {
         // Shortcut.
         if (selectedObjects.isEmpty()) return;
 
-        ArrayList instances = new ArrayList();
+        HashSet instances = new HashSet();
         JGoListPosition pos = selectedObjects.getFirstObjectPos();
         while (pos != null) {
             JGoObject obj = selectedObjects.getObjectAtPos(pos);
@@ -275,12 +260,24 @@ public class GraphWidget extends AbstractSlotWidget {
                 Node node = (Node) obj;
                 Instance instance = node.getInstance();
                 instances.add(instance);
+
+				// If the user deletes a node that has complex links either
+            	// coming into it or going out of it, we need to delete
+            	// the instances associated with those links so that we aren't
+                // left with "dangling" reified relations in the knowledge
+                // base.
+                HashSet associatedLinks = resolveComplexLinks(node);
+                instances.addAll(associatedLinks);
             } else if (obj instanceof SimpleLink) {
                 // User deleted a simple connector.  This means that the list
                 // of own slot values for the source node's connector slot need
                 // to be updated.
                 SimpleLink sLink = (SimpleLink) obj;
                 doc.removeValueFromSourceNode(sLink);
+            } else if (obj instanceof ComplexLink) {
+                ComplexLink cLink = (ComplexLink) obj;
+                Instance instance = cLink.getInstance();
+                instances.add(instance);
             }
             pos = selectedObjects.getNextObjectPosAtTop(pos);
         }
