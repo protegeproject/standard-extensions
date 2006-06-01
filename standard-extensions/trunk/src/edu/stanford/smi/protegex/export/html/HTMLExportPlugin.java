@@ -1,10 +1,13 @@
 package edu.stanford.smi.protegex.export.html;
 
 import java.awt.*;
+import java.util.Collection;
+
 import javax.swing.*;
 
 import edu.stanford.smi.protege.model.*;
 import edu.stanford.smi.protege.plugin.*;
+import edu.stanford.smi.protege.storage.clips.ClipsKnowledgeBaseFactory;
 import edu.stanford.smi.protege.ui.*;
 
 /**
@@ -38,6 +41,14 @@ public class HTMLExportPlugin implements ExportPlugin {
                 }
             }
         }
+    }
+    
+    public static boolean isSuitable(Project prj) {
+    	if (prj == null)
+    		return false;
+        String factoryName = prj.getKnowledgeBaseFactory().getClass().getName();
+        return factoryName.indexOf(".owl.") == -1;
+      // return (prj != null && prj.getKnowledgeBaseFactory() instanceof ClipsKnowledgeBaseFactory);
     }
 
     public void dispose() {
