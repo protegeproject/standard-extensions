@@ -101,6 +101,9 @@ public class HTMLExportConfigDialog extends JDialog {
             initializeUI();
         }
         catch(Exception e) {
+        	String errorMessage = "Export configuration file not found at:\n" + prefix + "HTMLExportConfigurations.xml"; 
+        	System.out.println(errorMessage);
+        	ModalDialog.showMessageDialog(this, errorMessage);
             e.printStackTrace();
         }
     }
