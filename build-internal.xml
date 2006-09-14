@@ -1,11 +1,11 @@
 <?xml version = "1.0" encoding = "UTF-8"?>
 <project name = "standard-extensions" basedir = ".">
+
 	<property name = "project.name" value = "standard-extensions"/>
 	<property name = "Name" value = "Standard Extensions"/>
 	<property name = "build.dir" value = "./build"/>
 	<property name = "build.src" value = "${build.dir}/src"/>
 	<property name = "build.dest" value = "${build.dir}/classes"/>
-	<property name = "build.scripts" value = "./bin"/>
 	<property name = "docs.dir" value = "./docs"/>
 	<property name = "build.javadoc" value = "${docs.dir}/apidocs"/>
 	<property name = "lib.dir" value = "./lib"/>
@@ -17,24 +17,21 @@
 	<property name = "packages" value = "edu.*"/>
 	<property name = "dist.dir" value = "./dist"/>
 	<property name = "examples.dir" value = "./examples"/>
+
 	<property file = "../global.properties"/>
-	<!-- =================================================================== -->
-	
-	<!-- INIT -->
-	
-	<!-- =================================================================== -->
+
 	<target name = "init">
 		<tstamp/>
 	</target>
+
 	<!-- =================================================================== -->
-	  
 	<!-- PREPARE-SRC -->
-	  
 	<!-- =================================================================== -->
 	<target name = "prepare-src" depends = "init">
 		<mkdir dir = "${build.src}"/>
 		<mkdir dir = "${build.dest}"/>
 		<mkdir dir = "${dist.dir}"/>
+
 		<!-- get source code from subversion repository -->
 		<exec executable = "cmd.exe" dir = "${batch.files}" os = "${os}">
 			<arg line = "/c checkout ${svn.core.url}/${project.name}/trunk/src ../${project.name}/build/src"/>
@@ -51,17 +48,15 @@
 		<exec executable = "cmd.exe" dir = "${batch.files}" os = "${os}">
 			<arg line = "/c checkout ${svn.core.url}/${project.name}/trunk/examples ../${project.name}/examples"/>
 		</exec>
+
 		<!-- add license text to top of source files -->
 		<exec executable = "cmd.exe" dir = "${batch.files}" os = "${os}">
 			<arg line = "/c merge_license_with_source ../${project.name}/build/src"/>
 		</exec>
 	</target>
+	
 	<!-- =================================================================== -->
-	
 	<!-- COMPILE -->
-	
-	<!-- Compile the source directory. -->
-	
 	<!-- =================================================================== -->
 	<target name = "compile" depends = "prepare-src">
 		<!-- compile source code -->
@@ -74,12 +69,9 @@
 			</classpath>
 		</javac>
 	</target>
+
 	<!-- =================================================================== -->
-	
 	<!-- JAR -->
-	
-	<!-- Create the class package. -->
-	
 	<!-- =================================================================== -->
 	<target name = "jar" depends = "compile">
 		<copy todir = "${build.dest}/edu/stanford/smi/protegex/widget/uri/images">
@@ -93,19 +85,16 @@
 		<copy file = "${build.src}/edu/stanford/smi/protegex/queries_tab/toolbox/SaveQuery.gif" todir = "${build.dest}/edu/stanford/smi/protegex/queries_tab/toolbox"/>
 		<jar jarfile = "${dist.dir}/${project.name}.jar" basedir = "${build.dest}" manifest = "${build.src}/META-INF//MANIFEST.MF"/>
 	</target>
+
 	<!-- =================================================================== -->
-	
 	<!-- JAVADOC -->
-	
-	<!-- Create the API documentation. -->
-	
 	<!-- =================================================================== -->
 	<target name = "javadoc" depends = "prepare-src">
 		<mkdir dir = "${build.javadoc}"/>
 		<javadoc packagenames = "${packages}" sourcepath = "${build.src}" destdir = "${build.javadoc}" doctitle = "${Name}" header = "${Name}" footer = "${Name}" windowtitle = "${Name}" author = "true">
 			<bottom><![CDATA[
 				<small>
-					<a href=mailto:protege-help@smi.stanford.edu>Submit a bug report or feature request</a></small>]]></bottom>
+					<a href=mailto:protege-discussion@lists.stanford.edu>Submit a bug report or feature request</a></small>]]></bottom>
 			<link href = "${jdk.javadoc}"/>
 			<link href = "${protege.javadoc}"/>
 			<classpath>
@@ -115,18 +104,19 @@
 			</classpath>
 		</javadoc>
 	</target>
+	
 	<!-- =================================================================== -->
-	
 	<!-- DIST -->
-	
-	<!-- Zips up all source code, resources, and api documentation. -->
-	
 	<!-- =================================================================== -->
 	<target name = "dist" depends = "init">
+
+		<!-- source distribution - gets copied out to the protege web site on deploy -->
 		<zip zipfile = "${dist.dir}/${project.name}-src-${version}.zip" update = "no">
 			<zipfileset dir = "${build.src}" prefix = "${Name}/src"/>
 			<zipfileset dir = "${build.javadoc}" prefix = "${Name}/docs/apidocs"/>
 		</zip>
+		
+		<!-- binary distribution -->
 		<zip zipfile = "${dist.dir}/${project.name}-bin-${version}.zip" update = "no">
 			<zipfileset dir = "${dist.dir}" includes = "${project.name}.jar" prefix = "edu.stanford.smi.protegex.standard-extensions"/>
 			<zipfileset dir = "." includes = "standard_extensions_text.properties" prefix = "edu.stanford.smi.protegex.standard-extensions"/>
@@ -155,26 +145,21 @@
 			<zipfileset dir = "${text.files}" includes = "readme" prefix = "edu.stanford.smi.protegex.standard-extensions"/>
 		</zip>
 	</target>
+	
 	<!-- =================================================================== -->
-	
 	<!-- CLEAN -->
-	
-	<!-- Cleans all generated files and directories. -->
-	
 	<!-- =================================================================== -->
 	<target name = "clean" depends = "init">
 		<delete dir = "${build.dir}"/>
 		<delete dir = "${docs.dir}"/>
 		<delete dir = "${dist.dir}"/>
 		<delete dir = "${examples.dir}"/>
+		<delete dir = "${lib.dir}"/>
 		<delete file = "standard_extensions_text.properties"/>
 	</target>
+
 	<!-- =================================================================== -->
-	
 	<!-- ALL -->
-	
-	<!-- Create the jar file, javadoc api documentaion, and the zip file. -->
-	
 	<!-- =================================================================== -->
 	<target name = "all" depends = "jar,javadoc,dist"/>
 </project>
