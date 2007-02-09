@@ -23,18 +23,18 @@ import edu.stanford.smi.protege.model.Slot;
 
 /**
  * An area that represents a graph node.  Contains one label, one port, and
- * can have different shapes that are configurable by the user in the diagram
+ * can have different shapes that are configurable by the user in the graph
  * widget configuration dialog.
  *
  * @author Jennifer Vendetti
  */
 public class Node extends JGoBasicNode {
-
+    private Instance instance = null;
     private JGoDrawable drawable = null;
     private NodeLabel label = null;
     private NodePort port = null;
-    private Instance instance = null;
     private String connectorSlot = null;
+    private String uniqueName = null;
 
     public Node() {
         super();
@@ -170,6 +170,7 @@ public class Node extends JGoBasicNode {
             // of this area are copied separately by the copyChildren method.
             newobj.instance = instance;
             newobj.connectorSlot = connectorSlot;
+            newobj.uniqueName = uniqueName;
         }
         return newobj;
     }
@@ -281,12 +282,26 @@ public class Node extends JGoBasicNode {
         return clsName;
     }
 
+	public String getUniqueName() {
+		return uniqueName;
+	}
+
+	public void setUniqueName(String uniqueName) {
+		this.uniqueName = uniqueName;
+	}
+    
     // Provide access to the various parts of the diagram node.
     public JGoDrawable getDrawable() { return drawable; }
+
     public JGoText getLabel() { return label; }
+    
     public JGoPort getPort() { return port; }
+    
     public JGoPen getPen() { return getDrawable().getPen(); }
+    
     public void setPen(JGoPen p) { getDrawable().setPen(p); }
+    
     public JGoBrush getBrush() { return getDrawable().getBrush(); }
+    
     public void setBrush(JGoBrush b) { getDrawable().setBrush(b); }
 }

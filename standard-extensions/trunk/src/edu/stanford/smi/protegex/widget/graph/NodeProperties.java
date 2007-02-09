@@ -1,78 +1,90 @@
 package edu.stanford.smi.protegex.widget.graph;
 
-// java
 import java.awt.Color;
 
-// stanford
 import edu.stanford.smi.protege.util.PropertyList;
 
 public class NodeProperties extends GraphObjectProperties {
-    private String shape;
-    private String connectorSlot;
-    private String lineType;
-    private String arrowheadType;
+	private boolean bold;
+    private boolean displayText;
+	private boolean italic;
 
     private Color shapeColor;
     private Color textColor;
 
-    private boolean bold;
-    private boolean italic;
-    private boolean displayText;
+    private String arrowheadType;
+    private String connectorSlot;
+    private String customDisplayName;
+    private String lineType;
+    private String prefix;
+    private String shape;
 
     public NodeProperties(String clsName, PropertyList propertyList) {
         super(clsName, propertyList);
+        this.prefix = getPrefix();
         initialize();
     }
 
     private void initialize() {
         int red, green, blue;
-        String prefix = getPrefix();
+
+        // See if the user has designaged a custom display name for the
+        // node (custom display names are used in the palette).
+        customDisplayName = getStringProperty(prefix + NodePropertyNames.NODE_DISPLAY_NAME, getClsName());
 
         // Get the node's shape.  Default to Ellipse if nothing is specified.
-        shape = getStringProperty(prefix + "shape", "Ellipse");
+        shape = getStringProperty(prefix + NodePropertyNames.NODE_SHAPE, "Ellipse");
 
         // Get the text properties used for the node's label.
-        bold = getBooleanProperty(prefix + "bold", new Boolean(false));
-        italic = getBooleanProperty(prefix + "italic", new Boolean(false));
-        red = getIntProperty(prefix + "textColorRed", new Integer(0));
-        green = getIntProperty(prefix + "textColorGreen", new Integer(0));
-        blue = getIntProperty(prefix + "textColorBlue", new Integer(0));
+        bold = getBooleanProperty(prefix + NodePropertyNames.LABEL_BOLD, new Boolean(false));
+        italic = getBooleanProperty(prefix + NodePropertyNames.LABEL_ITALIC, new Boolean(false));
+        red = getIntProperty(prefix + NodePropertyNames.LABEL_RGB_RED, new Integer(0));
+        green = getIntProperty(prefix + NodePropertyNames.LABEL_RGB_GREEN, new Integer(0));
+        blue = getIntProperty(prefix + NodePropertyNames.LABEL_RGB_BLUE, new Integer(0));
         textColor = new Color(red, green, blue);
 
         // Get the node's color.  Default to "SteelBlue".
-        red = getIntProperty(prefix + "shapeColorRed", new Integer(70));
-        green = getIntProperty(prefix + "shapeColorGreen", new Integer(130));
-        blue = getIntProperty(prefix + "shapeColorBlue", new Integer(180));
+        red = getIntProperty(prefix + NodePropertyNames.NODE_RGB_RED, new Integer(70));
+        green = getIntProperty(prefix + NodePropertyNames.NODE_RGB_GREEN, new Integer(130));
+        blue = getIntProperty(prefix + NodePropertyNames.NODE_RGB_BLUE, new Integer(180));
         shapeColor = new Color(red, green, blue);
 
-        // TODO: Figure out what the default should be here.
-        connectorSlot = getStringProperty(prefix + "connectorSlot", null);
-        lineType = getStringProperty(prefix + "lineType", "Solid");
-        arrowheadType = getStringProperty(prefix + "arrowheadType", "Arrowhead");
-        displayText = getBooleanProperty(prefix + "displayText", new Boolean(true));
+        /** @todo Figure out what the default should be for the connector slot */
+        connectorSlot = getStringProperty(prefix + NodePropertyNames.CONNECTOR_SLOT, null);
+        lineType = getStringProperty(prefix + NodePropertyNames.CONNECTOR_LINE_TYPE, "Solid");
+        arrowheadType = getStringProperty(prefix + NodePropertyNames.CONNECTOR_ARROWHEAD_TYPE, "Arrowhead");
+        displayText = getBooleanProperty(prefix + NodePropertyNames.CONNECTOR_DISPLAY_TEXT, new Boolean(true));
     }
 
     public void save() {
-        String prefix = getPrefix();
         PropertyList propertyList = getPropertyList();
 
-        propertyList.setString(prefix + "shape", this.shape);
+        propertyList.setString(prefix + NodePropertyNames.NODE_DISPLAY_NAME, this.customDisplayName);
+        propertyList.setString(prefix + NodePropertyNames.NODE_SHAPE, this.shape);
 
-        propertyList.setInteger(prefix + "shapeColorRed", this.shapeColor.getRed());
-        propertyList.setInteger(prefix + "shapeColorGreen", this.shapeColor.getGreen());
-        propertyList.setInteger(prefix + "shapeColorBlue", this.shapeColor.getBlue());
+        propertyList.setInteger(prefix + NodePropertyNames.NODE_RGB_RED, this.shapeColor.getRed());
+        propertyList.setInteger(prefix + NodePropertyNames.NODE_RGB_GREEN, this.shapeColor.getGreen());
+        propertyList.setInteger(prefix + NodePropertyNames.NODE_RGB_BLUE, this.shapeColor.getBlue());
+        propertyList.setInteger(prefix + NodePropertyNames.LABEL_RGB_RED, this.textColor.getRed());
+        propertyList.setInteger(prefix + NodePropertyNames.LABEL_RGB_GREEN, this.textColor.getGreen());
+        propertyList.setInteger(prefix + NodePropertyNames.LABEL_RGB_BLUE, this.textColor.getBlue());
 
-        propertyList.setInteger(prefix + "textColorRed", this.textColor.getRed());
-        propertyList.setInteger(prefix + "textColorGreen", this.textColor.getGreen());
-        propertyList.setInteger(prefix + "textColorBlue", this.textColor.getBlue());
+        propertyList.setBoolean(prefix + NodePropertyNames.LABEL_BOLD, this.bold);
+        propertyList.setBoolean(prefix + NodePropertyNames.LABEL_ITALIC, this.italic);
 
-        propertyList.setBoolean(prefix + "bold", this.bold);
-        propertyList.setBoolean(prefix + "italic", this.italic);
+        propertyList.setString(prefix + NodePropertyNames.CONNECTOR_SLOT, this.connectorSlot);
+        propertyList.setString(prefix + NodePropertyNames.CONNECTOR_LINE_TYPE, this.lineType);
+        propertyList.setString(prefix + NodePropertyNames.CONNECTOR_ARROWHEAD_TYPE, this.arrowheadType);
 
-        propertyList.setString(prefix + "connectorSlot", this.connectorSlot);
-        propertyList.setString(prefix + "lineType", this.lineType);
-        propertyList.setString(prefix + "arrowheadType", this.arrowheadType);
-        propertyList.setBoolean(prefix + "displayText", this.displayText);
+        propertyList.setBoolean(prefix + NodePropertyNames.CONNECTOR_DISPLAY_TEXT, this.displayText);
+    }
+
+    public String getCustomDisplayName() {
+    	return customDisplayName;
+    }
+
+    public void setCustomDisplayName(String name) {
+    	this.customDisplayName = name;
     }
 
     public String getShape() {

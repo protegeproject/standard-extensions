@@ -13,6 +13,8 @@ import com.nwoods.jgo.layout.JGoLayeredDigraphAutoLayout;
 import edu.stanford.smi.protege.event.*;
 import edu.stanford.smi.protege.model.*;
 import edu.stanford.smi.protege.resource.Icons;
+import edu.stanford.smi.protege.resource.LocalizedText;
+import edu.stanford.smi.protege.resource.ResourceKey;
 import edu.stanford.smi.protege.ui.DisplayUtilities;
 import edu.stanford.smi.protege.util.*;
 import edu.stanford.smi.protege.widget.*;
@@ -173,7 +175,8 @@ public class GraphWidget extends AbstractSlotWidget {
             int xPos = view.getGridOrigin().x + 10;
             int yPos = view.getGridOrigin().y + 10;
 
-            Collection c = DisplayUtilities.pickClses(this, getKnowledgeBase(), cls.getTemplateSlotAllowedClses(slot));
+            Collection c = DisplayUtilities.pickClses(this, getKnowledgeBase(), 
+            							cls.getTemplateSlotAllowedClses(slot));
             Iterator i = c.iterator();
             while (i.hasNext()) {
                 Cls cls = (Cls) i.next();
@@ -251,6 +254,11 @@ public class GraphWidget extends AbstractSlotWidget {
 
         // Shortcut.
         if (selectedObjects.isEmpty()) return;
+        
+        // Shortcut.
+        String text = LocalizedText.getText(ResourceKey.DIALOG_CONFIRM_DELETE_TEXT);
+        int result = ModalDialog.showMessageDialog(view, text, ModalDialog.MODE_YES_NO);
+        if (result == ModalDialog.OPTION_NO) return;
 
         HashSet instances = new HashSet();
         JGoListPosition pos = selectedObjects.getFirstObjectPos();
@@ -397,6 +405,8 @@ public class GraphWidget extends AbstractSlotWidget {
     }
 
     private void stuffPalette() {
+    	palette.getDocument().setSuspendUpdates(true);
+    	
         ArrayList nodes = new ArrayList();
 
         ArrayList allowedClses = new ArrayList(cls.getTemplateSlotAllowedClses(slot));
@@ -422,19 +432,22 @@ public class GraphWidget extends AbstractSlotWidget {
             JGoDocument doc = palette.getDocument();
             doc.addObjectAtTail(node);
         }
+        
+        palette.getDocument().setSuspendUpdates(false);
 
         // Need to call this here - otherwise nodes aren't properly
         // positioned in a couple of obscure cases.
         palette.layoutItems();
     }
 
-    private Node makeNewNode(String name, Point point) {
+    private Node makeNewNode(String clsName, Point point) {
         Node node = new Node();
 
         // Initialize.
-        NodeProperties props = new NodeProperties(name, pList);
+        NodeProperties props = new NodeProperties(clsName, pList);
         String shape = props.getShape();
-        node.initialize(point, shape, name);
+        //node.initialize(point, shape, clsName);
+        node.initialize(point, shape, props.getCustomDisplayName());
 
         // Set the node's color.
         node.setBrush(JGoBrush.makeStockBrush(props.getShapeColor()));
@@ -453,6 +466,8 @@ public class GraphWidget extends AbstractSlotWidget {
             node.setConnectorSlot(connectorSlot);
         }
 
+        node.setUniqueName(clsName);
+        
         return node;
     }
 
