@@ -118,6 +118,8 @@ public class GraphDocument extends JGoDocument {
 
                 // Set the node's instance.
                 node.setInstance(instance);
+                
+                node.setUniqueName(cls.getName());
 
                 instanceMap.put(instance, node);
                 addObjectAtTail(node);
@@ -137,8 +139,8 @@ public class GraphDocument extends JGoDocument {
         node.setResizable(true);
         node.setSize(GraphTypes.NODE_WIDTH, GraphTypes.NODE_HEIGHT);
 
-        String text = node.getText();
-        Cls cls = kb.getCls(text);
+        String uniqueName = node.getUniqueName();
+        Cls cls = kb.getCls(uniqueName);
         Instance instance = kb.createInstance(null, cls);
         instance.addFrameListener(frameListener);
         node.setInstance(instance);

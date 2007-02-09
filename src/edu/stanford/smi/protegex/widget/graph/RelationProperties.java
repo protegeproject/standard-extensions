@@ -24,26 +24,26 @@ public class RelationProperties extends GraphObjectProperties {
         String prefix = getPrefix();
 
         // Get the line's color.  Default to black.
-        red = getIntProperty(prefix + "lineColorRed", new Integer(0));
-        green = getIntProperty(prefix + "lineColorGreen", new Integer(0));
-        blue = getIntProperty(prefix + "lineColorBlue", new Integer(0));
+        red = getIntProperty(prefix + RelationPropertyNames.LINE_RGB_RED, new Integer(0));
+        green = getIntProperty(prefix + RelationPropertyNames.LINE_RGB_GREEN, new Integer(0));
+        blue = getIntProperty(prefix + RelationPropertyNames.LINE_RGB_BLUE, new Integer(0));
         lineColor = new Color(red, green, blue);
 
-        lineType = getStringProperty(prefix + "lineType", "Solid");
-        arrowheadType = getStringProperty(prefix + "arrowheadType", "Arrowhead");
-        displayText = getBooleanProperty(prefix + "displayText", new Boolean(true));
+        lineType = getStringProperty(prefix + RelationPropertyNames.LINE_TYPE, "Solid");
+        arrowheadType = getStringProperty(prefix + RelationPropertyNames.ARROWHEAD_TYPE, "Arrowhead");
+        displayText = getBooleanProperty(prefix + RelationPropertyNames.LINE_DISPLAY_TEXT, new Boolean(true));
     }
 
     public void save() {
         String prefix = getPrefix();
         PropertyList propertyList = getPropertyList();
 
-        propertyList.setInteger(prefix + "lineColorRed", this.lineColor.getRed());
-        propertyList.setInteger(prefix + "lineColorGreen", this.lineColor.getGreen());
-        propertyList.setInteger(prefix + "lineColorBlue", this.lineColor.getBlue());
-        propertyList.setString(prefix + "lineType", this.lineType);
-        propertyList.setString(prefix + "arrowheadType", this.arrowheadType);
-        propertyList.setBoolean(prefix + "displayText", this.displayText);
+        propertyList.setInteger(prefix + RelationPropertyNames.LINE_RGB_RED, this.lineColor.getRed());
+        propertyList.setInteger(prefix + RelationPropertyNames.LINE_RGB_GREEN, this.lineColor.getGreen());
+        propertyList.setInteger(prefix + RelationPropertyNames.LINE_RGB_BLUE, this.lineColor.getBlue());
+        propertyList.setString(prefix + RelationPropertyNames.LINE_TYPE, this.lineType);
+        propertyList.setString(prefix + RelationPropertyNames.ARROWHEAD_TYPE, this.arrowheadType);
+        propertyList.setBoolean(prefix + RelationPropertyNames.LINE_DISPLAY_TEXT, this.displayText);
     }
 
     public String getLineType() {

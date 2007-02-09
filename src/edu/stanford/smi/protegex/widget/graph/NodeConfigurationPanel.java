@@ -18,6 +18,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
@@ -32,10 +33,9 @@ import edu.stanford.smi.protege.model.ValueType;
 import edu.stanford.smi.protege.util.PropertyList;
 
 public class NodeConfigurationPanel extends JPanel {
-    JPanel topPnl = new JPanel(new BorderLayout());
-    JPanel bottomPnl = new JPanel(new BorderLayout());
-    JPanel nodePnl = new JPanel(new GridBagLayout());
-    JPanel connectorPnl = new JPanel(new GridBagLayout());
+    JCheckBox italic = new JCheckBox("Italic");
+    JCheckBox bold = new JCheckBox("Bold");
+    JCheckBox displayText = new JCheckBox("Display text for connectors");
 
     JComboBox shapeList = new JComboBox();
     JComboBox shapeColorList = new JComboBox();
@@ -44,6 +44,7 @@ public class NodeConfigurationPanel extends JPanel {
     JComboBox lineList = new JComboBox();
     JComboBox arrowheadList = new JComboBox();
 
+    JLabel displayNameLabel = new JLabel("Display Name:");
     JLabel jLabel1 = new JLabel("Shape:");
     JLabel jLabel2 = new JLabel("Shape Color:");
     JLabel jLabel3 = new JLabel("Text Color");
@@ -52,11 +53,14 @@ public class NodeConfigurationPanel extends JPanel {
     JLabel jLabel6 = new JLabel("Connector Slot:");
     JLabel lblStrut = new JLabel();
 
-    JCheckBox italic = new JCheckBox("Italic");
-    JCheckBox bold = new JCheckBox("Bold");
-    JCheckBox displayText = new JCheckBox("Display Text");
+    JPanel topPnl = new JPanel(new BorderLayout());
+    JPanel bottomPnl = new JPanel(new BorderLayout());
+    JPanel nodePnl = new JPanel(new GridBagLayout());
+    JPanel connectorPnl = new JPanel(new GridBagLayout());
 
     JTable clsesTable = new JTable();
+	JTextField displayNameTextField = new JTextField();
+
     private int lastSelectedIndex = -1;
     PropertyList propertyList;
 
@@ -101,100 +105,13 @@ public class NodeConfigurationPanel extends JPanel {
     }
 
     private void jbInit() throws Exception {
-        /* Build node panel ***************************************************/
-        shapeList.addItem(GraphTypes.DIAMOND);
-        shapeList.addItem(GraphTypes.ELLIPSE);
-        shapeList.addItem(GraphTypes.HEXAGON);
-        shapeList.addItem(GraphTypes.INVERTED_TRIANGLE);
-        shapeList.addItem(GraphTypes.OCTAGON);
-        shapeList.addItem(GraphTypes.PENTAGON);
-        shapeList.addItem(GraphTypes.RECTANGLE);
-        shapeList.addItem(GraphTypes.ROUNDED_RECTANGLE);
-        shapeList.addItem(GraphTypes.TRIANGLE);
-        shapeList.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                shapeList_actionPerformed(e);
-            }
-        });
+        /** Build node panel */
+        buildNodePanel();
 
-        shapeColorList = new JComboBox();
-        // This is the default color for nodes ("SteelBlue").
-        shapeColorList.addItem(new Color(70, 130, 180));
-        shapeColorList.addItem(Color.blue);
-        shapeColorList.addItem(Color.cyan);
-        shapeColorList.addItem(Color.darkGray);
-        shapeColorList.addItem(Color.gray);
-        shapeColorList.addItem(Color.lightGray);
-        shapeColorList.addItem(Color.green);
-        shapeColorList.addItem(Color.magenta);
-        shapeColorList.addItem(Color.orange);
-        shapeColorList.addItem(Color.pink);
-        shapeColorList.addItem(Color.red);
-        shapeColorList.addItem(Color.yellow);
-        shapeColorList.addItem(Color.white);
-        shapeColorList.addItem(Color.black);
-        shapeColorList.setRenderer(new ComboBoxColorRenderer());
-        shapeColorList.setEditor(new ComboBoxColorEditor());
-        shapeColorList.setEditable(true);
-        shapeColorList.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                shapeColorList_actionPerformed(e);
-            }
-        });
+        /** Build connector panel */
+        buildConnectorPanel();
 
-        textColorList = new JComboBox();
-        textColorList.addItem(Color.black);
-        textColorList.addItem(Color.blue);
-        textColorList.addItem(Color.cyan);
-        textColorList.addItem(Color.darkGray);
-        textColorList.addItem(Color.gray);
-        textColorList.addItem(Color.lightGray);
-        textColorList.addItem(Color.green);
-        textColorList.addItem(Color.magenta);
-        textColorList.addItem(Color.orange);
-        textColorList.addItem(Color.pink);
-        textColorList.addItem(Color.red);
-        textColorList.addItem(Color.yellow);
-        textColorList.addItem(Color.white);
-        textColorList.setRenderer(new ComboBoxColorRenderer());
-        textColorList.setEditor(new ComboBoxColorEditor());
-        textColorList.setEditable(true);
-
-        nodePnl.add(jLabel1, new GridBagConstraints(0,0,1,1,0.0,0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5,5,5,5),0,0));
-        nodePnl.add(jLabel2, new GridBagConstraints(0,1,1,1,0.0,0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5,5,5,5),0,0));
-        nodePnl.add(jLabel3, new GridBagConstraints(0,2,1,1,0.0,0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5,5,5,5),0,0));
-        nodePnl.add(shapeList, new GridBagConstraints(1,0,1,1,0.0,0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(5,5,5,5),0,0));
-        nodePnl.add(shapeColorList, new GridBagConstraints(1,1,1,1,0.0,0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(5,5,5,5),0,0));
-        nodePnl.add(textColorList, new GridBagConstraints(1,2,1,1,0.0,0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(5,5,5,5),0,0));
-        nodePnl.add(italic, new GridBagConstraints(3,2,1,1,1.0,0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(5,5,5,5),0,0));
-        nodePnl.add(bold, new GridBagConstraints(2,2,1,1,0.0,0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5,5,5,5),0,0));
-
-        /* Build connector panel **********************************************/
-        lineList.addItem(GraphTypes.SOLID);
-        lineList.addItem(GraphTypes.DASHED);
-        lineList.addItem(GraphTypes.DOTTED);
-        lineList.addItem(GraphTypes.DASH_DOT);
-        lineList.addItem(GraphTypes.DASH_DOT_DOT);
-
-        arrowheadList.addItem(GraphTypes.ARROW_ARROWHEAD);
-        arrowheadList.addItem(GraphTypes.ARROW_DIAMOND);
-        arrowheadList.addItem(GraphTypes.ARROW_SIMPLE_LINE_DRAWN);
-        arrowheadList.addItem(GraphTypes.ARROW_TRIANGLE);
-        arrowheadList.addItem(GraphTypes.NONE);
-
-        lblStrut.setText("");
-
-        connectorPnl.setBorder(new TitledBorder(BorderFactory.createEtchedBorder(Color.white, new Color(148, 145, 140)), "Optional Connector Slot"));
-        connectorPnl.add(jLabel4, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0));
-        connectorPnl.add(jLabel5, new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0));
-        connectorPnl.add(jLabel6, new GridBagConstraints(0, 0, 1, 2, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0));
-        connectorPnl.add(connectorSlots, new GridBagConstraints(1, 0, 1, 2, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
-        connectorPnl.add(arrowheadList, new GridBagConstraints(1, 3, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
-        connectorPnl.add(lineList, new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
-        connectorPnl.add(lblStrut, new GridBagConstraints(2, 0, 1, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
-        connectorPnl.add(displayText, new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0));
-
-        /* Build top panel ****************************************************/
+        /** Build top panel */
         initializeTable();
         if (clsesTable.getRowCount() > 0) {
             clsesTable.setRowSelectionInterval(0, 0);
@@ -202,15 +119,124 @@ public class NodeConfigurationPanel extends JPanel {
         JScrollPane scrollPane = new JScrollPane(clsesTable);
         topPnl.add(scrollPane, BorderLayout.CENTER);
 
-        /* Build bottom panel *************************************************/
+        /** Build bottom panel */
         bottomPnl.add(nodePnl, BorderLayout.NORTH);
         bottomPnl.add(connectorPnl, BorderLayout.SOUTH);
 
-        /* Build main panel ***************************************************/
+        /** Build main panel */
         this.setLayout(new BorderLayout());
         this.add(topPnl, BorderLayout.CENTER);
         this.add(bottomPnl, BorderLayout.SOUTH);
     }
+
+    private void buildNodePanel() {
+		shapeList.addItem(GraphTypes.DIAMOND);
+		shapeList.addItem(GraphTypes.ELLIPSE);
+		shapeList.addItem(GraphTypes.HEXAGON);
+		shapeList.addItem(GraphTypes.INVERTED_TRIANGLE);
+		shapeList.addItem(GraphTypes.OCTAGON);
+		shapeList.addItem(GraphTypes.PENTAGON);
+		shapeList.addItem(GraphTypes.RECTANGLE);
+		shapeList.addItem(GraphTypes.ROUNDED_RECTANGLE);
+		shapeList.addItem(GraphTypes.TRIANGLE);
+		shapeList.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+		    	shapeList_actionPerformed(e);
+		  	}
+		});
+
+		shapeColorList = new JComboBox();
+		// This is the default color for nodes ("SteelBlue").
+		shapeColorList.addItem(new Color(70, 130, 180));
+		shapeColorList.addItem(Color.blue);
+		shapeColorList.addItem(Color.cyan);
+		shapeColorList.addItem(Color.darkGray);
+		shapeColorList.addItem(Color.gray);
+		shapeColorList.addItem(Color.lightGray);
+		shapeColorList.addItem(Color.green);
+		shapeColorList.addItem(Color.magenta);
+		shapeColorList.addItem(Color.orange);
+		shapeColorList.addItem(Color.pink);
+		shapeColorList.addItem(Color.red);
+		shapeColorList.addItem(Color.yellow);
+		shapeColorList.addItem(Color.white);
+		shapeColorList.addItem(Color.black);
+		shapeColorList.setRenderer(new ComboBoxColorRenderer());
+		shapeColorList.setEditor(new ComboBoxColorEditor());
+		shapeColorList.setEditable(true);
+		shapeColorList.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+		    	shapeColorList_actionPerformed(e);
+		  	}
+		});
+
+		textColorList = new JComboBox();
+		textColorList.addItem(Color.black);
+		textColorList.addItem(Color.blue);
+		textColorList.addItem(Color.cyan);
+		textColorList.addItem(Color.darkGray);
+		textColorList.addItem(Color.gray);
+		textColorList.addItem(Color.lightGray);
+		textColorList.addItem(Color.green);
+		textColorList.addItem(Color.magenta);
+		textColorList.addItem(Color.orange);
+		textColorList.addItem(Color.pink);
+		textColorList.addItem(Color.red);
+		textColorList.addItem(Color.yellow);
+		textColorList.addItem(Color.white);
+		textColorList.setRenderer(new ComboBoxColorRenderer());
+		textColorList.setEditor(new ComboBoxColorEditor());
+		textColorList.setEditable(true);
+
+        GridBagConstraints c = new GridBagConstraints();
+        c.gridx = 0;
+        c.gridy = 0;
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        c.insets = new Insets(10,5,5,5);
+        c.anchor = GridBagConstraints.WEST;
+        nodePnl.add(displayNameLabel, c);
+
+		nodePnl.add(jLabel1, new GridBagConstraints(0,1,1,1,0.0,0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5,5,5,5),0,0));
+		nodePnl.add(jLabel2, new GridBagConstraints(0,2,1,1,0.0,0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5,5,5,5),0,0));
+		nodePnl.add(jLabel3, new GridBagConstraints(0,3,1,1,0.0,0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5,5,5,5),0,0));
+
+		c.gridx = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        nodePnl.add(displayNameTextField, c);
+
+		nodePnl.add(shapeList, new GridBagConstraints(1,1,1,1,0.0,0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(5,5,5,5),0,0));
+		nodePnl.add(shapeColorList, new GridBagConstraints(1,2,1,1,0.0,0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(5,5,5,5),0,0));
+		nodePnl.add(textColorList, new GridBagConstraints(1,3,1,1,0.0,0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(5,5,5,5),0,0));
+		nodePnl.add(italic, new GridBagConstraints(3,3,1,1,1.0,0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(5,5,5,5),0,0));
+		nodePnl.add(bold, new GridBagConstraints(2,3,1,1,0.0,0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5,5,5,5),0,0));
+	}
+
+	private void buildConnectorPanel() {
+		lineList.addItem(GraphTypes.SOLID);
+		lineList.addItem(GraphTypes.DASHED);
+		lineList.addItem(GraphTypes.DOTTED);
+		lineList.addItem(GraphTypes.DASH_DOT);
+		lineList.addItem(GraphTypes.DASH_DOT_DOT);
+
+		arrowheadList.addItem(GraphTypes.ARROW_ARROWHEAD);
+		arrowheadList.addItem(GraphTypes.ARROW_DIAMOND);
+		arrowheadList.addItem(GraphTypes.ARROW_SIMPLE_LINE_DRAWN);
+		arrowheadList.addItem(GraphTypes.ARROW_TRIANGLE);
+		arrowheadList.addItem(GraphTypes.NONE);
+
+		lblStrut.setText("");
+
+		connectorPnl.setBorder(new TitledBorder(BorderFactory.createEtchedBorder(Color.white, new Color(148, 145, 140)), "Optional Connector Slot"));
+		connectorPnl.add(jLabel4, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0));
+		connectorPnl.add(jLabel5, new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0));
+		connectorPnl.add(jLabel6, new GridBagConstraints(0, 0, 1, 2, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0));
+		connectorPnl.add(connectorSlots, new GridBagConstraints(1, 0, 1, 2, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
+		connectorPnl.add(arrowheadList, new GridBagConstraints(1, 3, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
+		connectorPnl.add(lineList, new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
+		connectorPnl.add(lblStrut, new GridBagConstraints(2, 0, 1, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
+		connectorPnl.add(displayText, new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0));
+	}
 
     class ClsTableModel extends AbstractTableModel {
         final String[] columnNames = { "Class", "Shape", "Shape Color" };
@@ -290,6 +316,7 @@ public class NodeConfigurationPanel extends JPanel {
 
     private void saveCurrentSettings(int index) {
         NodeProperties props = (NodeProperties) allowedClsProperties.get(index);
+        props.setCustomDisplayName((displayNameTextField.getText()).trim());
         props.setShape((String) shapeList.getSelectedItem());
         props.setShapeColor((Color) shapeColorList.getSelectedItem());
         props.setTextColor((Color) textColorList.getSelectedItem());
@@ -335,6 +362,7 @@ public class NodeConfigurationPanel extends JPanel {
             connectorSlots.setSelectedItem(GraphTypes.NONE);
         }
 
+		displayNameTextField.setText(props.getCustomDisplayName());
         shapeList.setSelectedItem(props.getShape());
         shapeColorList.setSelectedItem(props.getShapeColor());
         textColorList.setSelectedItem(props.getTextColor());
