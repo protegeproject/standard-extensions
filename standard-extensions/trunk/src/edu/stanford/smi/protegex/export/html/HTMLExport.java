@@ -65,7 +65,6 @@ public class HTMLExport {
         for (int i = 0; i < size; i++) {
             Cls cls = (Cls) rootClasses.get(i);
             classesToExport.add(cls);
-
             Collection subClasses = cls.getSubclasses();
             Iterator j = subClasses.iterator();
             while (j.hasNext()) {
@@ -107,7 +106,7 @@ public class HTMLExport {
             PrintWriter pw = new PrintWriter(new FileOutputStream(f));
 
             // Print generic stuff at top of page, including custom header
-            printTop(pw, properties.getProperty(CLASS_HIERARCHY));
+            printTop(pw, properties.getProperty(CLASS_HIERARCHY), "");
 
             // Print page title
             pw.println("<span class=\"pageTitle\">" + config.getProject().getName() + " " + properties.getProperty(CLASS_HIERARCHY) + "</span><br><br>");
@@ -118,7 +117,7 @@ public class HTMLExport {
             for (int i = 0; i < size; i++) {
                 Cls cls = (Cls) classes.get(i);
                 pw.println("<ul class=\"iconList\">");
-                exportHierarchy(pw, cls);
+                exportHierarchy(pw, cls, "");  // pathToRoot is ""  - could be user-configurable  (mh)
                 pw.println("</ul>");
             }
 
@@ -135,9 +134,9 @@ public class HTMLExport {
         }
     }
 
-    private void exportHierarchy(PrintWriter pw, Cls cls) {
+    private void exportHierarchy(PrintWriter pw, Cls cls, String pathToRoot) {
         String style = getListItemStyle(cls);
-        String href = getFrameFileName((Frame) cls);
+        String href = pathToRoot + getFrameFileName((Frame) cls); // (mh) 12 Feb 2007
 
         String listItem = "<li class=\"" + style + "\"><a href=\"" + href + "\">" + cls.getBrowserText() + "</a>";
 
@@ -171,7 +170,7 @@ public class HTMLExport {
         while (i.hasNext()) {
             Cls subCls = (Cls) i.next();
             pw.println("<ul class=\"iconList\">");
-            exportHierarchy(pw, subCls);
+            exportHierarchy(pw, subCls, pathToRoot);
             pw.println("</ul>");
         }
     }
@@ -181,14 +180,19 @@ public class HTMLExport {
 
         String clsName = cls.getName();
         clsName = stripIllegalChars(clsName);
-        String pathname = config.getOutputDir() + File.separator + clsName + ".html";
+        // String pathname = config.getOutputDir() + File.separator + clsName + ".html";  (mh) 12 Feb 2007
+        String pathname = config.getOutputDir() + File.separator + getFrameFileName(cls); // (mh) 12 Feb 2007
         File f = new File(pathname);
-
+        
+        // For new hierarchical folder output.  
+        f.getParentFile().mkdirs(); // (mh) 12 Feb 2007
+        String pathToRoot = getRootDirPath(cls);   // Figure out where the root is so we can access the CSS file.
+        
         try {
             PrintWriter pw = new PrintWriter(new FileOutputStream(f));
 
             // Generic stuff at top of page
-            printTop(pw, cls.getBrowserText());
+            printTop(pw, cls.getBrowserText(), pathToRoot);
 
             pw.println("<span class=\"pageTitle\">" + getClassPageTitle(cls) + ": " + cls.getBrowserText() + "</span><br><br>");
             pw.println("<div class=\"classBorder\">");
@@ -198,15 +202,15 @@ public class HTMLExport {
 
             // Print list of superclasses
             pw.println("<span class=\"sectionTitle\">" + properties.getProperty(SUPERCLASSES) + "</span>");
-            printClsIconList(pw, cls.getDirectSuperclasses());
+            printClsIconList(pw, cls.getDirectSuperclasses(), pathToRoot);
 
             // Print list of subclasses
             pw.println("<span class=\"sectionTitle\">" + properties.getProperty(SUBCLASSES) + "</span>");
-            printClsIconList(pw, cls.getDirectSubclasses());
+            printClsIconList(pw, cls.getDirectSubclasses(), pathToRoot);
 
             // Print list of direct types
             pw.println("<span class=\"sectionTitle\">" + properties.getProperty(TYPE_PLURAL) + "</span>");
-            printClsIconList(pw, cls.getDirectTypes());
+            printClsIconList(pw, cls.getDirectTypes(), pathToRoot);
 
             if ((config.getShowInstances()) && (cls.getDirectInstanceCount() > 0)) {
                 int numInstances = cls.getDirectInstanceCount();
@@ -214,10 +218,10 @@ public class HTMLExport {
             }
 
             // Print template slots table.
-    		printTemplateSlots(pw, cls);
+            printTemplateSlots(pw, cls, pathToRoot);
 
             // Print own slots table.
-            printOwnSlots(pw, cls);
+            printOwnSlots(pw, cls, pathToRoot);
 
             // Print list of instances
             if ((config.getShowInstances()) && (cls.getDirectInstanceCount() > 0)) {
@@ -232,12 +236,12 @@ public class HTMLExport {
 
                 if (!config.getUseNumbering()) {
                     pw.println("<span class=\"sectionTitle\">" + properties.getProperty(INSTANCE_UPPERCASE_PLURAL) + "</span>");
-                    printFrameIconList(pw, directInstances);
+                    printFrameIconList(pw, directInstances, pathToRoot);
                 } else {
                     pw.println("<dl>");
                     pw.println("<dt class=\"sectionTitle\">" + properties.getProperty(INSTANCE_UPPERCASE_PLURAL) + "</dt>");
                     pw.println("<dd>");
-                    printNumberedInstanceList(pw, directInstances);
+                    printNumberedInstanceList(pw, directInstances, pathToRoot);
                     pw.println("</dd>");
                     pw.println("</dl><br>");
                 }
@@ -245,7 +249,7 @@ public class HTMLExport {
                 pw.println("<br>");
             }
 
-            printBottom(pw, true);
+            printBottom(pw, true, pathToRoot);
             insertCustomHTML(pw, config.getFooterPath());
 
             pw.close();
@@ -295,15 +299,20 @@ public class HTMLExport {
 
         String slotName = slot.getName();
         slotName = stripIllegalChars(slotName);
-        String pathname = config.getOutputDir() + File.separator + "slot_" + slotName + ".html";
+        //String pathname = config.getOutputDir() + File.separator + "slot_" + slotName + ".html";
+        String pathname = config.getOutputDir() + File.separator + getFrameFileName(slot); // (mh) 12 Feb 2007
         File f = new File(pathname);
+        
+        // For new hierarchical folder output.  
+        f.getParentFile().mkdirs(); // (mh) 12 Feb 2007
+        String pathToRoot = getRootDirPath(slot);   // Figure out where the root is so we can access the CSS file.
 
         try {
             PrintWriter pw = new PrintWriter(new FileOutputStream(f));
 
             // Generic stuff at top of page
             String slotBrowserText = slot.getBrowserText();
-            printTop(pw, slotBrowserText);
+            printTop(pw, slotBrowserText, pathToRoot);
             pw.println("<span class=\"pageTitle\">" + properties.getProperty(SLOT) + ": " + slotBrowserText + "</span><br><br>");
             pw.println("<div class=\"slotBorder\">");
 
@@ -314,25 +323,25 @@ public class HTMLExport {
             Collection superslots = slot.getSuperslots();
             if (superslots.size() > 0) {
                 pw.println("<span class=\"sectionTitle\">" + properties.getProperty(SUPERSLOTS) + "</span>");
-                printSlotIconList(pw, superslots);
+                printSlotIconList(pw, superslots, pathToRoot);
             }
 
             // Print list of subslots
             Collection subslots = slot.getSubslots();
             if (subslots.size() > 0) {
                 pw.println("<span class=\"sectionTitle\">" + properties.getProperty(SUBSLOTS) + "</span>");
-                printSlotIconList(pw, slot.getSubslots());
+                printSlotIconList(pw, slot.getSubslots(), pathToRoot);
             }
 
             // Print list of direct types
             pw.println("<span class=\"sectionTitle\">" + properties.getProperty(TYPE_PLURAL) + "</span>");
-            printClsIconList(pw, slot.getDirectTypes());
+            printClsIconList(pw, slot.getDirectTypes(), pathToRoot);
 
             // Print own slots table
-            printOwnSlots(pw, slot);
+            printOwnSlots(pw, slot, pathToRoot);
             pw.println("<br>");
 
-            printBottom(pw, true);
+            printBottom(pw, true, pathToRoot);
             insertCustomHTML(pw, config.getFooterPath());
 
             pw.close();
@@ -358,27 +367,32 @@ public class HTMLExport {
     private void generateInstancePage(Instance instance) {
         String instanceName = instance.getName();
         instanceName = stripIllegalChars(instanceName);
-        String pathname = config.getOutputDir() + File.separator + instanceName + ".html";
+        //String pathname = config.getOutputDir() + File.separator + instanceName + ".html";
+        String pathname = config.getOutputDir() + File.separator + getFrameFileName(instance); // (mh) 12 Feb 2007
         File f = new File(pathname);
+        
+        // For new hierarchical folder output.  
+        f.getParentFile().mkdirs(); // (mh) 12 Feb 2007
+        String pathToRoot = getRootDirPath(instance);   // Figure out where the root is so we can access the CSS file.
 
         try {
             PrintWriter pw = new PrintWriter(new FileOutputStream(f));
 
             // Generic stuff at top of page
-            printTop(pw, instance.getBrowserText());
+            printTop(pw, instance.getBrowserText(), pathToRoot);
             pw.println("<span class=\"pageTitle\">" + properties.getProperty(INSTANCE_UPPERCASE) + ": " + instance.getBrowserText() + "</span><br><br>");
             pw.println("<div class=\"instanceBorder\">");
 
             // Print list of direct types
             pw.println("<span class=\"sectionTitle\">" + properties.getProperty(TYPE_PLURAL) + "</span>");
-            printClsIconList(pw, instance.getDirectTypes());
+            printClsIconList(pw, instance.getDirectTypes(), pathToRoot);
 
             // Print own slots table
-            printOwnSlots(pw, instance);
+            printOwnSlots(pw, instance, pathToRoot);
 
             pw.println("<br>");
 
-            printBottom(pw, true);
+            printBottom(pw, true, pathToRoot);
             insertCustomHTML(pw, config.getFooterPath());
 
             pw.close();
@@ -388,27 +402,31 @@ public class HTMLExport {
     }
 
     private void generateFacetPage(Facet facet) {
-        String pathname = config.getOutputDir() + File.separator + getFrameFileName((Frame) facet);
+        String pathname = config.getOutputDir() + File.separator + getFrameFileName(facet);
         File f = new File(pathname);
+        
+        // For new hierarchical folder output.  
+        f.getParentFile().mkdirs(); // (mh) 12 Feb 2007
+        String pathToRoot = getRootDirPath(facet);   // Figure out where the root is so we can access the CSS file.
 
         try {
             PrintWriter pw = new PrintWriter(new FileOutputStream(f));
 
             // Generic stuff at top of page
-            printTop(pw, facet.getBrowserText());
+            printTop(pw, facet.getBrowserText(), pathToRoot);
             pw.println("<span class=\"pageTitle\">" + properties.getProperty(FACET) + ": " + facet.getBrowserText() + "</span><br><br>");
             pw.println("<div class=\"facetBorder\">");
 
             // Print list of direct types
             pw.println("<span class=\"sectionTitle\">" + properties.getProperty(TYPE_PLURAL) + "</span>");
-            printClsIconList(pw, facet.getDirectTypes());
+            printClsIconList(pw, facet.getDirectTypes(), pathToRoot);
 
             // Print own slots table
-            printOwnSlots(pw, facet);
+            printOwnSlots(pw, facet, pathToRoot);
 
             pw.println("<br>");
 
-            printBottom(pw, true);
+            printBottom(pw, true, pathToRoot);
             insertCustomHTML(pw, config.getFooterPath());
 
             pw.close();
@@ -417,7 +435,14 @@ public class HTMLExport {
         }
     }
 
-    private void printTop(PrintWriter pw, String frameName) {
+    /**
+     * 
+     * @param pw  a PrintWriter
+     * @param frameName the name of the Frame whose HTML is being exported
+     * @param pathToRoot The path to the root folder - so we can locate the image and CSS files
+     */
+    private void printTop(PrintWriter pw, String frameName, String pathToRoot)
+    {
         pw.println("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">");
         pw.println("<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\">");
         pw.println("");
@@ -429,7 +454,7 @@ public class HTMLExport {
         pw.println("<meta http-equiv=\"content-type\" content=\"text/html; charset=iso-8859-1\"/>");
 
         String cssFileName = getCSSFileName();
-        pw.println("<link rel=\"stylesheet\" type=\"text/css\" href=\"" + cssFileName + "\"/>");
+        pw.println("<link rel=\"stylesheet\" type=\"text/css\" href=\"" + pathToRoot + cssFileName + "\"/>");
 
         pw.println("</head>");
         pw.println("");
@@ -443,12 +468,12 @@ public class HTMLExport {
         pw.println("");
     }
 
-    private void printBottom(PrintWriter pw, boolean hierarchyLink) {
+    private void printBottom(PrintWriter pw, boolean hierarchyLink, String pathToRoot) {
         pw.println("&nbsp;&nbsp;<a href=\"#top\"><span style=\"font-weight: bold;\">^ back to top</span></a>");
         pw.println("</div><br>");
 
         if (hierarchyLink) {
-            pw.println("<span class=\"generalContentBold\">Return to <a href=\"index.html\" target=\"_self\">" + properties.getProperty(CLASS_HIERARCHY) + "</a></span><br><br>");
+            pw.println("<span class=\"generalContentBold\">Return to <a href=\"" + pathToRoot + "index.html\" target=\"_self\">" + properties.getProperty(CLASS_HIERARCHY) + "</a></span><br><br>");
         }
 
         pw.println("<span class=\"generalContentBold\">Generated: " + buildDateString() + "</span><br><br>");
@@ -502,7 +527,7 @@ public class HTMLExport {
         }
     }
 
-    private void printSlotIconList(PrintWriter pw, Collection c) {
+    private void printSlotIconList(PrintWriter pw, Collection c, String pathToRoot) {
         // Shortcut
         if (c.size() == 0) return;
 
@@ -513,7 +538,7 @@ public class HTMLExport {
         Iterator i = c.iterator();
         while (i.hasNext()) {
             Slot slot = (Slot) i.next();
-            String slotFileName = getFrameFileName((Frame) slot);
+            String slotFileName = pathToRoot + getFrameFileName((Frame) slot);
             pw.println("\t<li class=\"slot\"><a href=\"" + slotFileName + "\">" + slot.getBrowserText() + "</a></li>");
         }
 
@@ -521,7 +546,7 @@ public class HTMLExport {
         pw.println("</ul><br>");
     }
 
-    private void printClsIconList(PrintWriter pw, Collection c) {
+    private void printClsIconList(PrintWriter pw, Collection c, String pathToRoot) {
         // Open list
         pw.println("<ul class=\"iconList\">");
 
@@ -532,7 +557,7 @@ public class HTMLExport {
             Iterator i = c.iterator();
             while (i.hasNext()) {
                 Cls cls = (Cls) i.next();
-                String clsFileName = getFrameFileName((Frame) cls);
+                String clsFileName = pathToRoot + getFrameFileName((Frame) cls);
                 String style = getListItemStyle(cls);
 
                 if (classesToExport.contains(cls)) {
@@ -547,7 +572,7 @@ public class HTMLExport {
         pw.println("</ul><br>");
     }
 
-    private void printFrameIconList(PrintWriter pw, Collection c) {
+    private void printFrameIconList(PrintWriter pw, Collection c, String pathToRoot) {
         // Open list
         pw.println("<ul class=\"iconList\">");
 
@@ -555,7 +580,7 @@ public class HTMLExport {
         Iterator i = c.iterator();
         while (i.hasNext()) {
             Frame frame = (Frame) i.next();
-            String fileName = getFrameFileName(frame);
+            String fileName = pathToRoot + getFrameFileName(frame);
             if (frame instanceof SimpleInstance) {
                 pw.println("\t<li class=\"directInstance\"><A HREF=\"" + fileName + "\">" + frame.getBrowserText() + "</A></li>");
             } else if (frame instanceof Cls) {
@@ -572,7 +597,7 @@ public class HTMLExport {
         pw.println("</ul><br>");
     }
 
-    private void printNumberedInstanceList(PrintWriter pw, Collection c) {
+    private void printNumberedInstanceList(PrintWriter pw, Collection c, String pathToRoot) {
         // Open list
         pw.println("<ol style=\"margin-left: 0px; padding-left: 0px;\">");
 
@@ -580,7 +605,7 @@ public class HTMLExport {
         Iterator i = c.iterator();
         while (i.hasNext()) {
             Instance instance = (Instance) i.next();
-            String instanceFileName = getFrameFileName((Frame) instance);
+            String instanceFileName = pathToRoot + getFrameFileName((Frame) instance);
             pw.println("\t<li><A HREF=\"" + instanceFileName + "\">" + instance.getBrowserText() + "</A></li>");
         }
 
@@ -588,7 +613,7 @@ public class HTMLExport {
         pw.println("</ol>");
     }
 
-    private void printTemplateSlots(PrintWriter pw, Cls cls) {
+    private void printTemplateSlots(PrintWriter pw, Cls cls, String pathToRoot) {
         // Open table tag
         pw.println("<table width=\"100%\" border=\"1\" cellpadding=\"3\" cellspacing=\"0\" class=\"mozillaTableHack\">");
 
@@ -650,11 +675,11 @@ public class HTMLExport {
 
                 // Column 1 - icon
                 String iconName = getSlotIconFileName(cls, slot);
-                pw.println("<td class=\"mozillaTableHack\"><img src=\"images/" + iconName + "\" width=\"16\" height=\"16\" border=\"0\" align=\"middle\"></td>");
+                pw.println("<td class=\"mozillaTableHack\"><img src=\"" + pathToRoot + "images/" + iconName + "\" width=\"16\" height=\"16\" border=\"0\" align=\"middle\"></td>");
 
                 // Column 2 - slot name, always present
                 String slotFileName = getFrameFileName((Frame) slot);
-                pw.println("<td class=\"mozillaTableHack\"><a href=\"" + slotFileName + "\">" + slot.getBrowserText() + "</a></td>");
+                pw.println("<td class=\"mozillaTableHack\"><a href=\"" + pathToRoot + slotFileName + "\">" + slot.getBrowserText() + "</a></td>");
 
                 // Column 3 - slot documentation, always present
                 /** @todo Format documentation better */
@@ -681,7 +706,7 @@ public class HTMLExport {
                             Cls allowedValue = (Cls) k.next();
                             if (classesToExport.contains(allowedValue)) {
                                 String fileName = getFrameFileName((Frame) allowedValue);
-                                stringValueType += "<a href=\"" + fileName + "\">" + allowedValue.getBrowserText() + "</a>";
+                                stringValueType += "<a href=\"" + pathToRoot + fileName + "\">" + allowedValue.getBrowserText() + "</a>";
                             } else {
                                 stringValueType += allowedValue.getBrowserText();
                             }
@@ -793,7 +818,7 @@ public class HTMLExport {
         return retval;
     }
 
-    private String getOwnSlotValuesString(Collection values) {
+    private String getOwnSlotValuesString(Collection values, String pathToRoot) {
         String retval = "";
 
         if (values.size() == 0) {
@@ -803,14 +828,24 @@ public class HTMLExport {
         Iterator i = values.iterator();
         while (i.hasNext()) {
             Object obj = i.next();
-            if (obj instanceof Instance) {
+            
+            // Special handling for classes    (MikeHewett) 13 Feb 2007
+            if (obj instanceof Cls)
+            {
+              if (classesToExport.contains(obj))
+              {
+                String clsFileName = getFrameFileName((Frame) obj);
+                retval += "<a href=\"" + pathToRoot + clsFileName + "\">" + ((Cls)obj).getBrowserText() + "</a>";
+              }
+            }
+            else if (obj instanceof Instance) {
                 Instance instance = (Instance) obj;
                 Cls directType = instance.getDirectType();
                 if (classesToExport.contains(directType)) {
                     // Only make this a hyperlink if we generated a page
                     // for this particular instance.
                     String instanceFileName = getFrameFileName((Frame) instance);
-                    retval += "<a href=\"" + instanceFileName + "\">" + instance.getBrowserText() + "</a>";
+                    retval += "<a href=\"" + pathToRoot + instanceFileName + "\">" + instance.getBrowserText() + "</a>";
                 } else {
                     retval += instance.getBrowserText();
                 }
@@ -826,7 +861,7 @@ public class HTMLExport {
         return retval;
     }
 
-    private void printOwnSlots(PrintWriter pw, Frame frame) {
+    private void printOwnSlots(PrintWriter pw, Frame frame, String pathToRoot) {
         printOwnSlotsTableHeader(pw);
 
         List ownSlots = new ArrayList(frame.getOwnSlots());
@@ -841,15 +876,15 @@ public class HTMLExport {
                 pw.println("<tr>");
 
                 // Column 1 - slot icon
-                pw.println("<td class=\"mozillaTableHack\"><img src=\"images/slot.gif\" width=\"16\" height=\"16\" border=\"0\" align=\"middle\"></td>");
+                pw.println("<td class=\"mozillaTableHack\"><img src=\"" + pathToRoot + "images/slot.gif\" width=\"16\" height=\"16\" border=\"0\" align=\"middle\"></td>");
 
                 // Column 2 - slot name
                 String ownSlotFileName = getFrameFileName((Frame) ownSlot);
-                pw.println("<td class=\"mozillaTableHack\"><a href=\"" + ownSlotFileName + "\">" + ownSlot.getBrowserText() + "</a></td>");
+                pw.println("<td class=\"mozillaTableHack\"><a href=\"" + pathToRoot + ownSlotFileName + "\">" + ownSlot.getBrowserText() + "</a></td>");
 
                 // Column 3 - slot value
                 Collection ownSlotValues = frame.getOwnSlotValues(ownSlot);
-                String ownSlotValuesString = getOwnSlotValuesString(ownSlotValues);
+                String ownSlotValuesString = getOwnSlotValuesString(ownSlotValues, pathToRoot);
                 pw.println("<td class=\"mozillaTableHack\">" + ownSlotValuesString + "</td>");
 
                 // End row
@@ -920,7 +955,7 @@ public class HTMLExport {
         // Strip all characters out of class names that are illegal
         // in file names (since HTML files are being named using class
         // names).
-        Pattern pattern = Pattern.compile("[:/*?<>|]");
+        Pattern pattern = Pattern.compile("[:/*?<>|`;()& ]");  // added `';&()<sp> (mh) 15 Feb 2007
         String regexp = pattern.pattern();
         retval = retval.replaceAll(regexp, "_");
 
@@ -940,7 +975,73 @@ public class HTMLExport {
         }
 
         name += stripIllegalChars(frame.getName()) + ".html";
+        
+        // Added (Mike Hewett) 12 Feb 2007   - optionally put the pages in folders corresponding to the class hierarchy
+        if (config.getUseHierarchicalFolders())
+        {
+          Frame currentFrame = frame;
+          Frame lastFrame    = null;   // check for loops
+          while ((currentFrame != null) && (! config.getRootClasses().contains(currentFrame)) && (! (currentFrame == lastFrame)))
+          {
+            if (currentFrame instanceof Cls)
+            {
+              lastFrame    = currentFrame;
+              Collection supers = ((Cls)currentFrame).getDirectSuperclasses();
+              if (supers.size() == 0)
+                break;
+              else
+              {
+                lastFrame = currentFrame;
+                currentFrame = (Frame)(supers.iterator().next());  // Just use the first one
+              }
+            }
+            else if (currentFrame instanceof Instance)
+            {
+              lastFrame    = currentFrame;
+              currentFrame = ((Instance)currentFrame).getDirectType();
+            }
+            else
+              break;
+    
+//            if (config.getRootClasses().contains(currentFrame))
+//              break;
+//            else
+              name = stripIllegalChars(currentFrame.getName()) + "/" + name;  // use / for URIs instead of File.separator
+          }
+        }
+        
         return name;
+    }
+
+    /**
+     * Returns a path like "../../.." up to the root directory
+     * so we can locate the CSS file and Image files.
+     * This allows the output to be portable.
+     * @param frame the frame being output.
+     * @return a path that goes up the hierarchy to the root folder
+     */
+    private String getRootDirPath(Frame frame) 
+    {
+      // Get the path to this class and then replace all folder names with "..".
+      String name = getFrameFileName(frame);
+      
+      // name looks like: foo/bar/baz/myFrame.html
+      int pos = 0, newPos = 0;
+      while (pos < name.length())
+      {
+        newPos = name.indexOf("/", pos);  // use forward-slash for URIs instead of File.separator
+        if (newPos < 0)
+          break;
+        name = name.substring(0, pos) + ".." + name.substring(newPos);
+        pos = pos + 3;  // "../"
+      }
+        
+      // Strip off the filename
+      int index = name.lastIndexOf("/") + 1;
+      if (index >= 0)
+        name = name.substring(0, index);  // include the separator
+      
+      return name;
     }
 
     private String buildDateString() {
@@ -1049,3 +1150,4 @@ public class HTMLExport {
         }
     }
 }
+

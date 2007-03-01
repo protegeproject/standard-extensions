@@ -10,7 +10,8 @@ public class ExportConfiguration {
     private boolean showInstances = false;
     private boolean sortSubclasses = false;
     private boolean useNumbering = false;
-
+    private boolean useHierarchicalFolders = false;
+    
     private ArrayList rootClasses = new ArrayList();
     private ArrayList slotsToDisplay = new ArrayList();
     private ArrayList facetsToDisplay = new ArrayList();
@@ -118,5 +119,25 @@ public class ExportConfiguration {
         String s = "";
         if (project != null) { s = project.getName(); }
         return s;
+    }
+
+    // (MikeHewett) 12 Feb 2007
+    /**
+     * @return true if the output should be organized in hierarchical folders.  
+     * Use flat folders otherwise.
+     */
+    public boolean getUseHierarchicalFolders()
+    {
+    	return useHierarchicalFolders;
+    }
+
+    // (MikeHewett) 12 Feb 2007
+    /**
+     * @param state true if the output should be organized in hierarchical 
+     * folders.  Uses flat folders otherwise.
+     */
+    public void setUseHierarchicalFolders(boolean state)
+    {
+    	useHierarchicalFolders = state;
     }
 }
