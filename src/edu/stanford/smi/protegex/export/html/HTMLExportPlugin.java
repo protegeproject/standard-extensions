@@ -1,14 +1,13 @@
 package edu.stanford.smi.protegex.export.html;
 
-import java.awt.*;
-import java.util.Collection;
+import java.awt.Dimension;
+import java.awt.Window;
+import javax.swing.JComponent;
+import javax.swing.SwingUtilities;
 
-import javax.swing.*;
-
-import edu.stanford.smi.protege.model.*;
-import edu.stanford.smi.protege.plugin.*;
-import edu.stanford.smi.protege.storage.clips.ClipsKnowledgeBaseFactory;
-import edu.stanford.smi.protege.ui.*;
+import edu.stanford.smi.protege.model.Project;
+import edu.stanford.smi.protege.plugin.ExportPlugin;
+import edu.stanford.smi.protege.ui.ProjectManager;
 
 /**
  *
@@ -27,7 +26,7 @@ public class HTMLExportPlugin implements ExportPlugin {
         if (window instanceof java.awt.Frame) {
             dialog = new HTMLExportConfigDialog((java.awt.Frame) window,
                 "HTML Export Configuration Options", true, project);
-            dialog.setSize(new Dimension(450, 500));
+            dialog.setSize(new Dimension(450, 525));
             dialog.setLocationRelativeTo(mainPanel);
             dialog.setVisible(true);
 
@@ -44,11 +43,10 @@ public class HTMLExportPlugin implements ExportPlugin {
     }
     
     public static boolean isSuitable(Project prj) {
-    	if (prj == null)
-    		return false;
+    	if (prj == null) return false;
+    	
         String factoryName = prj.getKnowledgeBaseFactory().getClass().getName();
         return factoryName.indexOf(".owl.") == -1;
-      // return (prj != null && prj.getKnowledgeBaseFactory() instanceof ClipsKnowledgeBaseFactory);
     }
 
     public void dispose() {

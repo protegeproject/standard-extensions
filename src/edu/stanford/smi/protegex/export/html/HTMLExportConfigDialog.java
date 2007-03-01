@@ -11,7 +11,6 @@ import java.io.File;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -47,6 +46,7 @@ public class HTMLExportConfigDialog extends JDialog {
     JCheckBox numberInstancesCheckbox = new JCheckBox("Use numbering for instance lists");
     JCheckBox showInstancesCheckbox = new JCheckBox("Show Instances");
     JCheckBox sortSubclassesCheckbox = new JCheckBox("Sort Subclasses");
+    JCheckBox useHierarchicalFoldersCheckbox = new JCheckBox("Use hierarchical folder structure"); // (MikeHewett) 12 Feb 2007
     JComboBox configNamesComboBox;
     JPanel configButtonPanel = new JPanel(new FlowLayout());
     JPanel customCodePanel = new JPanel();
@@ -432,22 +432,35 @@ public class HTMLExportConfigDialog extends JDialog {
         c.insets = new Insets(5, 5, 5, 0);
         generalPanel.add(showInstancesCheckbox, c);
 
-	    // sortSubclasses check box
-	    sortSubclassesCheckbox.setSelected(true);
-	    c.gridx = 0;
-	    c.gridy = 5;
-	    c.gridwidth = 1;
-	    c.gridheight = 1;
-	    c.weightx = 0.0; // fill horizontal space
-	    c.weighty = 0.0; // fill vertical space
-	    c.anchor = GridBagConstraints.WEST;
-	    c.fill = GridBagConstraints.NONE;
-	    c.insets = new Insets(0, 5, 5, 0);
-	    generalPanel.add(sortSubclassesCheckbox, c);
+        // sortSubclasses check box
+        sortSubclassesCheckbox.setSelected(true);
+        c.gridx = 0;
+        c.gridy = 5;
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        c.weightx = 0.0; // fill horizontal space
+        c.weighty = 0.0; // fill vertical space
+        c.anchor = GridBagConstraints.WEST;
+        c.fill = GridBagConstraints.NONE;
+        c.insets = new Insets(0, 5, 5, 0);
+        generalPanel.add(sortSubclassesCheckbox, c);
+
+        // useHierarchicalFolders check box         (MikeHewett) 12 Feb 2007
+        useHierarchicalFoldersCheckbox.setSelected(false);
+        c.gridx = 0;
+        c.gridy = 6;
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        c.weightx = 0.0; // fill horizontal space
+        c.weighty = 0.0; // fill vertical space
+        c.anchor = GridBagConstraints.WEST;
+        c.fill = GridBagConstraints.NONE;
+        c.insets = new Insets(0, 5, 5, 0);
+        generalPanel.add(useHierarchicalFoldersCheckbox, c);
 
 		// numberInstances check box
         c.gridx = 0;
-        c.gridy = 6;
+        c.gridy = 7;   // (MikeHewett) 12 Feb 2007  modified from 6 to 7 due to inserting a new element above.
         c.gridwidth = 1;
         c.gridheight = 1;
         c.weightx = 0.0; // fill horizontal space
@@ -623,6 +636,13 @@ public class HTMLExportConfigDialog extends JDialog {
         sortSubclasses.appendChild(text);
         config.appendChild(sortSubclasses);
 
+        // (MikeHewett) 12 Feb 2007
+        Node useHierarchicalFolders = document.createElement("hierarchical.folders");
+        b = new Boolean(useHierarchicalFoldersCheckbox.isSelected());
+        text = document.createTextNode(b.toString());
+        useHierarchicalFolders.appendChild(text);
+        config.appendChild(useHierarchicalFolders);
+
         Node useNumbering = document.createElement("use.numbering");
         b = new Boolean(numberInstancesCheckbox.isSelected());
         text = document.createTextNode(b.toString());
@@ -718,8 +738,9 @@ public class HTMLExportConfigDialog extends JDialog {
     public ExportConfiguration getExportConfiguration() {
         ExportConfiguration config = new ExportConfiguration();
 
-		config.setShowInstances(showInstancesCheckbox.isSelected());
+	    config.setShowInstances(showInstancesCheckbox.isSelected());
         config.setSortSubclasses(sortSubclassesCheckbox.isSelected());
+        config.setUseHierarchicalFolders(useHierarchicalFoldersCheckbox.isSelected());  // (MikeHewett) 12 Feb 2007
         config.setUseNumbering(numberInstancesCheckbox.isSelected());
         config.setOutputDir(outputDirComponent.getPath());
         config.setHeaderPath(headerComponent.getPath());
@@ -772,6 +793,7 @@ public class HTMLExportConfigDialog extends JDialog {
         saveButton.setEnabled(false);
         showInstancesCheckbox.setSelected(true);
         sortSubclassesCheckbox.setSelected(true);
+        useHierarchicalFoldersCheckbox.setSelected(false);   // (MikeHewett) 12 Feb 2007
         numberInstancesCheckbox.setSelected(false);
         outputDirComponent.setPath(SystemUtilities.getUserDirectory());
         headerComponent.setPath(prefix + "header.html");
@@ -848,6 +870,19 @@ public class HTMLExportConfigDialog extends JDialog {
                 }
                 else {
                     sortSubclassesCheckbox.setSelected(false);
+                }
+            }
+
+            // (MikeHewett) 12 Feb 2007
+            xpath = "/html.export.configurations/configuration[name=\"" + configName + "\"]/hierarchical.folders";
+            result = XPathAPI.selectSingleNode(document, xpath);
+            if (result != null) {
+                value = XPathAPI.eval(result, "string()");
+                if (value.str().equals("true")) {
+                    useHierarchicalFoldersCheckbox.setSelected(true);
+                }
+                else {
+                    useHierarchicalFoldersCheckbox.setSelected(false);
                 }
             }
 
@@ -957,3 +992,4 @@ public class HTMLExportConfigDialog extends JDialog {
         }
     }
 }
+
