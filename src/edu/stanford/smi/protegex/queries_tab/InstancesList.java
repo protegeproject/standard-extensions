@@ -1,36 +1,43 @@
 package edu.stanford.smi.protegex.queries_tab;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.io.File;
+import java.io.PrintWriter;
+import java.io.Writer;
 import java.util.*;
-import java.util.logging.*;
+import java.util.logging.Level;
 
-import javax.swing.*;
-import javax.swing.event.*;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JScrollPane;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
-import edu.stanford.smi.protege.action.*;
+import edu.stanford.smi.protege.action.ReferencersAction;
 import edu.stanford.smi.protege.model.*;
-import edu.stanford.smi.protege.model.Frame;
-import edu.stanford.smi.protege.resource.*;
-import edu.stanford.smi.protege.ui.*;
+import edu.stanford.smi.protege.resource.Icons;
+import edu.stanford.smi.protege.resource.ResourceKey;
+import edu.stanford.smi.protege.ui.DisplayUtilities;
+import edu.stanford.smi.protege.ui.ListFinder;
 import edu.stanford.smi.protege.util.*;
 
 /**
- * 
- * TODO Class Comment
- * 
  * @author Qi Li
  * @author Tania Tudorache
  * @author Daniel Schober
+ * 
+ * April 27, 2007 - Fixed a bug in the addInstance method that was preventing
+ * the tab delimiters from being output properly in the export text file.  
+ * Also fixed deprecation warnings.  Jennifer Vendetti (vendetti@stanford.edu).
  */
 
 public class InstancesList extends SelectableContainer implements Disposable {
-    private static final String EXPORT_FILENAME = "protege_query_results.txt";
-    private SelectableList itsList;
-    private Project itsProject;
+	private static final String EXPORT_FILENAME = "protege_query_results.txt";
 
+	private Project itsProject;
     private LabeledComponent c;
+    private SelectableList itsList;
 
     public InstancesList(Project project) {
         itsProject = project;
@@ -89,12 +96,14 @@ public class InstancesList extends SelectableContainer implements Disposable {
     }
 
     public void onSelectionChange() {
-        // Log.enter(this, "onSelectionChange");
         boolean editable = isSelectionEditable();
         ComponentUtilities.setDragAndDropEnabled(itsList, editable);
     }
-
-    // This is the part of code which is different from directInstancesList
+    
+    /**
+     * 
+     * This is the part of code which is different from directInstancesList
+     */
     public void setInstances(Collection instances) {
         if (instances == null) {
             getModel().setValues(new ArrayList());
@@ -103,41 +112,44 @@ public class InstancesList extends SelectableContainer implements Disposable {
         getModel().setValues(instances);
     }
 
-    //	New createExportAction Method (when Export-Button is pressed)...
+    /**
+     * 
+     * New createExportAction Method (when Export-Button is pressed).
+     */
     private Action createExportAction() {
-        //		 A new Icon (Exp.gif in recources) was designed and the Method
-        // getExpIcon() was added to Icons.java in resources
-        return new AbstractAction("Export Slot Values to " + EXPORT_FILENAME, Icons
-                .getQueryExportIcon()) {
-            public void actionPerformed(ActionEvent e) {
+		return new AbstractAction("Export Slot Values to " + EXPORT_FILENAME, 
+								  Icons.getQueryExportIcon()) {
 
-                //find out all the slots except system slots
-                HashSet slots = new HashSet();
-                Iterator j = itsProject.getKnowledgeBase().getSlots().iterator();
-                while (j.hasNext()) {
-                    // only domain-specific-, not the system-slots
-                    Slot s = (Slot) j.next();
-                    if (!s.isSystem())
-                        slots.add(s);
-                }
-                //Show Util Window for multiple Slot selection
-                Collection slotsToExport = DisplayUtilities.pickSlots(InstancesList.this, slots,
-                        "Pick slots to export (multiple selection)");
-                //                System.out.println("Slots to export: " + slotsToExport);
+			public void actionPerformed(ActionEvent e) {
+				// Strip out system slots
+				HashSet<Slot> slots = new HashSet<Slot>();
+				Iterator j = itsProject.getKnowledgeBase().getSlots().iterator();
+				while (j.hasNext()) {
+					Slot s = (Slot) j.next();
+					if (!s.isSystem()) {
+						slots.add(s);
+					}
+				}
 
-                File file = new File(itsProject.getProjectDirectoryFile(), EXPORT_FILENAME);
-                Writer ausgabestrom = FileUtilities.createBufferedWriter(file);
-                // filename
-                if (ausgabestrom == null) {
-                    Log.getLogger().log(Level.WARNING, "Unable to open output file.");
-                } else {
-                    printResults(ausgabestrom, getModel().getValues(), slotsToExport);
-                }
-            }
-        };
-    }
+				// Show util window for multiple slot selection
+				Collection slotsToExport = DisplayUtilities.pickSlots(InstancesList.this, 
+						slots, "Pick slots to export (multiple selection)");
+				
+				File file = new File(new File(itsProject.getProjectDirectoryURI()), EXPORT_FILENAME);
+				Writer ausgabestrom = FileUtilities.createBufferedWriter(file);
 
-	private static void printResults(Writer writer, Collection instances, Collection slots) {
+				// Filename
+				if (ausgabestrom == null) {
+					Log.getLogger().log(Level.WARNING, "Unable to open output file.");
+				} else {
+					printResults(ausgabestrom, getModel().getValues(), slotsToExport);
+				}
+			}
+		};
+	}
+
+	private static void printResults(Writer writer, Collection instances, 
+									 Collection slots) {
 	    PrintWriter output = new PrintWriter(writer);
 	    Iterator i = instances.iterator();
 	    while (i.hasNext()) {
@@ -147,37 +159,56 @@ public class InstancesList extends SelectableContainer implements Disposable {
 	    output.close();
 	}
 	
-	private static void addInstance(PrintWriter writer, Instance instance, Collection slots) {
-        //for current Instance write in tab delim txt file:
+	private static void addInstance(PrintWriter writer, Instance instance, 
+									Collection slots) {
         StringBuffer buffer = new StringBuffer();
+
+        // Export the browser text for the current instance.
         buffer.append(instance.getBrowserText());
         buffer.append("\t");
-        addValues(buffer, instance.getDirectTypes());
-        buffer.append("\t");
-        Iterator i = slots.iterator();
+        
+        // Export the direct types for the current instance.
+        Collection directTypes = instance.getDirectTypes();
+        Iterator i = directTypes.iterator();
         while (i.hasNext()) {
-            Slot slot = (Slot) i.next();
-            Collection values = instance.getOwnSlotValues(slot);
-            addValues(buffer, values);
+        	Cls directType = (Cls) i.next();
+        	buffer.append(directType.getBrowserText());
+        	if (i.hasNext()) {
+        		buffer.append("\t");
+        	}
         }
+        
+        // Export the own slot values for each slot attached to the 
+        // current instance.
+        if (!slots.isEmpty()) { 
+
+        	// Loop through slots attached to instance.
+        	Iterator j = slots.iterator();
+            while (j.hasNext()) {
+            	Slot slot = (Slot) j.next();
+
+            	Collection values = instance.getOwnSlotValues(slot);
+            	if (!values.isEmpty()) {
+            		buffer.append("\t");
+            	}
+            	
+            	// Loop through values for particular slot.
+            	Iterator k = values.iterator();
+            	while (k.hasNext()) {
+            		Object value = k.next();
+            		if (value instanceof Frame) {
+            			Frame frame = (Frame) value;
+            			value = frame.getBrowserText();            		
+            		}
+            		buffer.append(value);
+            		
+            		if (k.hasNext()) {
+            			buffer.append("\t");
+            		}
+            	}
+            }
+        }
+        
         writer.println(buffer.toString());
-	}
-	
-	private static void addValues(StringBuffer buffer, Collection values) {
-	    boolean isFirst = true;
-	    Iterator i = values.iterator();
-	    while (i.hasNext()) {
-	        Object value = i.next();
-	        if (isFirst) {
-	            isFirst = false;
-	        } else {
-	            buffer.append('|');
-	        }
-	        if (value instanceof Frame) {
-	            Frame frameValue = (Frame) value;
-	            value = frameValue.getBrowserText();
-	        }
-	        buffer.append(value);
-	    }
 	}
 }

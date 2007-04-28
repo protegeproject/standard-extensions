@@ -28,7 +28,6 @@ public class SearchWidget extends JPanel {
 
     private SlotValueWidget searchObject;
     private Vector searchObjects; // a vector of slotvaluewidget
-    private int activeIndex; // indicate which one is be shown
 
     private boolean isReady; // whether the input is ready
 
@@ -302,7 +301,6 @@ public class SearchWidget extends JPanel {
 
     private void initialize() {
         searchObjects = new Vector();
-        activeIndex = -1;
         isReady = true;
         searchStyle = 1; // default: search with children
 
@@ -615,7 +613,6 @@ public class SearchWidget extends JPanel {
     private void setUpWidget(String slotType) {
 
         if (slotType.equals("null")) {
-            activeIndex = 2;
             updateWidget(2);
             return;
         }
@@ -623,7 +620,6 @@ public class SearchWidget extends JPanel {
         for (int i = 0; i < searchObjects.size(); i++) {
             SlotValueWidget widget = (SlotValueWidget) searchObjects.elementAt(i);
             if (widget.getLabel().equalsIgnoreCase(slotType)) {
-                activeIndex = i;
                 updateWidget(i);
                 return;
             }
