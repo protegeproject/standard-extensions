@@ -5,7 +5,6 @@ import java.util.*;
 import edu.stanford.smi.protege.model.*;
 
 public class MatchInstances {
-   private Cls selection;
    private boolean matchOption;
    private Vector widgets;
    private QueriesTab itsTab;
@@ -20,7 +19,6 @@ public class MatchInstances {
 
     public MatchInstances(QueriesTab tab, Cls cls, boolean o, Vector widgets) {
         itsTab = tab;
-        selection = cls;
         matchOption = o;
         this.widgets = widgets;
     }

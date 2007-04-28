@@ -1,13 +1,14 @@
 package edu.stanford.smi.protegex.queries_tab.toolbox;
 
-import java.net.*;
-import java.util.*;
+import java.util.ListIterator;
+import java.util.StringTokenizer;
+import java.util.Vector;
 
-import javax.swing.*;
-
-import edu.stanford.smi.protege.model.*;
-import edu.stanford.smi.protege.util.*;
-import edu.stanford.smi.protegex.queries_tab.*;
+import edu.stanford.smi.protege.model.Cls;
+import edu.stanford.smi.protege.model.Instance;
+import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protege.model.ValueType;
+import edu.stanford.smi.protegex.queries_tab.SearchWidget;
 
 public final class Helper {
 
@@ -317,22 +318,5 @@ public final class Helper {
             i++;
         }
         return result;
-    }
-
-    /** Make the icon from the specified path. Return the imageicon. */
-    private static ImageIcon loadIcon(String path) {
-        ImageIcon icon = null;
-        URL url = Helper.class.getResource(path);
-
-        if (url != null) {
-            icon = new ImageIcon(url);
-            if (icon.getIconWidth() == -1) {
-                Log.error("failed to load", Helper.class, "loadIcon", path);
-            }
-        }
-        if (icon == null) {
-            icon = null;
-        }
-        return icon;
     }
 } // end of class
