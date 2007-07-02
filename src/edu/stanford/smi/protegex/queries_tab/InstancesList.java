@@ -10,6 +10,7 @@ import java.util.logging.Level;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.JFileChooser;
 import javax.swing.JScrollPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -33,8 +34,7 @@ import edu.stanford.smi.protege.util.*;
  */
 
 public class InstancesList extends SelectableContainer implements Disposable {
-	private static final String EXPORT_FILENAME = "protege_query_results.txt";
-
+	
 	private Project itsProject;
     private LabeledComponent c;
     private SelectableList itsList;
@@ -117,13 +117,13 @@ public class InstancesList extends SelectableContainer implements Disposable {
      * New createExportAction Method (when Export-Button is pressed).
      */
     private Action createExportAction() {
-		return new AbstractAction("Export Slot Values to " + EXPORT_FILENAME, 
-								  Icons.getQueryExportIcon()) {
+		return new AbstractAction("Export Slot Values to file", Icons.getQueryExportIcon()) {
 
 			public void actionPerformed(ActionEvent e) {
 				// Strip out system slots
 				HashSet<Slot> slots = new HashSet<Slot>();
-				Iterator j = itsProject.getKnowledgeBase().getSlots().iterator();
+				Iterator j = itsProject.getKnowledgeBase().getSlots()
+						.iterator();
 				while (j.hasNext()) {
 					Slot s = (Slot) j.next();
 					if (!s.isSystem()) {
@@ -132,23 +132,61 @@ public class InstancesList extends SelectableContainer implements Disposable {
 				}
 
 				// Show util window for multiple slot selection
-				Collection slotsToExport = DisplayUtilities.pickSlots(InstancesList.this, 
-						slots, "Pick slots to export (multiple selection)");
-				
-				File file = new File(new File(itsProject.getProjectDirectoryURI()), EXPORT_FILENAME);
-				Writer ausgabestrom = FileUtilities.createBufferedWriter(file);
+				Collection slotsToExport = DisplayUtilities.pickSlots(InstancesList.this, slots,
+						"Select slots to export (multiple selection)");
 
-				// Filename
-				if (ausgabestrom == null) {
-					Log.getLogger().log(Level.WARNING, "Unable to open output file.");
-				} else {
-					printResults(ausgabestrom, getModel().getValues(), slotsToExport);
+				File fileToSave = null;
+
+				JFileChooser chooser = ComponentFactory.createFileChooser(
+						"Select file to export query results ",
+						"Exported result files", "csv");
+				int saveDialogResult = chooser.showSaveDialog(InstancesList.this);
+				switch (saveDialogResult) {
+				case JFileChooser.ERROR_OPTION:
+					break;
+				case JFileChooser.CANCEL_OPTION:
+					break;
+				case JFileChooser.APPROVE_OPTION:
+					fileToSave = chooser.getSelectedFile();
+					break;
+				default:
+					Assert.fail("bad result: " + saveDialogResult);
+					break;
 				}
+
+				if (fileToSave == null) {
+					return;
+				}
+
+				boolean success = false;
+				
+				try {
+					Writer outputStream = FileUtilities.createBufferedWriter(fileToSave);
+
+					if (outputStream == null) {
+						Log.getLogger().log(Level.WARNING, "Unable to open output file.");
+					} else {
+						printResults(outputStream, getModel().getValues(), slotsToExport);
+						success = true;
+					}
+
+				} catch (Exception ex) {
+					Log.getLogger().log(Level.WARNING, "Errors at writing out query results file.", ex);					
+				}
+				
+				String messageText = success ? "Query results exported successfully to:\n" + fileToSave.getAbsolutePath() :
+					"There were errors at saving query results.\n" +
+					"Please consult the console for more details.";
+				
+				ModalDialog.showMessageDialog(InstancesList.this, messageText, success ? "Export successful" : "Errors at export");
+				
 			}
 		};
 	}
+		
+	
 
-	private static void printResults(Writer writer, Collection instances, 
+	private void printResults(Writer writer, Collection instances, 
 									 Collection slots) {
 	    PrintWriter output = new PrintWriter(writer);
 	    Iterator i = instances.iterator();
