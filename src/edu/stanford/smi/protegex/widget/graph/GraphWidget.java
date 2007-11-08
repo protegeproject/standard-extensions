@@ -227,7 +227,49 @@ public class GraphWidget extends AbstractSlotWidget {
     }
 
     public void handleRemoveSelectedInstances() {
+    	JGoSelection selectedObjects = view.getSelection();
+        
+        // Shortcut.
+        if (selectedObjects.isEmpty()) return;
+    	
+    	// If the user removes a node that has a reified relation either
+        // coming into it or going out of it, we need to remove the
+        // instances associated with that relation from the slot that 
+        // the user designated to hold instances of reified relations.  This 
+    	// has to be done manually here because the call to valueChanged 
+    	// will not handle this case.
+    	ArrayList linksToRemove = new ArrayList();
+    	JGoListPosition pos = selectedObjects.getFirstObjectPos();
+        while (pos != null) {
+            JGoObject obj = selectedObjects.getObjectAtPos(pos);
+            if (obj instanceof Node) {
+                Node node = (Node) obj;
+                HashSet nodeLinks = resolveComplexLinks(node);
+                linksToRemove.addAll(nodeLinks);
+            }
+            pos = selectedObjects.getNextObjectPosAtTop(pos);
+        }
+    	
         view.deleteSelection();
+        
+        // Necessary to remove the instances in a group after looping
+        // through selected objects above.  If you call removeOwnSlotValue
+        // while looping through selected objects, it fires a setValues()
+        // call which regenerates the graph widget and you lose your
+        // group of selected objects.
+        if (!linksToRemove.isEmpty()) {
+	        String slotName = pList.getString(GraphTypes.RELATION_SLOT);
+	        if (slotName != null) {
+	            Slot relationSlot = kb.getSlot(slotName);
+	            
+	            Iterator i = linksToRemove.iterator();
+	            while (i.hasNext()) {
+	                Instance instance = (Instance) i.next();
+	                this.getInstance().removeOwnSlotValue(relationSlot, instance);
+	            }
+	        }
+        }
+        
         valueChanged();
     }
 
