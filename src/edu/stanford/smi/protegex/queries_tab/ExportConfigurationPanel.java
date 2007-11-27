@@ -24,6 +24,7 @@ import edu.stanford.smi.protege.resource.Icons;
 import edu.stanford.smi.protege.ui.DisplayUtilities;
 import edu.stanford.smi.protege.ui.FrameRenderer;
 import edu.stanford.smi.protege.util.AllowableAction;
+import edu.stanford.smi.protege.util.ApplicationProperties;
 import edu.stanford.smi.protege.util.ComponentFactory;
 import edu.stanford.smi.protege.util.ComponentUtilities;
 import edu.stanford.smi.protege.util.FileField;
@@ -170,9 +171,15 @@ public class ExportConfigurationPanel {
 		}
 	}
 	
-	private String getExportedFileName(){		
-		String projPath = kb.getProject().getProjectFilePath();
+	private String getExportedFileName(){
+		String projPath = kb.getProject().getProjectFilePath();;
 		String projName = kb.getProject().getProjectName();
+		
+		if (kb.getProject().isMultiUserClient()) {
+			//use the application directory
+			projPath = ApplicationProperties.getApplicationDirectory().getAbsolutePath();
+			projName = "query";
+		}			
 			
 		String filename = FileUtilities.replaceFileName(projPath, projName + EXPORT_FILE_PREFIX);
 			
