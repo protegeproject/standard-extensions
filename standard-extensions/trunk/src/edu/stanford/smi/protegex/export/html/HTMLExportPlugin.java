@@ -45,7 +45,7 @@ public class HTMLExportPlugin implements ExportPlugin {
     public static boolean isSuitable(Project prj) {
     	if (prj == null) return false;
     	
-        String factoryName = prj.getKnowledgeBaseFactory().getClass().getName();
+        String factoryName = prj.getKnowledgeBase().getClass().getName();
         return factoryName.indexOf(".owl.") == -1;
     }
 
