@@ -9,7 +9,7 @@
    <property name = "classes"         location = "${build}/classes"/>
    <property name = "plugins"         location = "${build}/plugins"/>
    <property name = "lib"             location = "./lib"/>
-   <property name = "plugin_dist"     value = "edu.stanford.smi.protegex.stanford_extensions"/>
+   <property name = "plugin_dist"     value = "edu.stanford.smi.protegex.standard_extensions"/>
    <property name = "pluginName"      value = "standard-extensions"/>
 
    <property name = "image.resource"  value="edu/stanford/smi/protege/resource/image"/>
