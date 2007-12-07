@@ -37,9 +37,9 @@ Tab-Widget: True
 Name: edu/stanford/smi/protegex/export/html/HTMLExportPlugin.class
 Export-Plugin: True
 
+Name: edu/stanford/smi/protegex/widget/editorpane/EditorPaneWidget.class
+Slot-Widget: True
 
-
-
-
-
+Name: edu/stanford/smi/protegex/widget/editorpane/EditorPanePlainWidget.class
+Slot-Widget: True
 
