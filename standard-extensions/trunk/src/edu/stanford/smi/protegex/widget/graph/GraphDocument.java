@@ -356,7 +356,9 @@ public class GraphDocument extends JGoDocument {
             pos = getNextObjectPosAtTop(pos);
         }
 
-        kb.getProject().setClientInformation(key, positionMap);
+        if (!positionMap.isEmpty()) {
+        	kb.getProject().setClientInformation(key, positionMap);
+        }
     }
 
     private void insertPointsIntoLink(HashMap pointMap, JGoLink link) {
