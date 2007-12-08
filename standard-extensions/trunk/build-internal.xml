@@ -74,12 +74,19 @@
 	<!-- JAR -->
 	<!-- =================================================================== -->
 	<target name = "jar" depends = "compile">
+
 		<copy todir = "${build.dest}/edu/stanford/smi/protegex/widget/uri/images">
 			<fileset dir = "${build.src}/edu/stanford/smi/protegex/widget/uri/images"/>
 		</copy>
+
 		<copy todir = "${build.dest}/edu/stanford/smi/protegex/widget/graph/images">
 			<fileset dir = "${build.src}/edu/stanford/smi/protegex/widget/graph/images"/>
 		</copy>
+
+		<copy todir = "${build.dest}/edu/stanford/smi/protegex/widget/editorpane/images">
+			<fileset dir = "${build.src}/edu/stanford/smi/protegex/widget/editorpane/images"/>
+		</copy>
+
 		<copy file = "${build.src}/edu/stanford/smi/protegex/queries_tab/toolbox/Query.gif" todir = "${build.dest}/edu/stanford/smi/protegex/queries_tab/toolbox"/>
 		<copy file = "${build.src}/edu/stanford/smi/protegex/queries_tab/toolbox/LoadQuery.gif" todir = "${build.dest}/edu/stanford/smi/protegex/queries_tab/toolbox"/>
 		<copy file = "${build.src}/edu/stanford/smi/protegex/queries_tab/toolbox/SaveQuery.gif" todir = "${build.dest}/edu/stanford/smi/protegex/queries_tab/toolbox"/>
