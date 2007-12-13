@@ -368,7 +368,7 @@ public class GraphWidget extends AbstractSlotWidget {
         // If user has added or removed values from the slot that holds
         // reified relations, update the graph widget.
         Slot slot = event.getSlot();
-        if (slot == relationSlot) {
+        if (slot.equals(relationSlot)) {
             doc.savePositionInfo();
             doc.initNodes(getValues());
         }
