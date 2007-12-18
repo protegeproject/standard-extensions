@@ -1,23 +1,51 @@
 package edu.stanford.smi.protegex.widget.graph;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.Point;
+import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.net.URL;
-import java.util.*;
-import javax.swing.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import javax.swing.ImageIcon;
+import javax.swing.JPanel;
+import javax.swing.JSplitPane;
 
-import com.nwoods.jgo.*;
+import com.nwoods.jgo.JGoBrush;
+import com.nwoods.jgo.JGoDocument;
+import com.nwoods.jgo.JGoLink;
+import com.nwoods.jgo.JGoListPosition;
+import com.nwoods.jgo.JGoObject;
+import com.nwoods.jgo.JGoPort;
+import com.nwoods.jgo.JGoSelection;
+import com.nwoods.jgo.JGoViewEvent;
+import com.nwoods.jgo.JGoViewListener;
 import com.nwoods.jgo.layout.JGoLayeredDigraphAutoLayout;
 
-import edu.stanford.smi.protege.event.*;
-import edu.stanford.smi.protege.model.*;
+import edu.stanford.smi.protege.event.FrameAdapter;
+import edu.stanford.smi.protege.event.FrameEvent;
+import edu.stanford.smi.protege.event.FrameListener;
+import edu.stanford.smi.protege.model.Cls;
+import edu.stanford.smi.protege.model.Facet;
+import edu.stanford.smi.protege.model.Instance;
+import edu.stanford.smi.protege.model.KnowledgeBase;
+import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protege.model.ValueType;
 import edu.stanford.smi.protege.resource.Icons;
 import edu.stanford.smi.protege.resource.LocalizedText;
 import edu.stanford.smi.protege.resource.ResourceKey;
 import edu.stanford.smi.protege.ui.DisplayUtilities;
-import edu.stanford.smi.protege.util.*;
-import edu.stanford.smi.protege.widget.*;
+import edu.stanford.smi.protege.util.AddAction;
+import edu.stanford.smi.protege.util.AllowableAction;
+import edu.stanford.smi.protege.util.CreateAction;
+import edu.stanford.smi.protege.util.LabeledComponent;
+import edu.stanford.smi.protege.util.ModalDialog;
+import edu.stanford.smi.protege.util.PropertyList;
+import edu.stanford.smi.protege.widget.AbstractSlotWidget;
+import edu.stanford.smi.protege.widget.WidgetConfigurationPanel;
 
 public class GraphWidget extends AbstractSlotWidget {
     private JPanel mainPanel = new JPanel(new BorderLayout(0, 2));
@@ -75,6 +103,9 @@ public class GraphWidget extends AbstractSlotWidget {
 
         if (isDesignTime()) {
             view.getDocument().setModifiable(false);
+            view.setEnabled(false);
+            palette.getDocument().setModifiable(false);
+            palette.setEnabled(false);
         }
 
         // Populate the split pane.
@@ -101,10 +132,7 @@ public class GraphWidget extends AbstractSlotWidget {
 
         if (!isDesignTime()) {
             if (!docInitialized) {
-                doc = new GraphDocument(this);
-                doc.initNodes(currentValues);
-                view.setDocument(doc);
-                docInitialized = true;
+                initGraphDocument(currentValues);
             }
         }
     }
@@ -113,16 +141,30 @@ public class GraphWidget extends AbstractSlotWidget {
         if (!isDesignTime()) {
             currentValues = c;
             if (view.isShowing()) {
-                doc = new GraphDocument(this);
-                doc.initNodes(c);
-                view.setDocument(doc);
-                docInitialized = true;
+            	initGraphDocument(c);
             }
             else {
                 // Need to initialize document in addNotify instead.
                 docInitialized = false;
             }
         }
+    }
+    
+    public void initGraphDocument(Collection c) {
+        doc = new GraphDocument(this);
+        doc.initNodes(c);
+        view.setDocument(doc);
+        
+        // Don't allow modifications if this is an included instance.
+        Instance instance = getInstance();
+        if (instance != null) {
+        	if (instance.isIncluded()) {
+        		doc.setModifiable(false);
+                palette.getDocument().setModifiable(false);
+        	}
+        }
+        
+        docInitialized = true;
     }
 
     public void setInstance(Instance instance) {
@@ -514,28 +556,42 @@ public class GraphWidget extends AbstractSlotWidget {
     }
 
     public void processViewChange(JGoViewEvent e) {
-        //System.out.println("JGoViewEvent flag is: " + e.getFlags());
-        //System.out.println("JGoViewEvent hint is: " + e.getHint());
-        //System.out.println("");
+    	int hint = e.getHint();
 
-        if (e.getHint() == JGoViewEvent.SELECTION_GAINED) {
+    	// BEGIN --------------------------------------------------------------
+    	/* No documentation about why this code block was originally added.  
+    	 * Essentially, it disables/enables the "remove" button on the button 
+    	 * panel when a user selects/unselects a complex link in the view.  
+    	 * Not sure why this was a requirement.  Perhaps because instances 
+    	 * that are associated with complex links are stored in a separate 
+    	 * slot value called the "relation slot".  They do not belong to the 
+    	 * set of values for the current instance.
+    	 */
+    	if (hint == JGoViewEvent.SELECTION_GAINED) {
             if (isLinkInSelection() && doc.isModifiable()) {
                 removeSelectedInstancesAction.setEnabled(false);
             }
-        }
+        } else if (hint == JGoViewEvent.SELECTION_LOST) {
+        	boolean linkSelected = isLinkInSelection();
+        	boolean modifiable = doc.isModifiable();
+        	boolean included = false;
 
-        if (e.getHint() == JGoViewEvent.SELECTION_LOST) {
-            if (!isLinkInSelection() && doc.isModifiable()) {
-                removeSelectedInstancesAction.setEnabled(true);
+        	Instance instance = getInstance();
+        	if (instance != null) {
+        		included = instance.isIncluded();
+        	}
+        	
+        	if ((!linkSelected) && (modifiable) && (!included)) {
+               	removeSelectedInstancesAction.setEnabled(true);
             }
         }
+    	//END -----------------------------------------------------------------
 
         /**
-         * @todo See if we can call savePositionInfo() on a subset of view
-         * change events instead of all of them.
+         * @todo Only call savePositionInfo() on a subset of change events. 
          */
         if (doc != null) {
-            doc.savePositionInfo();
+        	doc.savePositionInfo();
         }
     }
 
