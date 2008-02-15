@@ -246,19 +246,26 @@ public class GraphWidget extends AbstractSlotWidget {
         if (slot != null) {
             int xPos = view.getGridOrigin().x + 10;
             int yPos = view.getGridOrigin().y + 10;
-
-            Collection instances = DisplayUtilities.pickInstances(this,
-                getKnowledgeBase(), cls.getTemplateSlotAllowedClses(slot));
+            
+            Collection instances = DisplayUtilities.pickInstances(this, 
+            					       getKnowledgeBase(), 
+            					       cls.getTemplateSlotAllowedClses(slot));
             Iterator i = instances.iterator();
             while (i.hasNext()) {
                 Instance instance = (Instance) i.next();
 
-                // Add new node to diagram.
+                // Add new node to view.
                 String name = instance.getDirectType().getName();
                 Node node = makeNewNode(name, new Point(xPos, yPos));
                 node.setInstance(instance);
                 node.setText(instance.getBrowserText());
                 node.setSize(GraphTypes.NODE_WIDTH, GraphTypes.NODE_HEIGHT);
+                
+                // Fix for bug reported by Samson where nodes were being 
+                // added behind the palette (thus, invisible to the user, 
+                // appearing as if nothing had actually been added to the 
+                // graph).
+                node.setTopLeft(xPos, yPos);
 
                 doc.addObjectAtTail(node);
                 xPos = xPos + 10;
