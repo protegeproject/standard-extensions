@@ -1,5 +1,6 @@
 package edu.stanford.smi.protegex.widget.editorpane;
 
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -13,7 +14,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.accessibility.AccessibleHypertext;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.JEditorPane;
+import javax.swing.KeyStroke;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Element;
@@ -41,11 +45,12 @@ import edu.stanford.smi.protege.util.SystemUtilities;
  * @author Vivek Tripathi (vivekyt@stanford.edu)
  *
  */
+
 public class EditorPaneLinkDetector extends JEditorPane implements Disposable {
 	
 	private static final long serialVersionUID = 6879261696169758008L;
 	
-	private final static String ONTOLOGY_COMPONENT_LINK_PREFIX = "link@";
+	private final static String ONTOLOGY_COMPONENT_LINK_PREFIX = "@";
 	
 	private final static int EDITOR_PANE_BROWSER_TEXT_DEFAULT_FRAME_LIMIT = 10000;
 	private final static String EDITOR_PANE_BROWSER_TEXT_FRAME_LIMIT_PROPERTY = "editor.pane.browsertext.frame.limit";
@@ -53,15 +58,25 @@ public class EditorPaneLinkDetector extends JEditorPane implements Disposable {
 	
 	private final int KBNoOfFrames;
 	private String linkActive;
-
-		
+	private boolean editable;
+	private boolean detectEnter;
+	
 	public String getLinkActive() {
 		return linkActive;
 	}
 	
-	private void internalLinkClicked(String name){
+	public void addText(String s) {
+		String old = getText();
+		int addIndex = old.indexOf("</body>") - 1;
+		String toadd1 = s.substring(0, s.indexOf("<html>") - 1);
+		String toadd2 = s.substring(s.indexOf("<body>") + "<body>".length() + 1, s.indexOf("</body>") -1 );
+		toadd2 = toadd2.replaceFirst("<p style=\"margin-top: 0\">", "");
+		String text = old.substring(0, addIndex) + "<p style=\"margin-top: 0\">" + toadd1 + toadd2 + old.substring(addIndex);
+		setText(text);
 		
-		//System.out.println("===Internal link clicked for Symbol: "+name);
+	}
+
+	private void internalLinkClicked(String name){
 		
 		Project p = ProjectManager.getProjectManager().getCurrentProject();
         KnowledgeBase kb = p.getKnowledgeBase();
@@ -76,8 +91,6 @@ public class EditorPaneLinkDetector extends JEditorPane implements Disposable {
 	        while (i.hasNext()) 
 	        {
 	            Instance frame = (Instance) i.next();
-	  //          System.out.println("Comparing: "+name+" with: "+frame.getBrowserText());
-
 	            if(frame.getBrowserText().equalsIgnoreCase(name))
 	            {
 	            	kb.getProject().show(frame);
@@ -88,14 +101,11 @@ public class EditorPaneLinkDetector extends JEditorPane implements Disposable {
 	    else
 	    { // works for classes, slots but instances actual name have to be given 
 	    	Instance frame = kb.getInstance(name);
-			if (frame != null) 
-			{
+			if (frame != null) {
 				kb.getProject().show(frame);
 				return;
-			}
-				
-	    }
-	        	
+			}				
+	    }	        	
 	                	
         ModalDialog.showMessageDialog(null, "Could not find entity with name: " + name);
 	}
@@ -132,25 +142,17 @@ public class EditorPaneLinkDetector extends JEditorPane implements Disposable {
 			else if(linkActive.contains("ftp://"))
 			{
 				str = linkActive;
-				try{
-				//	System.out.println("trying to launch explorer: "+str);
+				try {
 					BrowserLauncher.openURL(str);
-				//	Runtime.getRuntime().exec("explorer "+str);
-					
 				}
-				catch (IOException e1)
-				{
-					;
+				catch (IOException e1) {
+					//do nothing
 				}
 			}
-			else{
-				
-				if(linkActive.contains("mailto:") || linkActive.contains("http://") || linkActive.contains("file:/"))
-				{
+			else {				
+				if(linkActive.contains("mailto:") || linkActive.contains("http://") || linkActive.contains("file:/")) {
 					str = linkActive;
-				}
-				else
-				{
+				} else {
 					str = "http://"+linkActive;
 				}
 		
@@ -159,7 +161,8 @@ public class EditorPaneLinkDetector extends JEditorPane implements Disposable {
 				// Runtime.getRuntime().exec(str);
 				SystemUtilities.showHTML(str);
 			}
-			setEditable(true);
+			if(editable)
+				setEditable(true);
 			}
 		}
 	};
@@ -187,7 +190,7 @@ public class EditorPaneLinkDetector extends JEditorPane implements Disposable {
 								   // where mouse pointer is currently
 				setToolTipText(null);
 				linkActive = null;
-				if (!isEditable())
+				if (!isEditable() && editable)
 					setEditable(true);
 				return;
 				
@@ -197,13 +200,8 @@ public class EditorPaneLinkDetector extends JEditorPane implements Disposable {
 			// description of this particular link action.
 			// We save it in linkDesc.
 			
-			String linkDesc = accText.getLink(linkIndex)
-					.getAccessibleActionDescription(0);
+			String linkDesc = accText.getLink(linkIndex).getAccessibleActionDescription(0);
 
-			String toolTipText = "<html><body style='margin: 3'>"
-					+ linkDesc
-					+ "<br><b>Click to follow link</b></body></html>";
-			
 			//  here we make linkActive as the link on which mouse pointer
 			// is moved. This linkActive is then used in mouseclick listener
 			
@@ -213,7 +211,6 @@ public class EditorPaneLinkDetector extends JEditorPane implements Disposable {
 			// and also Change mouse pointer to 'hand' 
 			// when it is moved over a hyperlink
 			
-			setToolTipText(toolTipText);
 			if (isEditable())
 				setEditable(false);
 		}
@@ -229,8 +226,12 @@ public class EditorPaneLinkDetector extends JEditorPane implements Disposable {
 
 
 	public EditorPaneLinkDetector() {
-
-        
+		this(true, true);
+	}
+	
+	public EditorPaneLinkDetector(boolean edit, boolean detectent) {
+		this.detectEnter = detectent;
+		this.editable = edit;
 		linkActive = null;
 		HTMLEditorKit htmlkit = new HTMLEditorKit();
 
@@ -250,10 +251,21 @@ public class EditorPaneLinkDetector extends JEditorPane implements Disposable {
 		setDocument(doc);
 		addMouseListener(ml);
 		addMouseMotionListener(mml);
+	
 		Project p = ProjectManager.getProjectManager().getCurrentProject();
         KnowledgeBase kb = p.getKnowledgeBase();
 		KBNoOfFrames = kb.getFrameCount(); 
-			
+		setEditable(editable);
+		
+		if(!detectEnter) {
+			Action doNothing = new AbstractAction() {
+			    public void actionPerformed(ActionEvent e) {
+			       //do nothing
+			    }
+			};
+			getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "doNothing");
+			getActionMap().put("doNothing", doNothing);
+		}
 	}
 
 	
@@ -268,6 +280,7 @@ public class EditorPaneLinkDetector extends JEditorPane implements Disposable {
 			// Sets the number of tokens to buffer before trying to 
 			// update the documents element structure. 
 			setTokenThreshold(100);
+			
 			// Sets the parser that is used by the methods that insert 
 			// html into the existing document, such as setInnerHTML, 
 			// and setOuterHTML. 
@@ -386,32 +399,35 @@ public class EditorPaneLinkDetector extends JEditorPane implements Disposable {
 			String text = getText(startOffset, length);
 	
 			// here we specify to the parser for the stings to parse in given text
+			// Case-insensitive matching can also be done by (?i). 
+			//"\\b" matches a word boundary
+			// matcher detects external links
 			Matcher matcher = Pattern.compile(
 					"(?i)(\\b(http://|https://|www.|ftp://|file:/|mailto:)\\S+)(\\s+)")
 					.matcher(text);
+
+			String str = "((" + ONTOLOGY_COMPONENT_LINK_PREFIX + "').+)(')";
+			// matcherInternal detects internal links
+			Matcher matcherInternal = Pattern.compile(str).matcher(text);
 			
-			Matcher matcherInternal = Pattern.compile(
-			"(?i)(\\b(" + ONTOLOGY_COMPONENT_LINK_PREFIX + "').+)(')").matcher(text);
+//			Matcher matcherInternal = Pattern.compile(
+//			"(?i)(\\b(" + ONTOLOGY_COMPONENT_LINK_PREFIX + "').+)(')").matcher(text);
 			
 			int linkfound = -1;
 			String url = null;
-			String prefix = null;
 			String endingSpaces = null;
 			
 			if (matcherInternal.find()) 
 			{
 				url = matcherInternal.group(1) + "'";
-				prefix = matcherInternal.group(2);
 				endingSpaces = "";
-	//			System.out.println("internal link found: "+url);
 				linkfound = 0;
 			}
 			else if (matcher.find()) {
-	//			System.out.println("external link found");
 				// if we find a hyperlink in given text
 				url = matcher.group(1);
-				prefix = matcher.group(2);
-				endingSpaces = matcher.group(3);
+				endingSpaces = " ";
+				//endingSpaces = matcher.group(3);
 				// Example: if user types "this is a hyperlink www.google.com"
 				// then following would be the conents of above String variables
 				// url: www.google.com prefix: www. endingSpaces:
@@ -511,3 +527,4 @@ public class EditorPaneLinkDetector extends JEditorPane implements Disposable {
 	}
 
 }
+
