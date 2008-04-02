@@ -115,7 +115,7 @@ public class NodeLabel extends JGoText {
                 if (!kb.containsFrame(getText())) {
                     myDoc.setExternalUpdate(true);
                     try {
-                        instance.setName(getText());
+                        instance = (Instance) instance.rename(getText());
                     } catch (java.lang.IllegalArgumentException e) {
                         setText(myOldText);
                         final String errorMessage = e.getMessage();

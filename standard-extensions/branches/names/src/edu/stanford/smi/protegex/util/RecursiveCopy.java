@@ -80,7 +80,7 @@ public class RecursiveCopy {
         Cls cls = instance.getDirectType();
         KnowledgeBase kb = instance.getKnowledgeBase();
         // create an instance but don't fill in the default values
-        returnValue = kb.createInstance(null, cls, false);
+        returnValue = kb.createInstance((String) null, cls, false);
         alreadyDuplicatedInstances.put(instance, returnValue);
         if (null != newInstancesCreated) {
             newInstancesCreated.add(returnValue);
