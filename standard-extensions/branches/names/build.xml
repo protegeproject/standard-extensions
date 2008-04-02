@@ -82,9 +82,10 @@
      </copy>
    </target>
 
-   <target name = "images">
+   <target name = "images" depends="checkProtegeLibsAndReport">
+     <mkdir dir="${build}/images"/>
      <unjar src="${protege.lib}" 
-            dest="${plugins}/${plugin_dist}/html_export/images">
+            dest="${build}/images">
          <patternset>
              <include name="${image.resource}/class.abstract.gif"/>
              <include name="${image.resource}/class.gif"/>
@@ -97,10 +98,14 @@
              <include name="${image.resource}/slot.inherited.overridden.gif"/>
              <include name="${image.resource}/slot.overridden.gif"/>
          </patternset>
-         <mapper type="flatten"/>
      </unjar>
      <copy todir="${plugins}/${plugin_dist}/html_export/images"
            file="./docs/ProtegeLogo.gif"/>
+     <copy todir="${plugins}/${plugin_dist}/html_export/images">
+       <fileset dir="${build}/images/edu/stanford/smi/protege/resource/image">
+         <include name="*.gif"/>
+       </fileset>
+     </copy>
    </target>
 
    <target name = "jar" depends = "compile,images">
