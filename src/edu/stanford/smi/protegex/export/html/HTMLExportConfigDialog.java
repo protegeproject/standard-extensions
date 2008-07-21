@@ -1,6 +1,11 @@
 package edu.stanford.smi.protegex.export.html;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.HeadlessException;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -8,8 +13,26 @@ import java.awt.event.ItemListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.util.*;
-import javax.swing.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.Vector;
+import java.util.logging.Level;
+
+import javax.swing.Action;
+import javax.swing.DefaultListModel;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
@@ -17,18 +40,32 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import com.sun.org.apache.xpath.internal.XPathAPI;
-import com.sun.org.apache.xpath.internal.objects.XObject;
-
-import edu.stanford.smi.protege.model.*;
-import edu.stanford.smi.protege.plugin.PluginUtilities;
-import edu.stanford.smi.protege.resource.*;
-import edu.stanford.smi.protege.ui.*;
-import edu.stanford.smi.protege.util.*;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import com.sun.org.apache.xpath.internal.XPathAPI;
+import com.sun.org.apache.xpath.internal.objects.XObject;
+
+import edu.stanford.smi.protege.model.Cls;
+import edu.stanford.smi.protege.model.Model;
+import edu.stanford.smi.protege.model.Project;
+import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protege.resource.Icons;
+import edu.stanford.smi.protege.resource.ResourceKey;
+import edu.stanford.smi.protege.ui.DisplayUtilities;
+import edu.stanford.smi.protege.ui.FrameComparator;
+import edu.stanford.smi.protege.ui.FrameRenderer;
+import edu.stanford.smi.protege.util.AddAction;
+import edu.stanford.smi.protege.util.ComponentFactory;
+import edu.stanford.smi.protege.util.ComponentUtilities;
+import edu.stanford.smi.protege.util.FileField;
+import edu.stanford.smi.protege.util.LabeledComponent;
+import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protege.util.ModalDialog;
+import edu.stanford.smi.protege.util.RemoveAction;
+import edu.stanford.smi.protege.util.SelectableList;
+import edu.stanford.smi.protege.util.SystemUtilities;
 
 /**
  *
@@ -80,32 +117,24 @@ public class HTMLExportConfigDialog extends JDialog {
     String prefix;
 
     public HTMLExportConfigDialog(java.awt.Frame owner, String title,
-                                  boolean modal, Project project)
+                                  boolean modal, Project project, File configFile)
         throws HeadlessException {
         super(owner, title, modal);
         this.project = project;
-
-        prefix = PluginUtilities.getPluginsDirectory().getPath() +
-                                                  File.separator +
-                 "edu.stanford.smi.protegex.standard_extensions" +
-                                                  File.separator +
-                                                   "html_export" +
-                                                   File.separator;
+        this.prefix = configFile.getParent() + File.separator;
 
         try {
             // Read in configuration file.
             javax.xml.parsers.DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
             javax.xml.parsers.DocumentBuilder builder = builderFactory.newDocumentBuilder();
-            document = builder.parse(prefix + "HTMLExportConfigurations.xml");
+            document = builder.parse(configFile);
 
             initializeUI();
         }
         catch(Exception e) {
-        	String errorMessage = "Export configuration file not found at:\n" + prefix + "HTMLExportConfigurations.xml"; 
-        	System.out.println(errorMessage);
-        	ModalDialog.showMessageDialog(this, errorMessage);
-            e.printStackTrace();
-        }
+        	ModalDialog.showMessageDialog(this, "There were errors at export.\nSee console for more deatils.");
+            Log.getLogger().log(Level.WARNING, "There were error at export", e);
+       }
     }
 
     private void initializeUI() throws Exception {
@@ -193,7 +222,8 @@ public class HTMLExportConfigDialog extends JDialog {
 
         configNamesEditor = (JTextField) configNamesComboBox.getEditor().getEditorComponent();
         configNamesEditor.addKeyListener(new KeyAdapter() {
-            public void keyReleased(KeyEvent e) {
+            @Override
+			public void keyReleased(KeyEvent e) {
                 configNamesEditor_keyReleased(e);
             }
         });
@@ -544,7 +574,9 @@ public class HTMLExportConfigDialog extends JDialog {
 
     public void configNamesComboBox_itemStateChanged(ItemEvent ie) {
         // Shortcut - don't care about deselection.
-        if ((ie.getStateChange()) == (ItemEvent.DESELECTED)) return;
+        if (ie.getStateChange() == ItemEvent.DESELECTED) {
+			return;
+		}
 
         String configName = (String) configNamesComboBox.getSelectedItem();
         if (configName == "Protege Default") {
@@ -569,7 +601,7 @@ public class HTMLExportConfigDialog extends JDialog {
 
     public void configNamesEditor_keyReleased(KeyEvent e) {
         String s = configNamesEditor.getText();
-        if (s.equals("Protege Default") || (s.length() == 0)) {
+        if (s.equals("Protege Default") || s.length() == 0) {
             saveButton.setEnabled(false);
             deleteButton.setEnabled(false);
         } else {
@@ -585,7 +617,7 @@ public class HTMLExportConfigDialog extends JDialog {
         try {
             NodeList results = XPathAPI.selectNodeList(document, xpath);
             for (int i = 0; i < results.getLength(); i++) {
-                Node result = (Node) results.item(i);
+                Node result = results.item(i);
                 Node parent = result.getParentNode();
                 parent.removeChild(result);
             }
@@ -717,7 +749,8 @@ public class HTMLExportConfigDialog extends JDialog {
 
     private Action createAddClsAction() {
         return new AddAction(ResourceKey.CLASS_ADD) {
-            public void onAdd() {
+            @Override
+			public void onAdd() {
                 Collection c = DisplayUtilities.pickClses(generalPanel,
                     project.getKnowledgeBase());
                 if (!c.isEmpty()) {
@@ -729,7 +762,8 @@ public class HTMLExportConfigDialog extends JDialog {
 
     private Action createRemoveClsAction() {
         return new RemoveAction(ResourceKey.CLASS_REMOVE, classesList) {
-            public void onRemove(Collection values) {
+            @Override
+			public void onRemove(Collection values) {
                 ComponentUtilities.removeListValues(classesList, values);
             }
         };
@@ -929,7 +963,7 @@ public class HTMLExportConfigDialog extends JDialog {
             // Set root classes.
             xpath = "/html.export.configurations/configuration[name=\"" + configName + "\"]/classes/class";
             NodeList results = XPathAPI.selectNodeList(document, xpath);
-            if ((results != null) && (results.getLength() > 0)) {
+            if (results != null && results.getLength() > 0) {
                 ArrayList rootClasses = new ArrayList();
                 for (int i = 0; i < results.getLength(); i++) {
                     result = results.item(i);
@@ -945,7 +979,7 @@ public class HTMLExportConfigDialog extends JDialog {
             // Set slots to export.
             xpath = "/html.export.configurations/configuration[name=\"" + configName + "\"]/slots/slot";
             results = XPathAPI.selectNodeList(document, xpath);
-            if (results != null && (results.getLength() > 0)) {
+            if (results != null && results.getLength() > 0) {
                 ArrayList slotsToExport = new ArrayList();
                 for (int i = 0; i < results.getLength(); i++) {
                     result = results.item(i);
@@ -968,7 +1002,7 @@ public class HTMLExportConfigDialog extends JDialog {
             // Set facets to export.
             xpath = "/html.export.configurations/configuration[name=\"" + configName + "\"]/facets/facet";
             results = XPathAPI.selectNodeList(document, xpath);
-            if (results != null && (results.getLength() > 0)) {
+            if (results != null && results.getLength() > 0) {
                 ArrayList facetsToExport = new ArrayList();
                 for (int i = 0; i < results.getLength(); i++) {
                     result = results.item(i);
