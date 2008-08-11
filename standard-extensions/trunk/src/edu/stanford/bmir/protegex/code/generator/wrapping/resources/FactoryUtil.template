@@ -1,0 +1,69 @@
+import java.lang.reflect.Constructor;
+import java.util.logging.Level;
+
+import edu.stanford.smi.protege.model.Cls;
+import edu.stanford.smi.protege.model.Instance;
+import edu.stanford.smi.protege.model.KnowledgeBase;
+import edu.stanford.smi.protege.plugin.PluginUtilities;
+import edu.stanford.smi.protege.util.Log;
+
+public class FactoryUtil {
+
+	public static final Class<?>[] CONSTRUCTOR_PARAMETERS = {Instance.class};
+
+	public static final String JAVA_PACKAGE_SUBSTRING_IMPL = "impl";
+	public static final String JAVA_DEFAULT_IMPL_PREFIX = "Default";
+	public static final String JAVA_PACKAGE_IMPL = FactoryUtil.class.getPackage().getName();
+	public static final String JAVA_PACKAGE_INTERFACE =
+		JAVA_PACKAGE_IMPL.substring(0, JAVA_PACKAGE_IMPL.lastIndexOf("."+ JAVA_PACKAGE_SUBSTRING_IMPL));
+
+
+	public static <X> X createJavaObject(Class<? extends X> javaImplementationClass, Instance instance) {
+	    X obj = null;
+	    try {
+	        Constructor<? extends X> constructor = javaImplementationClass.getConstructor(CONSTRUCTOR_PARAMETERS);
+	        obj = constructor.newInstance(new Object[] {instance});
+	    } catch (Exception e) {
+	        Log.getLogger().log(Level.SEVERE, "Creating Java Object failed. (Java Impl Class: " +
+	        		javaImplementationClass + ", Wrapped Protege instance: " +
+	        		instance + ")", e);
+	    }
+	    return obj;
+	}
+
+	public static <X> X createJavaObjectAs(String name, Cls cls, Class<? extends X> javaInterface) {
+		KnowledgeBase kb = cls.getKnowledgeBase();
+
+		Instance instance = kb.getInstance(name); //need more checks here
+		if (instance == null) {
+			instance = kb.createInstance(name, cls);
+		}
+
+		return createJavaObject(getJavaImplementationClass(javaInterface), instance);
+	}
+
+	public static <X> X getJavaObject(KnowledgeBase kb, String name, Class<? extends X> javaInterface) {
+		Instance instance = kb.getInstance(name);
+		if (instance == null) {
+			return null;
+		}
+
+		return createJavaObject(getJavaImplementationClass(javaInterface), instance);
+	}
+
+	public static Class<?> getJavaInterface(Cls cls) {
+		return PluginUtilities.forName(JAVA_PACKAGE_INTERFACE + "." + cls.getName());
+	}
+
+	public static Class<?> getJavaImplementationClass(Cls cls) {
+		return PluginUtilities.forName(JAVA_PACKAGE_IMPL + "." + JAVA_DEFAULT_IMPL_PREFIX + cls.getName());
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <X> Class<? extends X> getJavaImplementationClass(Class<? extends X> javaInterface) {
+		String packageName = javaInterface.getPackage().getName();
+		String className = javaInterface.getSimpleName();
+		return PluginUtilities.forName(packageName + "." + JAVA_PACKAGE_SUBSTRING_IMPL + "." + JAVA_DEFAULT_IMPL_PREFIX + className);
+	}
+
+}
