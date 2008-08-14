@@ -51,7 +51,7 @@ public abstract class AbstractWrappedInstance {
 	@SuppressWarnings("unchecked")
 	private Collection<?> getUnwrappedCollection(Collection<?> values) {
 		Collection newValues = new ArrayList();
-		for (Object value : newValues) {
+		for (Object value : values) {
 			newValues.add(getUnwrappedObject(value));
 		}
 		return newValues;
