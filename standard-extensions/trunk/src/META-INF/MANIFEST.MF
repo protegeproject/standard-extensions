@@ -43,5 +43,3 @@ Slot-Widget: True
 Name: edu/stanford/smi/protegex/widget/editorpane/EditorPanePlainWidget.class
 Slot-Widget: True
 
-Name: edu.stanford.bmir.protegex.code.generator.CodeGeneratorProjectPlugin.class
-Project-Plugin: True
