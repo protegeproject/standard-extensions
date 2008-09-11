@@ -2,38 +2,38 @@ package edu.stanford.smi.protegex.queries_tab;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
-import java.io.File;
-import java.io.PrintWriter;
-import java.io.Writer;
-import java.util.*;
-import java.util.logging.Level;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 
-import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.JFileChooser;
 import javax.swing.JScrollPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import com.sun.corba.se.spi.legacy.connection.GetEndPointInfoAgainException;
-
 import edu.stanford.smi.protege.action.ExportToCsvAction;
 import edu.stanford.smi.protege.action.ReferencersAction;
-import edu.stanford.smi.protege.model.*;
+import edu.stanford.smi.protege.model.Instance;
+import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.resource.Icons;
 import edu.stanford.smi.protege.resource.ResourceKey;
-import edu.stanford.smi.protege.ui.DisplayUtilities;
 import edu.stanford.smi.protege.ui.ListFinder;
-import edu.stanford.smi.protege.ui.ProjectManager;
-import edu.stanford.smi.protege.util.*;
+import edu.stanford.smi.protege.util.ComponentFactory;
+import edu.stanford.smi.protege.util.ComponentUtilities;
+import edu.stanford.smi.protege.util.Disposable;
+import edu.stanford.smi.protege.util.LabeledComponent;
+import edu.stanford.smi.protege.util.SelectableContainer;
+import edu.stanford.smi.protege.util.SelectableList;
+import edu.stanford.smi.protege.util.SimpleListModel;
+import edu.stanford.smi.protege.util.ViewAction;
 
 /**
  * @author Qi Li
  * @author Tania Tudorache
  * @author Daniel Schober
- * 
+ *
  * April 27, 2007 - Fixed a bug in the addInstance method that was preventing
- * the tab delimiters from being output properly in the export text file.  
+ * the tab delimiters from being output properly in the export text file.
  * Also fixed deprecation warnings.  Jennifer Vendetti (vendetti@stanford.edu).
  */
 
@@ -41,7 +41,7 @@ public class InstancesList extends SelectableContainer implements Disposable {
 	private Project itsProject;
     private LabeledComponent c;
     private SelectableList itsList;
-    
+
 
     public InstancesList(Project project) {
         itsProject = project;
@@ -72,7 +72,8 @@ public class InstancesList extends SelectableContainer implements Disposable {
 
     private Action createViewAction() {
         return new ViewAction("View Instance", this, Icons.getViewInstanceIcon()) {
-            public void onView(Object o) {
+            @Override
+			public void onView(Object o) {
                 itsProject.show((Instance) o);
             }
         };
@@ -99,13 +100,14 @@ public class InstancesList extends SelectableContainer implements Disposable {
         return isEditable;
     }
 
-    public void onSelectionChange() {
+    @Override
+	public void onSelectionChange() {
         boolean editable = isSelectionEditable();
         ComponentUtilities.setDragAndDropEnabled(itsList, editable);
     }
-    
+
     /**
-     * 
+     *
      * This is the part of code which is different from directInstancesList
      */
     public void setInstances(Collection instances) {
@@ -117,7 +119,7 @@ public class InstancesList extends SelectableContainer implements Disposable {
     }
 
     /**
-     * 
+     *
      * New createExportAction Method (when Export-Button is pressed).
      */
     private Action createExportAction() {
@@ -130,5 +132,5 @@ public class InstancesList extends SelectableContainer implements Disposable {
 		};
 	}
 
-	
+
 }
