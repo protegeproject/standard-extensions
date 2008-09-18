@@ -25,6 +25,9 @@ import edu.stanford.smi.protege.resource.Icons;
 import edu.stanford.smi.protege.ui.Finder;
 import edu.stanford.smi.protege.util.LabeledComponent;
 import edu.stanford.smi.protege.util.Log;
+import edu.stanford.smi.protege.util.SelectableList;
+import edu.stanford.smi.protege.util.SimpleStringMatcher;
+import edu.stanford.smi.protege.util.StringMatcher;
 
 public class PagedFrameList<X extends Frame> extends LabeledComponent {
     private static final long serialVersionUID = 8889044179950621525L;
@@ -33,14 +36,14 @@ public class PagedFrameList<X extends Frame> extends LabeledComponent {
     private int pageSize = 50;
     private List<X> allFrames;
     private int pageLocation;
-    private JList framesList;
+    private SelectableList framesList;
     private JButton scrollBack;
     private JButton scrollForward;
     
     public PagedFrameList(String title) {
         super(title, new JScrollPane());
         JScrollPane scrollable = (JScrollPane) getCenterComponent();
-        scrollable.setViewportView(framesList = new JList());
+        scrollable.setViewportView(framesList = new SelectableList());
         setFooterComponent(makeFooter());
     }
     
@@ -66,10 +69,11 @@ public class PagedFrameList<X extends Frame> extends LabeledComponent {
             
             @Override
             protected List<Frame> getMatches(String text, int maxMatches) {
+                StringMatcher matcher = new SimpleStringMatcher("*" + text + "*");
                 int counter = 0;
                 List<Frame> results = new ArrayList<Frame>(); 
                 for (Frame frame : allFrames) {
-                    if (frame.getBrowserText().toLowerCase().contains(text.toLowerCase())) {
+                    if (matcher.isMatch(frame.getBrowserText())) {
                         results.add(frame);
                         if (maxMatches > 0 && ++counter >= maxMatches) {
                             return results;
@@ -84,6 +88,8 @@ public class PagedFrameList<X extends Frame> extends LabeledComponent {
                 int i = allFrames.indexOf(o);
                 if (i != -1) {
                     setPageLocation(i);
+                    int selection = i - pageLocation;
+                    framesList.setSelectedIndex(selection);
                 }
             }
         });
@@ -107,7 +113,7 @@ public class PagedFrameList<X extends Frame> extends LabeledComponent {
         else if (pageSize >= allFrames.size()) {
             pageLocation = 0;
         }
-        else if (pageLocation > allFrames.size() - pageSize) {
+        else if (pageLocation >= allFrames.size()) {
             pageLocation = allFrames.size() - pageSize + 1;
         }
         this.pageLocation = pageLocation;
@@ -138,6 +144,10 @@ public class PagedFrameList<X extends Frame> extends LabeledComponent {
     public void setAllFrames(List<X> allFrames) {
         this.allFrames = allFrames;
         setPageLocation(0);
+    }
+    
+    public SelectableList getSelectableList() {
+        return framesList;
     }
     
     public static void main(String [] args) throws InterruptedException {
