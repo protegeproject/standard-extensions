@@ -28,7 +28,7 @@ public class NodeProperties extends GraphObjectProperties {
     private void initialize() {
         int red, green, blue;
 
-        // See if the user has designaged a custom display name for the
+        // See if the user has designated a custom display name for the
         // node (custom display names are used in the palette).
         customDisplayName = getStringProperty(prefix + NodePropertyNames.NODE_DISPLAY_NAME, getClsName());
 

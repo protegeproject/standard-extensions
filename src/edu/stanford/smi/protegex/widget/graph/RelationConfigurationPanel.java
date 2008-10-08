@@ -64,7 +64,7 @@ public class RelationConfigurationPanel extends JPanel {
         // See if there are any reified relations in this project.  If there
         // aren't, just show a message to that effect.
         KnowledgeBase kb = cls.getKnowledgeBase();
-        Cls metacls = kb.getCls(Model.Cls.DIRECTED_BINARY_RELATION);
+        Cls metacls = kb.getSystemFrames().getDirectedBinaryRelationCls();
         Collection subClses = metacls.getSubclasses();
 
         try {
@@ -80,7 +80,9 @@ public class RelationConfigurationPanel extends JPanel {
 
     private void jbInit_1() throws Exception {
         Font font = new Font("Dialog", Font.PLAIN, 16);
-        JTextArea text = new JTextArea("The " + cls.getName() + " class has no slots that contain reified relations (subclasses of :DIRECTED-BINARY-RELATION)");
+        JTextArea text = new JTextArea("The " + cls.getBrowserText()
+				+ " class has no slots that contain reified relations "
+				+ "(subclasses of :DIRECTED-BINARY-RELATION)");
         text.setLineWrap(true);
         text.setWrapStyleWord(true);
         text.setEditable(false);
@@ -429,7 +431,7 @@ public class RelationConfigurationPanel extends JPanel {
 
     private boolean hasRelationSuperclass(Cls cls) {
         KnowledgeBase kb = this.cls.getKnowledgeBase();
-        Cls dbrCls = kb.getCls(Model.Cls.DIRECTED_BINARY_RELATION);
+        Cls dbrCls = kb.getSystemFrames().getDirectedBinaryRelationCls();
         return (cls.hasSuperclass(dbrCls)) ? true : false;
     }
 
