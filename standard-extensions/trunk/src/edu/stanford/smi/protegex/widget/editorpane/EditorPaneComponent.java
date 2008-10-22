@@ -1,41 +1,601 @@
 package edu.stanford.smi.protegex.widget.editorpane;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Document;
+import javax.swing.text.Highlighter;
 import javax.swing.text.StyledEditorKit;
 
+import edu.stanford.smi.protege.model.Instance;
+import edu.stanford.smi.protege.model.KnowledgeBase;
+import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protege.plugin.PluginUtilities;
+import edu.stanford.smi.protege.resource.Icons;
+import edu.stanford.smi.protege.ui.ConfigureAction;
+import edu.stanford.smi.protege.ui.DisplayUtilities;
+import edu.stanford.smi.protege.ui.FrameRenderer;
+import edu.stanford.smi.protege.ui.ProjectManager;
 import edu.stanford.smi.protege.util.AllowableAction;
+import edu.stanford.smi.protege.util.BrowserLauncher;
 import edu.stanford.smi.protege.util.ComponentUtilities;
 import edu.stanford.smi.protege.util.LabeledComponent;
+
+/* 
+* @author Vivek Tripathi (vivekyt@stanford.edu)
+*
+*/
 
 public class EditorPaneComponent {
 
 	private EditorPaneLinkDetector e;
+	private boolean OWL = false;
+	private final String ChatHelpURL = "http://protegewiki.stanford.edu/index.php/HTML_Chat";
+	private final String EditorPaneHelpURL = "http://protegewiki.stanford.edu/index.php/EditorPane";
+	private final String highlightstarttag1 = "<font color=\"blue\" style=\"background-color: yellow\">";
+	private final String highlightstarttag2 = "<font style=\"background-color: yellow\" color=\"blue\">";
+	private final String highlightendtag = "</font>";
 	
 	public EditorPaneLinkDetector createEditorPaneLinkDetector(){
 		return createEditorPaneLinkDetector(true, true);
 	}
-	
+	/*
+	private MouseListener ml = new MouseAdapter() {
+		public void mouseClicked(MouseEvent e1) {
+			
+		}
+	};
+	*/
 	public EditorPaneLinkDetector createEditorPaneLinkDetector(boolean editable, boolean detectEnter){
 		e = new EditorPaneLinkDetector(editable, detectEnter);
 		e.setAutoscrolls(true);
+	//	e.addMouseListener(ml);
+		
 		return e;
 	}
 	
 	public LabeledComponent createUI(EditorPaneLinkDetector e) {
 		LabeledComponent lc = new LabeledComponent("", e, false, true);
+		/*
+		final JToggleButton bold1 = new JToggleButton();
+		bold1.addChangeListener(new ChangeListener() {
+		    public void stateChanged(ChangeEvent event) {
+		        if (bold1.isSelected()) {
+			    
+			}
+		    }
+		});
 		
+		bold = new JToggleButton("B");
+		
+		bold.addActionListener(new ActionListener() {
+		    public void actionPerformed(ActionEvent event) {
+		        if (bold.isSelected()) {
+			 
+			}
+		    }
+		});
+	//	lc.add(bold,BorderLayout.NORTH);
+	//	lc.addHeaderButton(bold.getAction());
+	 
+	 */
 		lc.addHeaderButton(getBoldAction()); 
 		lc.addHeaderButton(getItalicsAction()); 
 		lc.addHeaderButton(getUnderlineAction()); 
-		lc.addHeaderButton(getStrikeThroughAction()); 
+		lc.addHeaderButton(getStrikeThroughAction());
+		lc.addHeaderButton(getHighligherAction());
+		
+		
+	//	lc.addHeaderButton(getHelpAction());
+	//	lc.addHeaderButton(createILAction());
+	//	lc.addHeaderButton(getHTMLHighlightAction());
+	//	lc.addHeaderButton(getUnhighlightAction());
+		
+		JButton helpButton = new JButton("?");
+		
+		helpButton.addActionListener(new ActionListener() {
+		    public void actionPerformed(ActionEvent event) {
+			    	try{
+			    		BrowserLauncher.openURL(ChatHelpURL);
+			    	}
+			    	catch (IOException e1){
+			    		;
+			    	}
+		    	}
+				    
+		});
+			
+		KnowledgeBase kb = ProjectManager.getProjectManager().getCurrentProject().getKnowledgeBase();
+		String[] options1 = { "Add Internal Link To", "Class", "Property", "Individual"};
+		String[] options2 = { "Add Internal Link To",  "Class", "Slot", "Instance" };
+		JComboBox internalLinkTo;
+		if(PluginUtilities.isOWL(kb))
+		{
+			OWL = true;
+			internalLinkTo = new JComboBox(options1);	
+		}
+		else
+		{
+			OWL = false;
+			internalLinkTo = new JComboBox(options2);
+		}
+		 
+		internalLinkTo.setRenderer(new FrameRenderer() {
+			@Override
+			public void load(Object value) {
+				if (value.equals("Class")) {
+					setMainIcon(Icons.getClsIcon());
+					setMainText("Class");
+				} else if (value.equals("Slot")) {
+					setMainIcon(Icons.getSlotIcon());
+					setMainText("Slot");
+				} else if (value.equals("Instance")) {
+					setMainIcon(Icons.getInstanceIcon());
+					setMainText("Instance");
+				}
+				else if (value.equals("Property")) {
+					setMainIcon(Icons.getSlotIcon());
+					setMainText("Property");
+				} else if (value.equals("Individual")) {
+					setMainIcon(Icons.getInstanceIcon());
+					setMainText("Individual");
+				} else {
+					super.load(value);
+				}
+			}
+		}
+		);
+		
+		internalLinkTo.setSelectedIndex(0);
+		internalLinkTo.addActionListener(getAddInternalLinkActionListener());
+	
+		JComponent lc1 = new JPanel();
+			
+		lc1.add(internalLinkTo, BorderLayout.WEST);
+		lc1.add(helpButton, BorderLayout.EAST);
+		lc.setHeaderComponent(lc1,BorderLayout.WEST);
+	
+//		lc.setHeaderComponent(internalLinkTo, BorderLayout.WEST);
+//		lc.setHeaderComponent(helpButton, BorderLayout.EAST);
+		
+		
+//		lc.add(internalLinkTo, BorderLayout.BEFORE_FIRST_LINE);
+	
 		return lc;
-
 	}
 
+	protected Action createILAction() {
+        return new ConfigureAction() {
+            public void loadPopupMenu(JPopupMenu menu) {
+            //    menu.add(createSetDisplaySlotAction());
+                menu.add(createShowAllInstancesAction());
+            }
+        };
+    }
+	 protected JMenuItem createShowAllInstancesAction() {
+	        Action action = new AbstractAction("Class") {
+	            public void actionPerformed(ActionEvent event) {
+	            	KnowledgeBase kb = ProjectManager.getProjectManager().getCurrentProject().getKnowledgeBase();
+	            	Instance cls = DisplayUtilities.pickCls(e, kb, kb.getClses());
+					String linkname = cls.getName();
+			
+	            }
+	        };
+	        JMenuItem item = new JCheckBoxMenuItem(action);
+	       
+	        return item;
+	    }
+	public void setOWL(boolean o)
+	{
+		OWL = o;
+	}
+	
+	public ActionListener getAddInternalLinkActionListener()
+	{
+		return new ActionListener() {
+			public void actionPerformed(ActionEvent e1) 
+			{
+		        JComboBox cb = (JComboBox)e1.getSource();
+		        int selection = cb.getSelectedIndex();
+		        cb.setSelectedIndex(0);
+		        
+		        insertInternalLink(selection, OWL);
+		        cb.setSelectedIndex(0);
+		        e.grabFocus();
+		        	        
+	    	}
+		};
+	}
+	private void insertInternalLink(int selection, boolean isOWL)
+	{
+		String linkname = null;
+		KnowledgeBase kb = ProjectManager.getProjectManager().getCurrentProject().getKnowledgeBase();
+
+	//	if(!isOWL) //in case anything else needs to be down for OWL case)
+		//{
+			switch (selection)
+			{
+			case 0:
+				// do nothing
+				break;
+			case 3:
+				Instance instance = DisplayUtilities.pickInstance(e, kb);
+				if(instance == null)
+					return;
+				linkname = instance.getName();				
+				break;
+			case 1:
+				
+				Instance cls = DisplayUtilities.pickConcreteCls(e, kb, "Select class");
+				if(cls == null)
+					return;
+					//linkname = cls.getName();
+				linkname = cls.getBrowserText();
+				break;
+			case 2:
+				Slot slot = DisplayUtilities.pickSlot(e, kb.getSlots());
+				if(slot == null)
+					return;
+				linkname = slot.getName();
+				break;
+			}
+		//}
+		/*else
+		{			
+			switch (selection)
+			{
+			case 0:
+				// do nothing
+				break;
+			case 3:
+				OWLIndividual instance = (OWLIndividual) DisplayUtilities.pickInstance(e, kb);
+				if(instance == null)
+					return;
+				linkname = instance.getBrowserText();
+				
+				
+				break;
+			case 1:
+				
+				OWLNamedClass cls = (OWLNamedClass) DisplayUtilities.pickConcreteCls(e, kb, owlModel.getOWLThingClass().getLocalName());
+				if(cls == null)
+					return;
+					linkname = cls.getLocalName();
+				//	System.out.println(linkname);
+				break;
+			case 2:
+				DefaultRDFProperty slot = (DefaultRDFProperty) DisplayUtilities.pickSlot(e, kb.getSlots());
+				if(slot == null)
+					return;
+				linkname = slot.getLocalName();
+			//	System.out.println(linkname);
+				break;
+			}
+		}*/
+		
+		linkname = "@'"+linkname+"' ";
+		Document doc = e.getDocument();
+		try{
+			doc.insertString(e.getCaretPosition(), linkname, null);
+		} catch (BadLocationException ble) {
+			
+			return;
+		}
+		
+		
+	}
+	public AllowableAction getHTMLHighlightAction()
+	{
+		return new AllowableAction("Highlight", 
+				ComponentUtilities.loadImageIcon(EditorPaneComponent.class, "images/text_htmlhighlight.gif") , null)
+		{
+			public void actionPerformed(ActionEvent arg0) 
+			{
+				
+				try{
+					e.getDocument().insertString(e.getSelectionStart(), "--highlightstart--", null);
+					e.getDocument().insertString(e.getSelectionEnd(), "--highlightend--", null);
+				} catch (BadLocationException ble) {
+
+					return;
+				}
+
+				String text = e.getText();
+			/*	int START = text.indexOf("--highlightstart--");
+				int END = text.indexOf("--highlightend--");
+				
+				String beforeStart = text.substring(0, START);
+				String selected = text.substring(START, END);
+				String afterEnd = text.substring(END);
+				
+				if(selected.indexOf(highlightstarttag1) != -1 || selected.indexOf(highlightstarttag2) != -1)
+					SecondPresent = true;
+				*/
+				
+				String modifiedtext;
+				if(text != null)
+				{	
+					modifiedtext = insertBRForNewline(text);
+					modifiedtext = modifiedtext.replaceAll("--highlightstart--", "<font color=\"blue\" style=\"background-color: yellow\">");
+					modifiedtext = modifiedtext.replaceAll("--highlightend--", "</font>");
+				}
+				else
+				{
+					modifiedtext = text;
+
+				}
+
+				e.setText(modifiedtext);
+				
+			
+	
+		}
+	};
+}
+
+	public AllowableAction getHighligherAction()
+	{
+		return new AllowableAction("Highlight", 
+				ComponentUtilities.loadImageIcon(EditorPaneComponent.class, "images/text_highlight.gif") , null)
+		{
+			public void actionPerformed(ActionEvent arg0) 
+			{
+				
+	
+				try{
+					e.getDocument().insertString(e.getSelectionStart(), "--UNstart--", null);
+					e.getDocument().insertString(e.getSelectionEnd(), "--UNend--", null);
+				} catch (BadLocationException ble) {
+
+					return;
+				}
+	
+
+				String text = e.getText();
+				String selection;
+				String modifiedtext;
+				
+				
+				if(text != null)
+				{
+					boolean unhighlight = false;
+					text = insertBRForNewline(text);
+					int START = text.indexOf("--UNstart--");
+					int END = text.indexOf("--UNend--");
+				
+					if(START == -1 || END == -1)
+						return;
+					
+					selection = text.substring(START, END);
+	
+				
+					if(selection.indexOf(highlightstarttag1) == "--UNstart--".length() || selection.indexOf(highlightstarttag2) == "--UNstart--".length())
+						unhighlight = true;
+					
+					selection = selection.replaceAll(highlightstarttag1, "");
+					selection = selection.replaceAll(highlightstarttag2, "");
+					selection = selection.replaceAll(highlightendtag, "");
+					
+					if(unhighlight == false)
+					{
+						selection = highlightstarttag1 + selection + highlightendtag;
+					}
+					modifiedtext = text.substring(0,START) + selection + text.substring(END);
+					modifiedtext = modifiedtext.replaceAll("--UNend--", "");
+					modifiedtext = modifiedtext.replaceAll("--UNstart--", "");
+					
+				}
+				else
+				{
+					modifiedtext = text;
+
+				}
+
+				e.setText(modifiedtext);
+
+			}
+		};
+	}
+	
+
+	
+	
+	
+	
+	public AllowableAction getUnhighlightAction()
+	{
+		return new AllowableAction("Unhighlight", 
+				ComponentUtilities.loadImageIcon(EditorPaneComponent.class, "images/text_unhighlight.gif") , null)
+		{
+			public void actionPerformed(ActionEvent arg0) 
+			{
+				
+	
+				try{
+					e.getDocument().insertString(e.getSelectionStart(), "--UNstart--", null);
+					e.getDocument().insertString(e.getSelectionEnd(), "--UNend--", null);
+				} catch (BadLocationException ble) {
+
+					return;
+				}
+	
+				String text = e.getText();
+				String selection;
+				String beforeStart;
+				String modifiedtext;
+				if(text != null)
+				{
+					text = insertBRForNewline(text);
+					int START = text.indexOf("--UNstart--");
+					int END = text.indexOf("--UNend--");
+					if(START == -1 || END == -1)
+						return;
+					selection = text.substring(START, END);
+	
+/*					beforeStart = text.substring(0, START);
+					int count = 0;
+					int countends = 0;
+					boolean handled = false;
+	
+					while(selection.indexOf(highlightstarttag1) != -1)
+					{
+						selection = selection.replaceFirst(highlightstarttag1, "");
+						count++;
+						
+					}
+					while(selection.indexOf(highlightstarttag2) != -1)
+					{
+						selection = selection.replaceFirst(highlightstarttag2, "");
+						count++;
+					}
+					
+					while(selection.indexOf(highlightendtag) != -1)
+					{
+						selection = selection.replaceFirst(highlightendtag, "");
+						countends++;
+					}
+					
+					if(countends < count)
+					{
+						selection = selection + highlightstarttag1;
+						//addstart at end of selection
+					}
+					if(countends > count)
+					{
+						//addend at start of selection
+						selection = highlightendtag + selection;
+						handled = true;
+					}
+					
+					count = 0;
+					countends = 0;
+					
+					while(beforeStart.indexOf(highlightstarttag1) != -1)
+					{
+						beforeStart = beforeStart.replaceFirst(highlightstarttag1, "");
+						count++;
+						
+					}
+					while(beforeStart.indexOf(highlightstarttag2) != -1)
+					{
+						beforeStart = beforeStart.replaceFirst(highlightstarttag2, "");
+						count++;
+					}
+					
+					while(beforeStart.indexOf(highlightendtag) != -1)
+					{
+						beforeStart = beforeStart.replaceFirst(highlightendtag, "");
+						countends++;
+					}
+					
+					if(count > countends && handled != true)
+					{
+						//addendtag at start of selection and starttag at end of selection
+						selection = highlightendtag + selection + highlightstarttag1;
+					}
+					if(count > countends && handled == true)
+					{
+						//addendtag at start of selection
+						selection = highlightendtag + selection;
+					}
+					
+					selection = selection.replaceAll("--UNstart--", "");
+					selection = selection.replaceAll("--UNend--", "");
+	*/	
+				
+					selection = selection.replaceAll(highlightstarttag1, "");
+					selection = selection.replaceAll(highlightstarttag2, "");
+					selection = selection.replaceAll(highlightendtag, "");
+		
+					modifiedtext = text.substring(0,START) + selection + text.substring(END);
+					modifiedtext = modifiedtext.replaceAll("--UNend--", "");
+					modifiedtext = modifiedtext.replaceAll("--UNstart--", "");
+	
+					/*
+					modifiedtext = insertBRForNewline(text);
+					
+					modifiedtext = modifiedtext.replaceAll("<font color=\"blue\" style=\"background-color: yellow\">", "");
+					modifiedtext = modifiedtext.replaceAll("<font style=\"background-color: yellow\" color=\"blue\">", "");
+					modifiedtext = modifiedtext.replaceAll("</font>", "");
+					*/
+					
+				}
+				else
+				{
+					modifiedtext = text;
+
+				}
+
+				e.setText(modifiedtext);
+
+			}
+		};
+	}
+	
+	public AllowableAction getHighlightAction()
+	{
+		return new AllowableAction("Highlight", 
+				ComponentUtilities.loadImageIcon(EditorPaneComponent.class, "images/text_highlight.gif") , null)
+		{
+			public void actionPerformed(ActionEvent arg0) 
+			{
+		/*		if(bold.isSelected())
+					bold.setSelected(false);
+				else
+					bold.setSelected(true);
+				*/
+				int flag = 0;
+				Highlighter hilite = e.getHighlighter();
+				
+				Highlighter.HighlightPainter myHighlightPainter = new MyHighlightPainter(Color.yellow);
+				try {
+					Highlighter.Highlight[] hilites = hilite.getHighlights();
+					for (int i=0; i<hilites.length; i++) {
+						if (hilites[i].getStartOffset() <= e.getSelectionStart() && hilites[i].getEndOffset() >= e.getSelectionEnd())
+						{
+			                hilite.removeHighlight(hilites[i]);
+			            	hilite.addHighlight(hilites[i].getStartOffset(), e.getSelectionStart(), myHighlightPainter);
+			            	hilite.addHighlight(e.getSelectionEnd(), hilites[i].getEndOffset(), myHighlightPainter);
+			                flag = 1;
+			                break;
+			            }
+			        }
+					if(flag == 1)
+					{
+						for (int i=0; i<hilites.length; i++) {
+							if (hilites[i].getStartOffset() >= e.getSelectionStart() && hilites[i].getEndOffset() <= e.getSelectionEnd()) {
+				                hilite.removeHighlight(hilites[i]);
+				  	                
+				            }
+				        }
+					}
+					
+					if(flag == 0)
+						hilite.addHighlight(e.getSelectionStart(), e.getSelectionEnd(), myHighlightPainter);
+				} catch (BadLocationException e) {
+				}
+					
+				}
+		};
+		
+	}
+	
+	
 	public AllowableAction getBoldAction()
 	{
 		return new AllowableAction("Bold", 
@@ -44,6 +604,7 @@ public class EditorPaneComponent {
 			public void actionPerformed(ActionEvent arg0) 
 			{
 				(new StyledEditorKit.BoldAction()).actionPerformed(arg0);
+				
 			}
 		};
 		
@@ -74,6 +635,26 @@ public class EditorPaneComponent {
 		};
 	}
 
+	public AllowableAction getEditorPaneHelpAction()
+	{
+		return new AllowableAction("Help", 
+				ComponentUtilities.loadImageIcon(EditorPaneComponent.class, "images/Help.gif"), null)
+		{
+			public void actionPerformed(ActionEvent arg0) 
+			{
+				try{
+					BrowserLauncher.openURL(EditorPaneHelpURL);
+				}
+				catch (IOException e1)
+				{
+					;
+				}
+			
+			}
+		};
+	}
+
+	
 	public AllowableAction getStrikeThroughAction()
 	{
 		return new AllowableAction("StrikeThrough", 
@@ -94,6 +675,7 @@ public class EditorPaneComponent {
 		{
 			public void actionPerformed(ActionEvent arg0) 
 			{
+				
 				insertImage();
 			}
 		};
@@ -119,7 +701,7 @@ public class EditorPaneComponent {
 
 		if(s.indexOf(".gif") == -1 && s.indexOf(".jpg") == -1 && s.indexOf(".bmp") == -1 && s.indexOf(".png") == -1 && s.indexOf(".ico") == -1)
 		{
-			System.out.println("Invalid image");
+	
 			return;
 		}
 
@@ -254,3 +836,13 @@ public class EditorPaneComponent {
 	}
 
 }
+
+
+
+// A private subclass of the default highlight painter
+class MyHighlightPainter extends DefaultHighlighter.DefaultHighlightPainter {
+    public MyHighlightPainter(Color color) {
+        super(color);
+    }
+}
+
