@@ -444,7 +444,7 @@ public class EditorPanePlainWidget extends TextComponentWidget {
 	        {
 	        	// this means that the link doesnt end! 
 	        	// we avoid enabling such links
-	        //	System.out.println("Could not detect the end of link: "+htmltext.substring(linkIndex));
+	        
 	        	linkEnds = 0;
 	        	linkPresent = false;
 	        	break;
@@ -461,7 +461,7 @@ public class EditorPanePlainWidget extends TextComponentWidget {
 	        */
 	        linkEnds = findMin(linkEnds1, linkEnds2);
 	        
-	   //     System.out.println("linkstarts: "+linkIndex+" linkends: "+linkEnds);
+	   
 	        
 	        // now we have start and end indexes of the first link.
 	        // we add tags around this link and get new htmltext with first link tagged
