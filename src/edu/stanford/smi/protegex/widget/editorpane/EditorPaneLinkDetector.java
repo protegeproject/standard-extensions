@@ -1,5 +1,6 @@
 package edu.stanford.smi.protegex.widget.editorpane;
 
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -30,6 +31,7 @@ import javax.swing.text.html.parser.ParserDelegator;
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.KnowledgeBase;
 import edu.stanford.smi.protege.model.Project;
+import edu.stanford.smi.protege.plugin.PluginUtilities;
 import edu.stanford.smi.protege.ui.ProjectManager;
 import edu.stanford.smi.protege.util.ApplicationProperties;
 import edu.stanford.smi.protege.util.BrowserLauncher;
@@ -78,8 +80,16 @@ public class EditorPaneLinkDetector extends JEditorPane implements Disposable {
 
 	private void internalLinkClicked(String name){
 		
+		String name2 = "owl:"+name;
+
 		Project p = ProjectManager.getProjectManager().getCurrentProject();
         KnowledgeBase kb = p.getKnowledgeBase();
+           
+        boolean isOWL = PluginUtilities.isOWL(kb);
+        isOWL = false; //ignoring OWL for now... need to change the 
+        			 //kb.getProject().show(frame); line below to make this run for OWL individual
+        
+        System.out.println("need to change the kb.getProject().show(frame); line below to make this run for OWL individual");
         
         int maxNoOfFrames = ApplicationProperties.getIntegerProperty(EDITOR_PANE_BROWSER_TEXT_FRAME_LIMIT_PROPERTY, 
         	EDITOR_PANE_BROWSER_TEXT_DEFAULT_FRAME_LIMIT);
@@ -90,12 +100,22 @@ public class EditorPaneLinkDetector extends JEditorPane implements Disposable {
 	        Iterator i = instances.iterator();
 	        while (i.hasNext()) 
 	        {
-	            Instance frame = (Instance) i.next();
-	            if(frame.getBrowserText().equalsIgnoreCase(name))
-	            {
-	            	kb.getProject().show(frame);
-	            	return;
-	            }            	
+	        	if(!isOWL)
+	        	{
+	        		Instance frame = (Instance) i.next();
+	        		
+	 	            if(frame.getBrowserText().equalsIgnoreCase(name) || frame.getBrowserText().equalsIgnoreCase(name2))
+		            {
+		            	kb.getProject().show(frame);
+		            	return;
+		            }
+	        	}
+	        	else
+	        	{
+	        		//ignoring OWL for now... need to change the 
+       			 	//kb.getProject().show(frame); line below to make this run for OWL individual
+	        	}
+	        	
 	        }
         }
 	    else
@@ -142,7 +162,7 @@ public class EditorPaneLinkDetector extends JEditorPane implements Disposable {
 			else if(linkActive.contains("ftp://"))
 			{
 				str = linkActive;
-				try {
+				try{
 					BrowserLauncher.openURL(str);
 				}
 				catch (IOException e1) {
@@ -232,22 +252,26 @@ public class EditorPaneLinkDetector extends JEditorPane implements Disposable {
 	public EditorPaneLinkDetector(boolean edit, boolean detectent) {
 		this.detectEnter = detectent;
 		this.editable = edit;
+		this.setFont(new Font("Arial", Font.PLAIN, 12));
 		linkActive = null;
 		HTMLEditorKit htmlkit = new HTMLEditorKit();
-
+	
 		StyleSheet styles = htmlkit.getStyleSheet();
 		StyleSheet ss = new StyleSheet();
-
+		
 		ss.addStyleSheet(styles);
-
+		
 		ss.addRule("body {font-family:arial;font-size:12pt}");
 		ss.addRule("p {font-family:arial;margin:2}");
-
+	
+//		styles.addRule("body {font-size : 21pt; }");
+//		styles.addRule("body {font-family : Sans Serif; }");
+	
 		// HTMLDocLinkDetector is class made which extends HTMLDocument
 		HTMLDocument doc = new HTMLDocLinkDetector(ss);
-		
 		setEditorKit(htmlkit);
-
+			
+		
 		setDocument(doc);
 		addMouseListener(ml);
 		addMouseMotionListener(mml);
@@ -260,7 +284,7 @@ public class EditorPaneLinkDetector extends JEditorPane implements Disposable {
 		if(!detectEnter) {
 			Action doNothing = new AbstractAction() {
 			    public void actionPerformed(ActionEvent e) {
-			       //do nothing
+			       ;//do nothing
 			    }
 			};
 			getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "doNothing");
@@ -280,7 +304,6 @@ public class EditorPaneLinkDetector extends JEditorPane implements Disposable {
 			// Sets the number of tokens to buffer before trying to 
 			// update the documents element structure. 
 			setTokenThreshold(100);
-			
 			// Sets the parser that is used by the methods that insert 
 			// html into the existing document, such as setInnerHTML, 
 			// and setOuterHTML. 
