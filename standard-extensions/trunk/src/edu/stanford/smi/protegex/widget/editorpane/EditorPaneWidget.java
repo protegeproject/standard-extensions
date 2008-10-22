@@ -1,15 +1,30 @@
 package edu.stanford.smi.protegex.widget.editorpane;
 
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import javax.swing.Action;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JEditorPane;
+import javax.swing.JPanel;
 import javax.swing.text.JTextComponent;
 
+import edu.stanford.smi.protege.model.KnowledgeBase;
+import edu.stanford.smi.protege.plugin.PluginUtilities;
+import edu.stanford.smi.protege.resource.Icons;
+import edu.stanford.smi.protege.ui.FrameRenderer;
+import edu.stanford.smi.protege.ui.ProjectManager;
 import edu.stanford.smi.protege.util.AllowableAction;
+import edu.stanford.smi.protege.util.BrowserLauncher;
 import edu.stanford.smi.protege.util.CollectionUtilities;
 import edu.stanford.smi.protege.util.ComponentFactory;
+import edu.stanford.smi.protege.util.LabeledComponent;
 import edu.stanford.smi.protege.widget.TextComponentWidget;
 
 /**
@@ -25,7 +40,10 @@ import edu.stanford.smi.protege.widget.TextComponentWidget;
 public class EditorPaneWidget extends TextComponentWidget {
 
 	private static final long serialVersionUID = -1198463792463053162L;
-	private EditorPaneComponent editorPaneComponent;
+	private EditorPaneComponent epc;
+	private LabeledComponent labeledComponent;
+	JComboBox internalLinkTo;
+	private final String EditorPaneHelpURL = "http://protegewiki.stanford.edu/index.php/EditorPane";
 
 	protected JComponent createCenterComponent(JTextComponent textComponent) {
 		return ComponentFactory.createScrollPane(textComponent);
@@ -41,38 +59,113 @@ public class EditorPaneWidget extends TextComponentWidget {
 	}
 
 	public JEditorPane createEditorPane() {
-		editorPaneComponent = new EditorPaneComponent();
-		return editorPaneComponent.createEditorPaneLinkDetector();
+		epc = new EditorPaneComponent();
+		
+		KnowledgeBase kb = ProjectManager.getProjectManager().getCurrentProject().getKnowledgeBase();
+		String[] options1 = { "Add Internal Link To" , "Class", "Property" , "Individual"};
+		String[] options2 = { "Add Internal Link To" , "Class", "Slot", "Instance"  };
+		
+		
+		if(PluginUtilities.isOWL(kb))
+		{
+			epc.setOWL(true);
+			internalLinkTo = new JComboBox(options1);
+			
+		}
+		else
+		{
+			epc.setOWL(false);
+			internalLinkTo = new JComboBox(options2);
+				
+		}
+		
+		internalLinkTo.setRenderer(new FrameRenderer() {
+			@Override
+			public void load(Object value) {
+				if (value.equals("Class")) {
+					setMainIcon(Icons.getClsIcon());
+					setMainText("Class");
+				} else if (value.equals("Slot")) {
+					setMainIcon(Icons.getSlotIcon());
+					setMainText("Slot");
+				} else if (value.equals("Instance")) {
+					setMainIcon(Icons.getInstanceIcon());
+					setMainText("Instance");
+				}
+				else if (value.equals("Property")) {
+					setMainIcon(Icons.getSlotIcon());
+					setMainText("Property");
+				} else if (value.equals("Individual")) {
+					setMainIcon(Icons.getInstanceIcon());
+					setMainText("Individual");
+				} else {
+					super.load(value);
+				}
+			}
+		}
+		);
+				
+		internalLinkTo.setSelectedIndex(0);
+		internalLinkTo.addActionListener(epc.getAddInternalLinkActionListener());
+		
+	//	add(internalLinkTo, BorderLayout.BEFORE_FIRST_LINE);
+		EditorPaneLinkDetector epl = epc.createEditorPaneLinkDetector(); 
+	//	lc = new LabeledComponent("", epl, false, true);
+//		lc.setHeaderComponent(internalLinkTo, BorderLayout.WEST);
+		return epl;
 	}
 
 
 	public void initialize() {		
 		super.initialize(true, true, 2, 2);
+		labeledComponent = (LabeledComponent) getComponent(0);
+		JButton helpButton = new JButton("?");
+		addButtons(labeledComponent);
+		
+		helpButton.addActionListener(new ActionListener() {
+		    public void actionPerformed(ActionEvent event) {
+			    	try{
+			    		BrowserLauncher.openURL(EditorPaneHelpURL);
+			    	}
+			    	catch (IOException e1){
+			    		;
+			    	}
+		    	}
+				    
+		});
+		
+		JComponent lc1 = new JPanel();
+		lc1.add(internalLinkTo, BorderLayout.WEST);
+		lc1.add(helpButton, BorderLayout.EAST);
+		labeledComponent.setHeaderComponent(lc1,BorderLayout.WEST);
+		
 	}
 	
 	
 	protected Collection<AllowableAction> createActions() {
 		ArrayList<AllowableAction> actions = new ArrayList<AllowableAction>();
-
-		AllowableAction b = editorPaneComponent.getBoldAction();
+/*
+		AllowableAction b = epc.getBoldAction();
 		actions.add(b);
 
 
-		AllowableAction i = editorPaneComponent.getItalicsAction();
+		AllowableAction i = epc.getItalicsAction();
 		actions.add(i);
 
 		
-		AllowableAction u = editorPaneComponent.getUnderlineAction();
+		AllowableAction u = epc.getUnderlineAction();
 		actions.add(u);
 
 		
-		AllowableAction s = editorPaneComponent.getStrikeThroughAction();
+		AllowableAction s = epc.getStrikeThroughAction();
 		actions.add(s);
 
-		
-		AllowableAction insert_image = editorPaneComponent.getInsertImageAction();
+		AllowableAction h = epc.getHighligherAction();
+		actions.add(h);
+	
+		AllowableAction insert_image = epc.getInsertImageAction();
 		actions.add(insert_image);
-
+		*/
 		return actions;           
 	}
 	
@@ -311,8 +404,7 @@ public class EditorPaneWidget extends TextComponentWidget {
 
 			linkEnds = findMin(linkEnds1, linkEnds2);
 
-			//      System.out.println("linkstarts: "+linkIndex+" linkends: "+linkEnds);
-
+	
 			// now we have start and end indexes of the first link.
 			// we add tags around this link and get new htmltext with first link tagged
 			htmltext = htmltext.substring(0, linkIndex) +
@@ -343,6 +435,29 @@ public class EditorPaneWidget extends TextComponentWidget {
 		epane.dispose();		
 		super.dispose();       
 	}
+	
+	protected void addButtons(LabeledComponent c) {
+        addButton(epc.getBoldAction());
+        addButton(epc.getItalicsAction());
+        addButton(epc.getUnderlineAction());
+        addButton(epc.getStrikeThroughAction());
+        addButton(epc.getHighligherAction());
+        addButton(epc.getInsertImageAction());
+    }
+
+	public void addButton(Action action) {
+        addButton(action, true);
+    }
+
+    public void addButton(Action action, boolean defaultState) {
+        if (action != null) {
+            addButtonConfiguration(action, defaultState);
+            if (displayButton(action)) {
+            	labeledComponent.addHeaderButton(action);
+            }
+        }
+    }
+
 }
 
 
