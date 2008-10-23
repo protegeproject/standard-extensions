@@ -28,14 +28,14 @@ import edu.stanford.smi.protege.util.LabeledComponent;
 import edu.stanford.smi.protege.widget.TextComponentWidget;
 
 /**
- * Slot widget for detecting hyperlinks in entered text and opening 
- * the link in a new browser when it is clicked. 
+ * Slot widget for detecting hyperlinks in entered text and opening
+ * the link in a new browser when it is clicked.
  * It also supports simple HTML tags, such as bold, italics, underline,
  * strike-through and inserting images.
  * It also detects links to internal ontologies entities and opens
  * them in a separate window when clicked.
- * 
- *  @author Vivek Tripathi (vivekyt@stanford.edu) 
+ *
+ *  @author Vivek Tripathi (vivekyt@stanford.edu)
  */
 public class EditorPaneWidget extends TextComponentWidget {
 
@@ -45,11 +45,13 @@ public class EditorPaneWidget extends TextComponentWidget {
 	JComboBox internalLinkTo;
 	private final String EditorPaneHelpURL = "http://protegewiki.stanford.edu/index.php/EditorPane";
 
+	@Override
 	protected JComponent createCenterComponent(JTextComponent textComponent) {
 		return ComponentFactory.createScrollPane(textComponent);
 	}
 
 
+	@Override
 	protected JTextComponent createTextComponent() {
 		return createEditorPane();
 	}
@@ -60,25 +62,25 @@ public class EditorPaneWidget extends TextComponentWidget {
 
 	public JEditorPane createEditorPane() {
 		epc = new EditorPaneComponent();
-		
+
 		KnowledgeBase kb = ProjectManager.getProjectManager().getCurrentProject().getKnowledgeBase();
 		String[] options1 = { "Add Internal Link To" , "Class", "Property" , "Individual"};
 		String[] options2 = { "Add Internal Link To" , "Class", "Slot", "Instance"  };
-		
-		
+
+
 		if(PluginUtilities.isOWL(kb))
 		{
-			epc.setOWL(true);
+			epc.setOWLMode(true);
 			internalLinkTo = new JComboBox(options1);
-			
+
 		}
 		else
 		{
-			epc.setOWL(false);
+			epc.setOWLMode(false);
 			internalLinkTo = new JComboBox(options2);
-				
+
 		}
-		
+
 		internalLinkTo.setRenderer(new FrameRenderer() {
 			@Override
 			public void load(Object value) {
@@ -104,24 +106,24 @@ public class EditorPaneWidget extends TextComponentWidget {
 			}
 		}
 		);
-				
+
 		internalLinkTo.setSelectedIndex(0);
 		internalLinkTo.addActionListener(epc.getAddInternalLinkActionListener());
-		
+
 	//	add(internalLinkTo, BorderLayout.BEFORE_FIRST_LINE);
-		EditorPaneLinkDetector epl = epc.createEditorPaneLinkDetector(); 
+		EditorPaneLinkDetector epl = epc.createEditorPaneLinkDetector();
 	//	lc = new LabeledComponent("", epl, false, true);
 //		lc.setHeaderComponent(internalLinkTo, BorderLayout.WEST);
 		return epl;
 	}
 
 
-	public void initialize() {		
+	public void initialize() {
 		super.initialize(true, true, 2, 2);
 		labeledComponent = (LabeledComponent) getComponent(0);
 		JButton helpButton = new JButton("?");
 		addButtons(labeledComponent);
-		
+
 		helpButton.addActionListener(new ActionListener() {
 		    public void actionPerformed(ActionEvent event) {
 			    	try{
@@ -131,17 +133,18 @@ public class EditorPaneWidget extends TextComponentWidget {
 			    		;
 			    	}
 		    	}
-				    
+
 		});
-		
+
 		JComponent lc1 = new JPanel();
 		lc1.add(internalLinkTo, BorderLayout.WEST);
 		lc1.add(helpButton, BorderLayout.EAST);
 		labeledComponent.setHeaderComponent(lc1,BorderLayout.WEST);
-		
+
 	}
-	
-	
+
+
+	@Override
 	protected Collection<AllowableAction> createActions() {
 		ArrayList<AllowableAction> actions = new ArrayList<AllowableAction>();
 /*
@@ -152,30 +155,31 @@ public class EditorPaneWidget extends TextComponentWidget {
 		AllowableAction i = epc.getItalicsAction();
 		actions.add(i);
 
-		
+
 		AllowableAction u = epc.getUnderlineAction();
 		actions.add(u);
 
-		
+
 		AllowableAction s = epc.getStrikeThroughAction();
 		actions.add(s);
 
 		AllowableAction h = epc.getHighligherAction();
 		actions.add(h);
-	
+
 		AllowableAction insert_image = epc.getInsertImageAction();
 		actions.add(insert_image);
 		*/
-		return actions;           
+		return actions;
 	}
-	
-	
+
+
+	@Override
 	public Collection getValues() {
 		String s = getText();
 		String modifiedS;
 		// this functions strips off the </p> from text. Also it inserts <br> for all newlines
 		// which user had entered
-		if(s != null) { 
+		if(s != null) {
 			modifiedS = insertBRForNewline(s);
 		} else {
 			modifiedS = s;
@@ -184,12 +188,13 @@ public class EditorPaneWidget extends TextComponentWidget {
 		return CollectionUtilities.createList(modifiedS);
 	}
 
+	@Override
 	public void setValues(Collection values) {
 		Object o = CollectionUtilities.getFirstItem(values);
 		String text = o == null ? (String) null : o.toString();
 
 		// the text that we are reading from the knowledge base can be html enabled with
-		// html tags or it can be plain text in which case we need to interpret all 
+		// html tags or it can be plain text in which case we need to interpret all
 		// the hyperlinks on the fly!
 		if(text != null && text.indexOf("<html>") == -1 && text.indexOf("<body>") == -1)
 		{
@@ -229,7 +234,7 @@ public class EditorPaneWidget extends TextComponentWidget {
 		String modifiedS2;
 
 		if(s2.indexOf("</p>") != -1) // this means html body recognizes
-		{							 // new lines in the text and puts 
+		{							 // new lines in the text and puts
 			// </p> for each new line
 			pPresent = true;
 			modifiedS2 = s2;
@@ -270,26 +275,23 @@ public class EditorPaneWidget extends TextComponentWidget {
 
 		}
 		else
-		{ 
+		{
 			// this means that editor pane has not accounted for the new lines
 			// which the user might have entered and hence we need to replace
 			// all \n with <br>
-			s2 = s2.replaceAll("\n    ", "");   
+			s2 = s2.replaceAll("\n    ", "");
 			modifiedS2 = s2.replaceAll("\n", "<br>");
 
 		}
 
 		// to remove the last <br> from this string. otherwise extra <br> shows up in the end
-		int length = modifiedS2.length();
 
-		while(length >= 0)
-		{
-			if(modifiedS2.substring(length-1).indexOf("<br>") != -1)
-				break;
-			else
-				length = length-1;
 
+		int index = modifiedS2.lastIndexOf("<br>");
+		if (index > -1) {
+			modifiedS2 = modifiedS2.substring(0, index) + modifiedS2.substring(index+5);
 		}
+		int length = modifiedS2.length();
 
 		// here we obtain the part which we will be removing in "remainder" string
 		// and check that it doesn't contain any actual text apart from <br> and spaces
@@ -304,7 +306,7 @@ public class EditorPaneWidget extends TextComponentWidget {
 		// and we don't change modifiedText since we don't want to get into trouble
 		// by removing anything other than spaces and <br>.
 
-		// we were operating on the middle part of entire string. now we 
+		// we were operating on the middle part of entire string. now we
 		// complete the original string and return it.
 		String modifiedS = s1 + modifiedS2 + s3;
 		return modifiedS;
@@ -312,37 +314,47 @@ public class EditorPaneWidget extends TextComponentWidget {
 
 	private int findMin(int a, int b, int c)
 	{
-		if(a < b && a < c && a != -1)
+		if(a < b && a < c && a != -1) {
 			return a;
-		if(b < a && b < c && b != -1)
+		}
+		if(b < a && b < c && b != -1) {
 			return b;
-		if(c < a && c < b && c != -1)
+		}
+		if(c < a && c < b && c != -1) {
 			return c;
-		if(a == -1)
+		}
+		if(a == -1) {
 			return findMin(b, c);
-		if(b == -1)
+		}
+		if(b == -1) {
 			return findMin(a, c);
-		if(c == -1)
+		}
+		if(c == -1) {
 			return findMin(a, b);
+		}
 		return -1;
 	}
 
 	private int findMin(int a, int b)
 	{
-		if(a < b && a != -1)
+		if(a < b && a != -1) {
 			return a;
-		if(b < a && b != -1)
+		}
+		if(b < a && b != -1) {
 			return b;
-		if(a == -1 && b != -1)
+		}
+		if(a == -1 && b != -1) {
 			return b;
-		if(b == -1 && a != -1)
+		}
+		if(b == -1 && a != -1) {
 			return a;
+		}
 		return -1;
 	}
 
 	private String enableLinkInPlainText(String text)
 	{
-		// text is plain text. so it has \n to represent new lines. but 
+		// text is plain text. so it has \n to represent new lines. but
 		// html doesnt understand \n. so we replace all \n with <br>
 		String htmltext = text.replaceAll("\n", "<br>");
 
@@ -353,8 +365,9 @@ public class EditorPaneWidget extends TextComponentWidget {
 
 		// if there is no link in this plain text, we dont have to do anything
 		// else we need to parse links and enable them
-		if(htmltext.indexOf("http:") != -1 || htmltext.indexOf("www.") != -1 || htmltext.indexOf("mailto:") != -1 || htmltext.indexOf("ftp://") != -1 || htmltext.indexOf("file:/") != -1 )
+		if(htmltext.indexOf("http:") != -1 || htmltext.indexOf("www.") != -1 || htmltext.indexOf("mailto:") != -1 || htmltext.indexOf("ftp://") != -1 || htmltext.indexOf("file:/") != -1 ) {
 			linkPresent = true;
+		}
 
 		while(linkPresent)
 		{
@@ -382,20 +395,22 @@ public class EditorPaneWidget extends TextComponentWidget {
 				break;
 			}
 
-			if(linkIndex1 != -1 || linkIndex2 != -1 || linkIndex3 != -1 )
+			if(linkIndex1 != -1 || linkIndex2 != -1 || linkIndex3 != -1 ) {
 				linkIndex = findMin(linkIndex1, linkIndex2, linkIndex3);
-			if(linkIndex != -1 || linkIndex4 != -1 || linkIndex5 != -1 )
+			}
+			if(linkIndex != -1 || linkIndex4 != -1 || linkIndex5 != -1 ) {
 				linkIndex = findMin(linkIndex, linkIndex4, linkIndex5);
+			}
 
 			// now we have in the variable linkIndex the place where first link
-			// starts so we now find the place where link ends (either link 
+			// starts so we now find the place where link ends (either link
 			// ends with a space or newline
 			linkEnds1 = htmltext.indexOf(" ", linkIndex);
 			linkEnds2 = htmltext.indexOf("<br>", linkIndex);
 
 			if(linkEnds2 == -1 && linkEnds1 == -1)
 			{
-				// this means that the link doesnt end! 
+				// this means that the link doesnt end!
 				// we avoid enabling such links
 				linkEnds = 0;
 				linkPresent = false;
@@ -404,11 +419,11 @@ public class EditorPaneWidget extends TextComponentWidget {
 
 			linkEnds = findMin(linkEnds1, linkEnds2);
 
-	
+
 			// now we have start and end indexes of the first link.
 			// we add tags around this link and get new htmltext with first link tagged
 			htmltext = htmltext.substring(0, linkIndex) +
-			"<a href='" + htmltext.substring(linkIndex, linkEnds) + 
+			"<a href='" + htmltext.substring(linkIndex, linkEnds) +
 			"'>" + htmltext.substring(linkIndex, linkEnds)+ "</a>" +
 			htmltext.substring(linkEnds);
 
@@ -417,25 +432,26 @@ public class EditorPaneWidget extends TextComponentWidget {
 
 			// here we check whether there is next link in the remaining text or not.
 			if(htmltext.indexOf("http:",startSearch) == -1 && htmltext.indexOf("www.",startSearch) == -1 && htmltext.indexOf("mailto:",startSearch) == -1 && htmltext.indexOf("ftp://",startSearch) == -1 && htmltext.indexOf("file:/",startSearch) == -1)
-			{	
+			{
 				linkPresent = false;
 				break;
 			}
 
-		} 
+		}
 		// add higher level html tags and body
 		htmltext = "<html> \n <head> \n <style type=\"text/css\"> \n <!-- \n body { font-family: arial; font-size: 12pt } \n  p { margin-top: 2; margin-bottom: 2; margin-left: 2; margin-right: 2; font-family: arial } \n  --> \n  </style> \n </head> \n  <body> \n" + htmltext + "\n </body> \n  </html>";
 		return htmltext;
 	}
 
 
+	@Override
 	public void dispose() {
 		EditorPaneLinkDetector epane = (EditorPaneLinkDetector) getEditorPane();
 		// remove mouse listeners for cleanup
-		epane.dispose();		
-		super.dispose();       
+		epane.dispose();
+		super.dispose();
 	}
-	
+
 	protected void addButtons(LabeledComponent c) {
         addButton(epc.getBoldAction());
         addButton(epc.getItalicsAction());
