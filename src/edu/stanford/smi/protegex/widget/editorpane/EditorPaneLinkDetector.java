@@ -72,8 +72,6 @@ public class EditorPaneLinkDetector extends JEditorPane implements Disposable {
 	}
 
 	private void internalLinkClicked(String name) {
-		System.out.println("Clicked: " + name);
-
 		try {
 			KnowledgeBase kb = ProjectManager.getProjectManager().getCurrentProject().getKnowledgeBase();
 			Instance inst = kb.getInstance(name);
