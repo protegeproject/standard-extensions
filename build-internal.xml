@@ -96,21 +96,25 @@
 	<!-- =================================================================== -->
 	<!-- JAVADOC -->
 	<!-- =================================================================== -->
-	<target name = "javadoc" depends = "prepare-src">
+	<target name = "javadoc" depends = "prepare-src" unless = "testbuild">
 		<mkdir dir = "${build.javadoc}"/>
-		<javadoc packagenames = "${packages}" sourcepath = "${build.src}" destdir = "${build.javadoc}" doctitle = "${Name}" header = "${Name}" footer = "${Name}" windowtitle = "${Name}" author = "true" linksource = "yes">
-
+		<javadoc packagenames = "${packages}" 
+		              sourcepath = "${build.src}" 
+		              destdir = "${build.javadoc}" 
+		              doctitle = "${Name}" 
+		              header = "${Name}" 
+		              footer = "${Name}" 
+		              windowtitle = "${Name}" 
+		              author = "true"
+		              maxmemory = "256M">
 			<bottom><![CDATA[<small><a href=mailto:protege-discussion@lists.stanford.edu>Submit a bug report or feature request</a></small>]]></bottom>
-
 			<link href = "${jdk.javadoc}"/>
 			<link href = "${protege.javadoc}"/>
-
 			<classpath>
 				<pathelement path = "${protege.jar}"/>
 				<pathelement location = "${lib.dir}/jgo.jar"/>
 				<pathelement location = "${lib.dir}/jgolayout.jar"/>
 			</classpath>
-
 		</javadoc>
 	</target>
 	
