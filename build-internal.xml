@@ -31,6 +31,7 @@
 		<mkdir dir = "${build.src}"/>
 		<mkdir dir = "${build.dest}"/>
 		<mkdir dir = "${dist.dir}"/>
+		<mkdir dir = "${build.javadoc}"/>
 
 		<!-- get source code from subversion repository -->
 		<exec executable = "cmd.exe" dir = "${batch.files}" os = "${os}">
@@ -97,7 +98,6 @@
 	<!-- JAVADOC -->
 	<!-- =================================================================== -->
 	<target name = "javadoc" depends = "prepare-src" unless = "testbuild">
-		<mkdir dir = "${build.javadoc}"/>
 		<javadoc packagenames = "${packages}" 
 		              sourcepath = "${build.src}" 
 		              destdir = "${build.javadoc}" 
