@@ -52,7 +52,6 @@ public class EditorPaneLinkDetector extends JEditorPane implements Disposable {
 	private final static int EDITOR_PANE_BROWSER_TEXT_DEFAULT_FRAME_LIMIT = 10000;
 	private final static String EDITOR_PANE_BROWSER_TEXT_FRAME_LIMIT_PROPERTY = "editor.pane.browsertext.frame.limit";
 
-	private final int KBNoOfFrames;
 	private String linkActive;
 	private boolean editable;
 	private boolean detectEnter;
@@ -230,7 +229,6 @@ public class EditorPaneLinkDetector extends JEditorPane implements Disposable {
 
 		Project p = ProjectManager.getProjectManager().getCurrentProject();
 		KnowledgeBase kb = p.getKnowledgeBase();
-		KBNoOfFrames = kb.getFrameCount();
 		setEditable(editable);
 
 		if (!detectEnter) {
