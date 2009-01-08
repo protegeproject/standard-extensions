@@ -4,37 +4,31 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.SwingUtilities;
 
-import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.model.Frame;
-import edu.stanford.smi.protege.model.KnowledgeBase;
-import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.resource.Icons;
 import edu.stanford.smi.protege.ui.Finder;
+import edu.stanford.smi.protege.util.FrameWithBrowserText;
 import edu.stanford.smi.protege.util.LabeledComponent;
 import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.SelectableList;
 import edu.stanford.smi.protege.util.SimpleStringMatcher;
 import edu.stanford.smi.protege.util.StringMatcher;
 
-public class PagedFrameList<X extends Frame> extends LabeledComponent {
+public class PagedFrameList extends LabeledComponent {
     private static final long serialVersionUID = 8889044179950621525L;
     private static final transient Logger log = Log.getLogger(PagedFrameList.class);
     
     private int pageSize = 50;
-    private List<X> allFrames;
+    private List<FrameWithBrowserText> allFrames;
     private int pageLocation;
     private SelectableList framesList;
     private JButton scrollBack;
@@ -43,7 +37,14 @@ public class PagedFrameList<X extends Frame> extends LabeledComponent {
     public PagedFrameList(String title) {
         super(title, new JScrollPane());
         JScrollPane scrollable = (JScrollPane) getCenterComponent();
-        scrollable.setViewportView(framesList = new SelectableList());
+        framesList = new SelectableList() {
+            @Override
+            public Collection getSelection() {
+                // TODO Auto-generated method stub
+                return super.getSelection();
+            }
+        };
+        scrollable.setViewportView(framesList);
         setFooterComponent(makeFooter());
     }
     
@@ -72,9 +73,9 @@ public class PagedFrameList<X extends Frame> extends LabeledComponent {
                 StringMatcher matcher = new SimpleStringMatcher("*" + text + "*");
                 int counter = 0;
                 List<Frame> results = new ArrayList<Frame>(); 
-                for (Frame frame : allFrames) {
+                for (FrameWithBrowserText frame : allFrames) {
                     if (matcher.isMatch(frame.getBrowserText())) {
-                        results.add(frame);
+                        results.add(frame.getFrame());
                         if (maxMatches > 0 && ++counter >= maxMatches) {
                             return results;
                         }
@@ -85,8 +86,14 @@ public class PagedFrameList<X extends Frame> extends LabeledComponent {
             
             @Override
             protected void select(Object o) {
-                int i = allFrames.indexOf(o);
-                if (i != -1) {
+                int i = 0;
+                for (FrameWithBrowserText frame : allFrames) {
+                    if (frame.getFrame().equals(o)) {
+                        break;
+                    }
+                    i++;
+                }
+                if (i < allFrames.size()) {
                     setPageLocation(i);
                     int selection = i - pageLocation;
                     framesList.setSelectedIndex(selection);
@@ -122,7 +129,7 @@ public class PagedFrameList<X extends Frame> extends LabeledComponent {
         if (startOfNextPage >= allFrames.size()) {
             startOfNextPage = allFrames.size();
         }
-        List<X> frames = allFrames.subList(pageLocation, startOfNextPage);
+        List<FrameWithBrowserText> frames = allFrames.subList(pageLocation, startOfNextPage);
         framesList.setListData(frames.toArray());
         scrollForward.setEnabled(pageLocation + pageSize < allFrames.size());
         scrollBack.setEnabled(pageLocation > 0);
@@ -137,11 +144,11 @@ public class PagedFrameList<X extends Frame> extends LabeledComponent {
         setPageLocation(pageLocation);
     }
 
-    public List<X> getAllFrames() {
+    public List<FrameWithBrowserText> getAllFrames() {
         return allFrames;
     }
 
-    public void setAllFrames(List<X> allFrames) {
+    public void setAllFrames(List<FrameWithBrowserText> allFrames) {
         this.allFrames = allFrames;
         setPageLocation(0);
     }
@@ -149,31 +156,7 @@ public class PagedFrameList<X extends Frame> extends LabeledComponent {
     public SelectableList getSelectableList() {
         return framesList;
     }
-    
-    public static void main(String [] args) throws InterruptedException {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                Collection errors = new ArrayList();
-                KnowledgeBase kb = new Project("examples/newspaper/newspaper.pprj", errors).getKnowledgeBase();
-                if (!errors.isEmpty()) {
-                    log.warning("failed to load newspaper project");
-                    return;
-                }
-                List<Cls> classes = new ArrayList<Cls>(kb.getClses());
-                Collections.sort(classes);
-                PagedFrameList<Cls> panel = new PagedFrameList<Cls>("Sample");
-                panel.setAllFrames(classes);
-                panel.setPageSize(15);
-                
-                JFrame frame = new JFrame("Test");
-                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                frame.getContentPane().add(panel);
-                frame.pack();
-                frame.setVisible(true);
-            }
-        });
 
-    }
 
     
 }
