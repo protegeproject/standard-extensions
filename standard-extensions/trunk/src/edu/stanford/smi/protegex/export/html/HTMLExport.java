@@ -1,10 +1,35 @@
 package edu.stanford.smi.protegex.export.html;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
+import java.util.Set;
 import java.util.regex.Pattern;
-import edu.stanford.smi.protege.model.*;
+
+import edu.stanford.smi.protege.model.Cls;
+import edu.stanford.smi.protege.model.Facet;
+import edu.stanford.smi.protege.model.Frame;
+import edu.stanford.smi.protege.model.Instance;
+import edu.stanford.smi.protege.model.Model;
+import edu.stanford.smi.protege.model.SimpleInstance;
+import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protege.model.ValueType;
 import edu.stanford.smi.protege.plugin.PluginUtilities;
 import edu.stanford.smi.protege.ui.FrameComparator;
 
@@ -136,7 +161,7 @@ public class HTMLExport {
 
     private void exportHierarchy(PrintWriter pw, Cls cls, String pathToRoot) {
         String style = getListItemStyle(cls);
-        String href = pathToRoot + getFrameFileName((Frame) cls); // (mh) 12 Feb 2007
+        String href = pathToRoot + getFrameFileName(cls); // (mh) 12 Feb 2007
 
         String listItem = "<li class=\"" + style + "\"><a href=\"" + href + "\">" + cls.getBrowserText() + "</a>";
 
@@ -538,7 +563,7 @@ public class HTMLExport {
         Iterator i = c.iterator();
         while (i.hasNext()) {
             Slot slot = (Slot) i.next();
-            String slotFileName = pathToRoot + getFrameFileName((Frame) slot);
+            String slotFileName = pathToRoot + getFrameFileName(slot);
             pw.println("\t<li class=\"slot\"><a href=\"" + slotFileName + "\">" + slot.getBrowserText() + "</a></li>");
         }
 
@@ -557,7 +582,7 @@ public class HTMLExport {
             Iterator i = c.iterator();
             while (i.hasNext()) {
                 Cls cls = (Cls) i.next();
-                String clsFileName = pathToRoot + getFrameFileName((Frame) cls);
+                String clsFileName = pathToRoot + getFrameFileName(cls);
                 String style = getListItemStyle(cls);
 
                 if (classesToExport.contains(cls)) {
@@ -605,7 +630,7 @@ public class HTMLExport {
         Iterator i = c.iterator();
         while (i.hasNext()) {
             Instance instance = (Instance) i.next();
-            String instanceFileName = pathToRoot + getFrameFileName((Frame) instance);
+            String instanceFileName = pathToRoot + getFrameFileName(instance);
             pw.println("\t<li><A HREF=\"" + instanceFileName + "\">" + instance.getBrowserText() + "</A></li>");
         }
 
@@ -678,7 +703,7 @@ public class HTMLExport {
                 pw.println("<td class=\"mozillaTableHack\"><img src=\"" + pathToRoot + "images/" + iconName + "\" width=\"16\" height=\"16\" border=\"0\" align=\"middle\"></td>");
 
                 // Column 2 - slot name, always present
-                String slotFileName = getFrameFileName((Frame) slot);
+                String slotFileName = getFrameFileName(slot);
                 pw.println("<td class=\"mozillaTableHack\"><a href=\"" + pathToRoot + slotFileName + "\">" + slot.getBrowserText() + "</a></td>");
 
                 // Column 3 - slot documentation, always present
@@ -705,7 +730,7 @@ public class HTMLExport {
                         while (k.hasNext()) {
                             Cls allowedValue = (Cls) k.next();
                             if (classesToExport.contains(allowedValue)) {
-                                String fileName = getFrameFileName((Frame) allowedValue);
+                                String fileName = getFrameFileName(allowedValue);
                                 stringValueType += "<a href=\"" + pathToRoot + fileName + "\">" + allowedValue.getBrowserText() + "</a>";
                             } else {
                                 stringValueType += allowedValue.getBrowserText();
@@ -844,7 +869,7 @@ public class HTMLExport {
                 if (classesToExport.contains(directType)) {
                     // Only make this a hyperlink if we generated a page
                     // for this particular instance.
-                    String instanceFileName = getFrameFileName((Frame) instance);
+                    String instanceFileName = getFrameFileName(instance);
                     retval += "<a href=\"" + pathToRoot + instanceFileName + "\">" + instance.getBrowserText() + "</a>";
                 } else {
                     retval += instance.getBrowserText();
@@ -869,7 +894,7 @@ public class HTMLExport {
         Iterator i = ownSlots.iterator();
         while (i.hasNext()) {
             Slot ownSlot = (Slot) i.next();
-            String ownSlotName = ownSlot.getName();
+            String ownSlotName = ownSlot.getBrowserText();
 
             if (config.getSlotsToDisplay().contains(ownSlotName)) {
                 // Start row
@@ -879,7 +904,7 @@ public class HTMLExport {
                 pw.println("<td class=\"mozillaTableHack\"><img src=\"" + pathToRoot + "images/slot.gif\" width=\"16\" height=\"16\" border=\"0\" align=\"middle\"></td>");
 
                 // Column 2 - slot name
-                String ownSlotFileName = getFrameFileName((Frame) ownSlot);
+                String ownSlotFileName = getFrameFileName(ownSlot);
                 pw.println("<td class=\"mozillaTableHack\"><a href=\"" + pathToRoot + ownSlotFileName + "\">" + ownSlot.getBrowserText() + "</a></td>");
 
                 // Column 3 - slot value
