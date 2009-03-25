@@ -57,7 +57,6 @@ import edu.stanford.smi.protege.ui.DisplayUtilities;
 import edu.stanford.smi.protege.ui.FrameComparator;
 import edu.stanford.smi.protege.ui.FrameRenderer;
 import edu.stanford.smi.protege.util.AddAction;
-import edu.stanford.smi.protege.util.ApplicationProperties;
 import edu.stanford.smi.protege.util.ComponentFactory;
 import edu.stanford.smi.protege.util.ComponentUtilities;
 import edu.stanford.smi.protege.util.FileField;
@@ -422,9 +421,7 @@ public class HTMLExportConfigDialog extends JDialog {
         generalPanel.add(configButtonPanel, c);
 
         // Output Directory component
-        File dir = ApplicationProperties.getLastFileDirectory();        
-        outputDirComponent = new FileField("Output Directory:", dir == null ? 
-        		null : dir.getAbsolutePath(), "Output Directory");
+        outputDirComponent = new FileField("Output Directory:", null, "Output Directory");
         c.gridx = 0;
         c.gridy = 2;
         c.gridwidth = 2;
