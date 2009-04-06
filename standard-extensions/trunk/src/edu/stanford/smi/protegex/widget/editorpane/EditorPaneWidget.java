@@ -196,7 +196,7 @@ public class EditorPaneWidget extends TextComponentWidget {
 		// the text that we are reading from the knowledge base can be html enabled with
 		// html tags or it can be plain text in which case we need to interpret all
 		// the hyperlinks on the fly!
-		if(text != null && text.indexOf("<html>") == -1 && text.indexOf("<body>") == -1)
+		if(text != null && text.indexOf("<html>") == -1 && text.indexOf("<body>") == -1 && text.indexOf("<a href") == -1)
 		{
 			// so the text in knowledge base doesn't have html tags and we need
 			// to detect all the hyperlinks now in order to display them
