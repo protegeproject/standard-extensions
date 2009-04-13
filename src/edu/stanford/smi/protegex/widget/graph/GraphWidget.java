@@ -666,8 +666,14 @@ public class GraphWidget extends AbstractSlotWidget {
 
     public void dispose() {
         if (!isDesignTime()) {
-            getInstance().removeFrameListener(frameListener);
-            doc.removeListener();
+
+        	Instance instance = getInstance();
+        	if (instance != null) {
+        		instance.removeFrameListener(frameListener);
+        	}
+            
+        	doc.removeListener();
+        	
         }
         super.dispose();
     }
