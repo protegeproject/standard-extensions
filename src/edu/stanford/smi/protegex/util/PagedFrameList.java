@@ -3,7 +3,6 @@ package edu.stanford.smi.protegex.util;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -16,6 +15,7 @@ import javax.swing.JScrollPane;
 import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.resource.Icons;
 import edu.stanford.smi.protege.ui.Finder;
+import edu.stanford.smi.protege.util.ComponentFactory;
 import edu.stanford.smi.protege.util.FrameWithBrowserText;
 import edu.stanford.smi.protege.util.LabeledComponent;
 import edu.stanford.smi.protege.util.Log;
@@ -37,13 +37,7 @@ public class PagedFrameList extends LabeledComponent {
     public PagedFrameList(String title) {
         super(title, new JScrollPane());
         JScrollPane scrollable = (JScrollPane) getCenterComponent();
-        framesList = new SelectableList() {
-            @Override
-            public Collection getSelection() {
-                // TODO Auto-generated method stub
-                return super.getSelection();
-            }
-        };
+        framesList = ComponentFactory.createSelectableList(null);
         scrollable.setViewportView(framesList);
         setFooterComponent(makeFooter());
     }
