@@ -1,13 +1,19 @@
 package edu.stanford.smi.protegex.widget.instancetable;
 
-import java.beans.*;
-import java.util.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.Iterator;
 
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.table.*;
+import javax.swing.JTable;
+import javax.swing.SwingUtilities;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.TableColumnModelEvent;
+import javax.swing.event.TableColumnModelListener;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 
-import edu.stanford.smi.protege.model.*;
+import edu.stanford.smi.protege.model.Slot;
 
 /**
  *  Table used in configuration panel to get column width, color, name
@@ -63,7 +69,7 @@ public class ConfigTable extends JTable {
 
         public void propertyChange(PropertyChangeEvent evt) {
             String property = evt.getPropertyName();
-            if ((TableColumn.COLUMN_WIDTH_PROPERTY).equals(property)) {
+            if ("width".equals(property)) {
                 Integer newWidth = (Integer) evt.getNewValue();
                 _visibleSlotDescription.preferredSize = newWidth.intValue();
             }
@@ -96,7 +102,8 @@ public class ConfigTable extends JTable {
         column.addPropertyChangeListener(new CaptureWidthChanges(vsd));
     }
 
-    public boolean isCellEditable(int row, int column) {
+    @Override
+	public boolean isCellEditable(int row, int column) {
         return true;
     }
 
