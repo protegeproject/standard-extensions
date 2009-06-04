@@ -134,8 +134,10 @@ public class PagedFrameList extends LabeledComponent {
     }
 
     public void setPageSize(int pageSize) {
-        this.pageSize = pageSize;
-        setPageLocation(pageLocation);
+    	if (pageSize >  0) {
+    		this.pageSize = pageSize;
+    		setPageLocation(pageLocation);
+    	}
     }
 
     public List<FrameWithBrowserText> getAllFrames() {
