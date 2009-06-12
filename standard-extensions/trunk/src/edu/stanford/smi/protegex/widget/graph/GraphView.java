@@ -358,8 +358,8 @@ public class GraphView extends JGoView {
         } else if (oldlink instanceof ComplexLink) {
             ComplexLink cLink = (ComplexLink) oldlink;
             Instance instance = cLink.getInstance();
-            Slot toSlot = kb.getSlot(GraphTypes.TO_SLOT);
-            Slot fromSlot = kb.getSlot(GraphTypes.FROM_SLOT);
+            Slot toSlot = kb.getReifedRelationToSlot();
+            Slot fromSlot = kb.getReifedRelationFromSlot();
             instance.setOwnSlotValue(fromSlot, fromPort.getNode().getInstance());
             instance.setOwnSlotValue(toSlot, toPort.getNode().getInstance());
         }

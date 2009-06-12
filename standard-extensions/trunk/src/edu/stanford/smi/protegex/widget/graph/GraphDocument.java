@@ -9,9 +9,13 @@ import com.nwoods.jgo.layout.*;
 import edu.stanford.smi.protege.event.*;
 import edu.stanford.smi.protege.model.*;
 import edu.stanford.smi.protege.model.Frame;
+import edu.stanford.smi.protege.plugin.PluginUtilities;
 import edu.stanford.smi.protege.util.*;
 
 public class GraphDocument extends JGoDocument {
+	
+	public static final String POSITION_PREFIX = "InstanceGraphWidget.";
+	
     /**
      * Added transient keywords here to prevent serialization of certain
      * items. This is necessary as a workaround for a bug in the way that
@@ -46,10 +50,18 @@ public class GraphDocument extends JGoDocument {
         this.pList = widget.getPropertyList();
         this.slot = widget.getSlot();
 
-        key = "InstanceGraphWidget." + widget.getInstance().getName() + "." + slot.getName();
+        key = POSITION_PREFIX + widget.getInstance().getName() + "." + slot.getName();
         positionMap = (HashMap) kb.getProject().getClientInformation(key);
+
         if (positionMap == null) {
-            positionMap = new HashMap();
+        	
+        	// Check for short names from older OWL projects that are 
+        	// being read into Protege 3.4.1 for the first time.
+        	if (PluginUtilities.isOWL(kb)) {
+        		positionMap = PositionInfoFixup.checkForShortNames(kb, key);
+        	} else {        	
+        		positionMap = new HashMap();
+        	}
         }
     }
 
@@ -79,7 +91,8 @@ public class GraphDocument extends JGoDocument {
         return defaultLocation;
     }
 
-    public void initNodes(Collection instances) {
+    @SuppressWarnings("unchecked")
+	public void initNodes(Collection instances) {
         setSuspendUpdates(true);
 
         if (instances != null) {
@@ -93,7 +106,7 @@ public class GraphDocument extends JGoDocument {
                 instance.addFrameListener(frameListener);
 
                 Cls cls = instance.getDirectType();
-                NodeProperties props = new NodeProperties(cls.getName(), pList);
+                NodeProperties props = new NodeProperties(cls.getName(), cls.getBrowserText(), pList);
                 String shape = props.getShape();
 
                 Node node = new Node();
@@ -228,8 +241,8 @@ public class GraphDocument extends JGoDocument {
         if (relationSlot == null)
             return;
 
-        Slot fromSlot = kb.getSlot(GraphTypes.FROM_SLOT);
-        Slot toSlot = kb.getSlot(GraphTypes.TO_SLOT);
+        Slot fromSlot = kb.getReifedRelationFromSlot();
+        Slot toSlot = kb.getReifedRelationToSlot();
 
         Instance currentInstance = widget.getInstance();
         Collection c = currentInstance.getDirectOwnSlotValues(relationSlot);
@@ -297,7 +310,8 @@ public class GraphDocument extends JGoDocument {
         savePositionInfo();
     }
 
-    public void savePositionInfo() {
+    @SuppressWarnings("unchecked")
+	public void savePositionInfo() {
         // This check is necessary as a workaround for a bug where nodes were
         // losing positioning information if a user was editing a label in the
         // view and then clicked on the node's drawable.  Calling
@@ -378,7 +392,7 @@ public class GraphDocument extends JGoDocument {
     public static HashMap getPositionInfo(Instance instance, Slot slot) {
         HashMap positionMap = new HashMap();
         if ((instance != null) && (slot != null)) {
-            String key = "InstanceGraphWidget." + instance.getName() + "." + slot.getName();
+            String key = POSITION_PREFIX + instance.getName() + "." + slot.getName();
             KnowledgeBase kb = instance.getKnowledgeBase();
             positionMap = (HashMap) kb.getProject().getClientInformation(key);
         }

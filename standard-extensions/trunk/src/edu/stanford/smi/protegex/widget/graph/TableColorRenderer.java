@@ -18,24 +18,26 @@ public class TableColorRenderer extends JLabel implements TableCellRenderer {
     }
 
     public Component getTableCellRendererComponent(JTable table, Object color,
-                                                   boolean isSelected,
-                                                   boolean hasFocus,
-                                                   int row, int column) {
-        setBackground((Color)color);
+			boolean isSelected, boolean hasFocus, int row, int column) {
+
+    	setBackground((Color)color);
         if (isBordered) {
             if (isSelected) {
                 if (selectedBorder == null) {
-                    selectedBorder = BorderFactory.createMatteBorder(2, 10, 2, 10, table.getSelectionBackground());
+                    selectedBorder = BorderFactory.createMatteBorder(2, 10, 2,
+							10, table.getSelectionBackground());
                 }
                 setBorder(selectedBorder);
             } else {
                 if (unselectedBorder == null) {
-                    unselectedBorder = BorderFactory.createMatteBorder(2, 10, 2, 10, table.getBackground());
+                    unselectedBorder = BorderFactory.createMatteBorder(2, 10,
+							2, 10, table.getBackground());
                 }
                 setBorder(unselectedBorder);
             }
         }
         return this;
+        
     }
 
     /*public String getToolTipText() {

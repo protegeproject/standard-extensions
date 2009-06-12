@@ -225,8 +225,7 @@ public class GraphWidget extends AbstractSlotWidget {
                 if (cls.isConcrete()) {
 
                     // Add new node to diagram.
-                    String name = cls.getName();
-                    Node node = makeNewNode(name, new Point(xPos, yPos));
+                    Node node = makeNewNode(cls.getName(), cls.getBrowserText(), new Point(xPos, yPos));
                     Instance instance = kb.createInstance(null, cls);
                     node.setInstance(instance);
                     node.setText(instance.getBrowserText());
@@ -255,8 +254,8 @@ public class GraphWidget extends AbstractSlotWidget {
                 Instance instance = (Instance) i.next();
 
                 // Add new node to view.
-                String name = instance.getDirectType().getName();
-                Node node = makeNewNode(name, new Point(xPos, yPos));
+                Cls directType = instance.getDirectType();
+                Node node = makeNewNode(directType.getName(), directType.getBrowserText(), new Point(xPos, yPos));
                 node.setInstance(instance);
                 node.setText(instance.getBrowserText());
                 node.setSize(GraphTypes.NODE_WIDTH, GraphTypes.NODE_HEIGHT);
@@ -518,8 +517,7 @@ public class GraphWidget extends AbstractSlotWidget {
 
         for (int i = 0; i < nodes.size(); i++) {
             Cls cls = (Cls) nodes.get(i);
-            String clsName = cls.getName();
-            Node node = makeNewNode(clsName, new Point());
+            Node node = makeNewNode(cls.getName(), cls.getBrowserText(), new Point());
             JGoDocument doc = palette.getDocument();
             doc.addObjectAtTail(node);
         }
@@ -531,12 +529,13 @@ public class GraphWidget extends AbstractSlotWidget {
         palette.layoutItems();
     }
 
-    private Node makeNewNode(String clsName, Point point) {
+    private Node makeNewNode(String clsName, String browserText, Point point) {
         Node node = new Node();
 
         // Initialize.
-        NodeProperties props = new NodeProperties(clsName, pList);
+        NodeProperties props = new NodeProperties(clsName, browserText, pList);
         String shape = props.getShape();
+
         //node.initialize(point, shape, clsName);
         node.initialize(point, shape, props.getCustomDisplayName());
 

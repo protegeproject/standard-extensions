@@ -13,14 +13,16 @@ public class NodeProperties extends GraphObjectProperties {
     private Color textColor;
 
     private String arrowheadType;
+    private String browserText;
     private String connectorSlot;
     private String customDisplayName;
     private String lineType;
     private String prefix;
     private String shape;
 
-    public NodeProperties(String clsName, PropertyList propertyList) {
+    public NodeProperties(String clsName, String browserText, PropertyList propertyList) {
         super(clsName, propertyList);
+        this.browserText = browserText;
         this.prefix = getPrefix();
         initialize();
     }
@@ -30,7 +32,7 @@ public class NodeProperties extends GraphObjectProperties {
 
         // See if the user has designated a custom display name for the
         // node (custom display names are used in the palette).
-        customDisplayName = getStringProperty(prefix + NodePropertyNames.NODE_DISPLAY_NAME, getClsName());
+        customDisplayName = getStringProperty(prefix + NodePropertyNames.NODE_DISPLAY_NAME, browserText);
 
         // Get the node's shape.  Default to Ellipse if nothing is specified.
         shape = getStringProperty(prefix + NodePropertyNames.NODE_SHAPE, "Ellipse");
