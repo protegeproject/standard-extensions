@@ -33,14 +33,10 @@ public class ViewConfigurationPanel extends JPanel {
     private JRadioButton jump = new JRadioButton(GraphTypes.GRID_SNAP_DURING);
     private JRadioButton afterwards = new JRadioButton(GraphTypes.GRID_SNAP_AFTER);
 
-    private PropertyList props;
     private ViewProperties vProps;
-    private Cls cls;
 
     public ViewConfigurationPanel(Cls cls, PropertyList props) {
         try {
-            this.props = props;
-            this.cls = cls;
             vProps = new ViewProperties(cls.getName(), props);
             initialize();
         } catch (Exception e) {

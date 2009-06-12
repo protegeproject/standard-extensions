@@ -44,8 +44,8 @@ public class LinkUtilities {
     }
 
     private void initialize() {
-        fromSlot = kb.getSlot(GraphTypes.FROM_SLOT);
-        toSlot = kb.getSlot(GraphTypes.TO_SLOT);
+    	fromSlot = kb.getReifedRelationFromSlot();
+    	toSlot = kb.getReifedRelationToSlot();
 
         sourceNode = from.getNode();
         sourceInstance = sourceNode.getInstance();
@@ -169,11 +169,13 @@ public class LinkUtilities {
         SimpleLink sLink = new SimpleLink(from, to);
 
         // Initialize.
-        sLink.initialize(connectorSlot.getName());
+        sLink.initialize(connectorSlot.getBrowserText());
 
         // Get properties.
-        String clsName = sourceInstance.getDirectType().getName();
-        NodeProperties props = new NodeProperties(clsName, pList);
+        Cls directType = sourceInstance.getDirectType();
+        String clsName = directType.getName();
+        String browserText = directType.getBrowserText();
+        NodeProperties props = new NodeProperties(clsName, browserText, pList);
 
         setLineType(props, sLink, Color.black);
         setArrowheadType(props, sLink);

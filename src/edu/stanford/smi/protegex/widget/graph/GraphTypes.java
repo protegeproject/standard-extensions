@@ -27,8 +27,6 @@ public interface GraphTypes {
 
     // Misc.
     String RELATION_SLOT = "slotForRelations";
-    String FROM_SLOT = ":FROM";
-    String TO_SLOT = ":TO";
     String NONE = "< none >";
 
     int NODE_WIDTH = 60;

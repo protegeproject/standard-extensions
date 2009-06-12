@@ -72,8 +72,48 @@ public class NodeConfigurationPanel extends JPanel {
     // for each allowed class.  This info gets saved to the diagram widget's
     // PropertyList.
     ArrayList allowedClsProperties = new ArrayList();
+    
+    class ClsTableModel extends AbstractTableModel {
+        final String[] columnNames = { "Class", "Shape", "Shape Color" };
+        Object[][] data = new Object[allowedClsMap.size()][3];
 
-    public NodeConfigurationPanel(ArrayList allowedClses, PropertyList propertyList) {
+        public int getColumnCount() {
+            return columnNames.length;
+        }
+
+        public int getRowCount() {
+            return data.length;
+        }
+
+        public String getColumnName(int col) {
+            return columnNames[col];
+        }
+
+        public Object getValueAt(int row, int col) {
+            return data[row][col];
+        }
+
+        @SuppressWarnings("unchecked")
+    	public Class getColumnClass(int c) {
+            return getValueAt(0, c).getClass();
+        }
+
+        public boolean isCellEditable(int row, int col) {
+            if (col == 2) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        public void setValueAt(Object value, int row, int col) {
+            data[row][col] = value;
+            fireTableCellUpdated(row, col);
+        }
+    }
+    
+    @SuppressWarnings("unchecked")
+	public NodeConfigurationPanel(ArrayList allowedClses, PropertyList propertyList) {
         try {
             this.propertyList = propertyList;
 
@@ -82,7 +122,11 @@ public class NodeConfigurationPanel extends JPanel {
                     Cls cls = (Cls) allowedClses.get(i);
                     if (cls.isConcrete()) {
                         allowedClsMap.put(cls.getName(), cls);
-                        allowedClsProperties.add(new NodeProperties(cls.getName(), propertyList));
+                        
+                        String clsName = cls.getName();
+                        String browserText = cls.getBrowserText();
+                        NodeProperties props = new NodeProperties(clsName, browserText, propertyList);
+                        allowedClsProperties.add(props);
                     }
 
                     ArrayList subClses = new ArrayList(cls.getSubclasses());
@@ -90,7 +134,8 @@ public class NodeConfigurationPanel extends JPanel {
                         Cls subCls = (Cls) subClses.get(j);
                         if (subCls.isConcrete()) {
                             allowedClsMap.put(subCls.getName(), subCls);
-                            allowedClsProperties.add(new NodeProperties(subCls.getName(), propertyList));
+                            allowedClsProperties.add(new NodeProperties(subCls.getName(), 
+                            	subCls.getBrowserText(), propertyList));
                         }
                     }
                 }
@@ -227,54 +272,33 @@ public class NodeConfigurationPanel extends JPanel {
 
 		lblStrut.setText("");
 
-		connectorPnl.setBorder(new TitledBorder(BorderFactory.createEtchedBorder(Color.white, new Color(148, 145, 140)), "Optional Connector Slot"));
-		connectorPnl.add(jLabel4, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0));
-		connectorPnl.add(jLabel5, new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0));
-		connectorPnl.add(jLabel6, new GridBagConstraints(0, 0, 1, 2, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0));
-		connectorPnl.add(connectorSlots, new GridBagConstraints(1, 0, 1, 2, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
-		connectorPnl.add(arrowheadList, new GridBagConstraints(1, 3, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
-		connectorPnl.add(lineList, new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
-		connectorPnl.add(lblStrut, new GridBagConstraints(2, 0, 1, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
-		connectorPnl.add(displayText, new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0));
+		connectorPnl.setBorder(new TitledBorder(BorderFactory.createEtchedBorder(Color.white, 
+				new Color(148, 145, 140)), "Optional Connector Slot"));
+		
+		connectorPnl.add(jLabel4, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, 
+				GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0));
+		
+		connectorPnl.add(jLabel5, new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0, 
+				GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0));
+		
+		connectorPnl.add(jLabel6, new GridBagConstraints(0, 0, 1, 2, 0.0, 0.0, 
+				GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0));
+		
+		connectorPnl.add(connectorSlots, new GridBagConstraints(1, 0, 1, 2, 0.0, 0.0, 
+				GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
+		
+		connectorPnl.add(arrowheadList, new GridBagConstraints(1, 3, 1, 1, 0.0, 0.0, 
+				GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
+		
+		connectorPnl.add(lineList, new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0, 
+				GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
+		
+		connectorPnl.add(lblStrut, new GridBagConstraints(2, 0, 1, 1, 1.0, 0.0, 
+				GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
+		
+		connectorPnl.add(displayText, new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0, 
+				GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0));
 	}
-
-    class ClsTableModel extends AbstractTableModel {
-        final String[] columnNames = { "Class", "Shape", "Shape Color" };
-        Object[][] data = new Object[allowedClsMap.size()][3];
-
-        public int getColumnCount() {
-            return columnNames.length;
-        }
-
-        public int getRowCount() {
-            return data.length;
-        }
-
-        public String getColumnName(int col) {
-            return columnNames[col];
-        }
-
-        public Object getValueAt(int row, int col) {
-            return data[row][col];
-        }
-
-        public Class getColumnClass(int c) {
-            return getValueAt(0, c).getClass();
-        }
-
-        public boolean isCellEditable(int row, int col) {
-            if (col == 2) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-
-        public void setValueAt(Object value, int row, int col) {
-            data[row][col] = value;
-            fireTableCellUpdated(row, col);
-        }
-    }
 
     private void setUpTableColorRenderer(JTable table) {
         TableCellRenderer cellRenderer = new TableColorRenderer(true);
@@ -299,8 +323,9 @@ public class NodeConfigurationPanel extends JPanel {
 
         // Fill table with the list of allowed classes and their properties.
         for (int i = 0; i < allowedClsProperties.size(); i++) {
-            NodeProperties properties = (NodeProperties) allowedClsProperties.get(i);
-            clsesTable.setValueAt(properties.getClsName(), i, 0);
+        	NodeProperties properties = (NodeProperties) allowedClsProperties.get(i);
+            Cls allowedCls = (Cls) allowedClsMap.get(properties.getClsName());
+            clsesTable.setValueAt(new FrameData(allowedCls), i, 0);
             clsesTable.setValueAt(properties.getShape(), i, 1);
             clsesTable.setValueAt(properties.getShapeColor(), i, 2);
         }
@@ -316,19 +341,29 @@ public class NodeConfigurationPanel extends JPanel {
 
     private void saveCurrentSettings(int index) {
         NodeProperties props = (NodeProperties) allowedClsProperties.get(index);
+        
         props.setCustomDisplayName((displayNameTextField.getText()).trim());
         props.setShape((String) shapeList.getSelectedItem());
         props.setShapeColor((Color) shapeColorList.getSelectedItem());
         props.setTextColor((Color) textColorList.getSelectedItem());
         props.setBold(bold.isSelected());
         props.setItalic(italic.isSelected());
-        props.setConnectorSlot((String) connectorSlots.getSelectedItem());
+        
+        Object obj = connectorSlots.getSelectedItem();
+        if (obj.equals(GraphTypes.NONE)) {
+        	props.setConnectorSlot(GraphTypes.NONE);
+        } else if (obj instanceof FrameData) {
+        	FrameData slotData = (FrameData) obj;
+			props.setConnectorSlot(slotData.getFullName());
+        }
+        
         props.setLineType((String) lineList.getSelectedItem());
         props.setArrowheadType((String) arrowheadList.getSelectedItem());
         props.setDisplayText(displayText.isSelected());
     }
 
-    void tableSelectionChanged(ListSelectionEvent e) {
+    @SuppressWarnings("unchecked")
+	void tableSelectionChanged(ListSelectionEvent e) {
         if (e.getValueIsAdjusting())
             return;
 
@@ -343,13 +378,16 @@ public class NodeConfigurationPanel extends JPanel {
         // Repopulate the "Connector Slots:" combo box.
         connectorSlots.removeAllItems();
         connectorSlots.addItem(GraphTypes.NONE);
-        String className = (String) clsesTable.getValueAt(selectedIndex, 0);
-        Cls cls = (Cls) allowedClsMap.get(className);
+        
+        FrameData data = (FrameData) clsesTable.getValueAt(selectedIndex, 0);
+        Cls cls = (Cls) allowedClsMap.get(data.getFullName());
         ArrayList templateSlots = new ArrayList(cls.getTemplateSlots());
         for (int i = 0; i < templateSlots.size(); i++) {
             Slot templateSlot = (Slot) templateSlots.get(i);
-            if (templateSlot.getValueType() == ValueType.INSTANCE) {
-                connectorSlots.addItem(templateSlot.getName());
+            if ((templateSlot.getValueType() == ValueType.INSTANCE)
+            		&& (!templateSlot.isSystem())) {
+            	FrameData slotData = new FrameData(templateSlot);
+                connectorSlots.addItem(slotData);
             }
         }
 
@@ -357,7 +395,14 @@ public class NodeConfigurationPanel extends JPanel {
         // selected class.
         String connectorSlot = props.getConnectorSlot();
         if (connectorSlot != null) {
-            connectorSlots.setSelectedItem(connectorSlot);
+        	Slot slot = (Slot) cls.getKnowledgeBase().getSlot(connectorSlot);
+        	if (slot != null) {
+				FrameData slotData = new FrameData(slot);
+				connectorSlots.setSelectedItem(slotData);
+			}
+        	else {
+                connectorSlots.setSelectedItem(GraphTypes.NONE);
+        	}
         } else {
             connectorSlots.setSelectedItem(GraphTypes.NONE);
         }
