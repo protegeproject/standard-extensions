@@ -64,6 +64,7 @@
 		<javac srcdir = "${build.src}" destdir = "${build.dest}" deprecation = "${deprecation}" debug = "${debug}" optimize = "${optimize}" includeAntRuntime = "${includeAntRuntime}">
 			<classpath>
 				<pathelement path = "${protege.jar}"/>
+				<pathelement path = "${protege-owl.jar}"/>
 				<fileset dir = "${lib.dir}">
 					<include name = "**/*.jar"/>
 				</fileset>
