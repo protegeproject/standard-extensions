@@ -11,33 +11,26 @@
    <property name = "lib"             location = "./lib"/>
    <property name = "plugin_dist"     value = "edu.stanford.smi.protegex.standard_extensions"/>
    <property name = "pluginName"      value = "standard-extensions"/>
+   <property name = "owl.lib"         location = "${protege.home}/plugins/edu.stanford.smi.protegex.owl/protege-owl.jar"/>
+   <property name = "protege.lib"     location = "${protege.home}/protege.jar"/>
 
    <property name = "image.resource"  value="edu/stanford/smi/protege/resource/image"/>
 
-   <target name="checkProtegeHome">
-       <condition property="protege.home.set">
-           <available file="${protege.home}/protege.jar" type="file"/>
-       </condition>
-   </target>
-
-   <target name="useProtegeHome" depends="checkProtegeHome" if="protege.home.set">
+   <target name = "checkProtegeLibs">
        <echo message="Using Protege Home = ${protege.home} to find protege jars"/>
        <property name="protege.lib" value="${protege.home}/protege.jar"/>
+       <condition property="libs.found">
+           <and>
+               <available file="${protege.lib}" type = "file"/>
+               <available file="${owl.lib}"/>
+           </and>
+       </condition>
+        <path id = "project.classpath">    
+            <pathelement location = "${protege.lib}"/>
+            <pathelement location = "${owl.lib}"/>
+            <fileset dir="${lib}"/>
+        </path>
    </target>
-    
-
-    <target name = "checkProtegeLibs" depends="useProtegeHome">
-      <condition property="libs.found">
-        <and>
-          <available file="${protege.lib}" type = "file"/>
-        </and>
-      </condition>
-      <path id = "project.classpath">    
-        <pathelement location = "${protege.lib}"/>
-        <fileset dir="${lib}"/>
-      </path>
-
-    </target>
 
     <target name="checkProtegeLibsAndReport" depends="checkProtegeLibs"
             unless="libs.found">
@@ -151,7 +144,7 @@
             todir="${protege.home}/plugins/${plugin_dist}"/>
    </target>
 
-   <target name = "install" depends = "checkProtegeHome, dist">
+   <target name = "install" depends = "dist">
       <fail message = "set the protege.home variable to do an install">
          <condition>
             <not>
