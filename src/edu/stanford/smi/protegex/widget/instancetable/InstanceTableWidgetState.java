@@ -1,10 +1,17 @@
 package edu.stanford.smi.protegex.widget.instancetable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 
-import edu.stanford.smi.protege.model.*;
-import edu.stanford.smi.protege.util.*;
-import edu.stanford.smi.protegex.widget.abstracttable.*;
+import edu.stanford.smi.protege.model.Cls;
+import edu.stanford.smi.protege.model.KnowledgeBase;
+import edu.stanford.smi.protege.model.Slot;
+import edu.stanford.smi.protege.util.Assert;
+import edu.stanford.smi.protege.util.PropertyList;
+import edu.stanford.smi.protegex.widget.abstracttable.AbstractTableWidgetState;
 
 /**
  *  Stores list is slots to use as column and for each of these it stores a
@@ -26,11 +33,11 @@ public class InstanceTableWidgetState extends AbstractTableWidgetState {
     private boolean _createFormForNewInstances;
     private boolean _highlightSelectedRow;
 
-    private ArrayList _availableSlots;
-    private ArrayList _visibleSlots;
-    private HashMap _slotToVisibleSlotDescriptions;
-    private Collection _allowedClses;
-    private KnowledgeBase _kb;
+    protected ArrayList _availableSlots;
+    protected ArrayList _visibleSlots;
+    protected HashMap _slotToVisibleSlotDescriptions;
+    protected Collection _allowedClses;
+    protected KnowledgeBase _kb;
 
     private final static String VISIBLE_SLOT_LIST = ":Visible:Slot:List";
     private final static String VISIBLE_SLOT_INDEX = ":Visible:Slot:Index";
@@ -55,10 +62,11 @@ public class InstanceTableWidgetState extends AbstractTableWidgetState {
         broadcast();
     }
 
-    public void dispose() {
+    @Override
+	public void dispose() {
     }
 
-    private void getAllSlots() {
+    protected void getAllSlots() {
         // this hack of a test is necessary because this method is called by the superclass constructor before the variable
         // has been initialized.
         Collection allowedSlots = null;
@@ -169,7 +177,8 @@ public class InstanceTableWidgetState extends AbstractTableWidgetState {
         removeSlotVisibility((Slot) _visibleSlots.get(index));
     }
 
-    public void restore() {
+    @Override
+	public void restore() {
         // This gets called by the superclass before the local variables are initialized.  It gets called again
         // by the constructor after they are initialized.  This is a horrible hack.
         if (_kb != null) {
@@ -227,7 +236,8 @@ public class InstanceTableWidgetState extends AbstractTableWidgetState {
         return;
     }
 
-    public void save() {
+    @Override
+	public void save() {
         saveVisibleSlotDescriptions();
         saveColumnOrderings();
         _properties.setBoolean(AUTO_SELECT_INSERTIONS, _autoSelectInsertions);
