@@ -22,7 +22,8 @@
 
    <target name="useProtegeHome" depends="checkProtegeHome" if="protege.home.set">
        <echo message="Using Protege Home = ${protege.home} to find protege jars"/>
-       <property name="protege.lib" value="${protege.home}/protege.jar"/>
+       <property name="protege.lib" location="${protege.home}/protege.jar"/>
+       <property name="owl.lib"     location="${protege.home}/plugins/edu.stanford.smi.protegex.owl/protege-owl.jar"/>
    </target>
     
 
@@ -30,10 +31,12 @@
       <condition property="libs.found">
         <and>
           <available file="${protege.lib}" type = "file"/>
+          <available file="${owl.lib}" type = "file"/>
         </and>
       </condition>
       <path id = "project.classpath">    
         <pathelement location = "${protege.lib}"/>
+        <pathelement location = "${owl.lib}"/>
         <fileset dir="${lib}"/>
       </path>
 
