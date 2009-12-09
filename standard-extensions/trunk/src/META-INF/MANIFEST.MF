@@ -43,3 +43,6 @@ Slot-Widget: True
 Name: edu/stanford/smi/protegex/widget/editorpane/EditorPanePlainWidget.class
 Slot-Widget: True
 
+Name: edu.stanford.smi.protegex.widget.combobox.ComboBoxInstanceWidget
+Slot-Widget: True
+
