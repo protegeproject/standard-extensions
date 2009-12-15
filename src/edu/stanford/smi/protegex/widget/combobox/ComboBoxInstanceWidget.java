@@ -1,8 +1,6 @@
 package edu.stanford.smi.protegex.widget.combobox;
 
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -12,7 +10,6 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -45,7 +42,7 @@ public class ComboBoxInstanceWidget extends ComboBoxWidget {
 	protected final static String NONE = "";
 	private SteppedComboBox _comboBox;
 
-	private JButton addButton;
+	//private JButton addButton;
 	private JLabel label;
 	private List values;
 	private Instance _instance = null;
@@ -65,14 +62,17 @@ public class ComboBoxInstanceWidget extends ComboBoxWidget {
 
 	public void initialize() {
 		super.initialize();
-		addButton = new JButton("New");
+			
 		label = new JLabel(getLabel());
+		/*
+		addButton = new JButton("New");
 		addButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-
 				handleCreateAction();
 			}
 		});
+		*/
+		
 		setRenderer(FrameRenderer.createInstance());
 		JPanel footerPanel = new JPanel();
 		footerPanel.setLayout(new BoxLayout(footerPanel, BoxLayout.X_AXIS));
@@ -83,7 +83,8 @@ public class ComboBoxInstanceWidget extends ComboBoxWidget {
 
 		footerPanel.add(cb);	
 		footerPanel.add(Box.createRigidArea(new Dimension(10, 10)));
-		footerPanel.add(addButton);
+		//TODO: make it configurable
+		//footerPanel.add(addButton);
 		footerPanel.setPreferredSize(new Dimension(1, 25));
 		add(footerPanel);
 		setPreferredColumns(2);
