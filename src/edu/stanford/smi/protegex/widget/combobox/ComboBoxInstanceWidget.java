@@ -64,6 +64,7 @@ public class ComboBoxInstanceWidget extends ComboBoxWidget {
 		super.initialize();
 			
 		label = new JLabel(getLabel());
+		//TODO: make it configurable
 		/*
 		addButton = new JButton("New");
 		addButton.addActionListener(new ActionListener() {
@@ -83,7 +84,7 @@ public class ComboBoxInstanceWidget extends ComboBoxWidget {
 
 		footerPanel.add(cb);	
 		footerPanel.add(Box.createRigidArea(new Dimension(10, 10)));
-		//TODO: make it configurable
+		
 		//footerPanel.add(addButton);
 		footerPanel.setPreferredSize(new Dimension(1, 25));
 		add(footerPanel);
@@ -103,19 +104,17 @@ public class ComboBoxInstanceWidget extends ComboBoxWidget {
 		} else {
 			values = new ArrayList();
 			values.add(NONE);
+			
 			ValueType type = getCls().getTemplateSlotValueType(slot);
-
 			Collection clses = getCls().getTemplateSlotAllowedClses(getSlot());
 
 			for (Iterator it = clses.iterator(); it.hasNext();) {
-				Cls individual = (Cls) it.next();
-
-				for (Iterator it1 = individual.getInstances().iterator(); it1.hasNext();) {
+				Cls cls = (Cls) it.next();
+				for (Iterator it1 = cls.getInstances().iterator(); it1.hasNext();) {
 					Instance inst = (Instance) it1.next();
 					values.add(inst);
 				}
 			}
-
 			if (type == ValueType.SYMBOL) {
 				values.addAll(getCls().getTemplateSlotAllowedValues(slot));
 			}
