@@ -35,20 +35,38 @@ public class PagedFrameList extends LabeledComponent {
     private SearchType searchType;
     
     public enum SearchType {
-    	STARTS_WITH, ENDS_WITH, CONTAINS;
-    	
-    	public String makeSearchString(String s) {
-    		switch (this) {
-    		case STARTS_WITH:
-    			return s + "*";
-    		case ENDS_WITH:
+    	STARTS_WITH("Starts With") {
+            public String makeSearchString(String s) {
+                return s + "*";
+            }
+    	}, 
+        ENDS_WITH("Ends With") {
+            public String makeSearchString(String s) {
     			return "*" + s;
-    		case CONTAINS:
+            }
+        }, 
+        CONTAINS("Contains") {
+            public String makeSearchString(String s) {
     			return "*" + s + "*";
-    		default:
-    			throw new IllegalStateException("Programmer error");
-    		}
+            }
+        }, 
+        EXACT_MATCH("Exact Match") {
+            public String makeSearchString(String s) {
+    			return s;
+            }
+        };
+    	
+    	private String name;
+    	
+    	private SearchType(String name) {
+    		this.name = name;
     	}
+    	
+    	public String getName() {
+    		return name;
+    	}
+    	
+    	public abstract String makeSearchString(String s);
     }
     
     public PagedFrameList(String title) {
