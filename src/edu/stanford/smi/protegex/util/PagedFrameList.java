@@ -4,7 +4,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -18,14 +17,14 @@ import edu.stanford.smi.protege.ui.Finder;
 import edu.stanford.smi.protege.util.ComponentFactory;
 import edu.stanford.smi.protege.util.FrameWithBrowserText;
 import edu.stanford.smi.protege.util.LabeledComponent;
-import edu.stanford.smi.protege.util.Log;
 import edu.stanford.smi.protege.util.SelectableList;
 import edu.stanford.smi.protege.util.SimpleStringMatcher;
 import edu.stanford.smi.protege.util.StringMatcher;
 
 public class PagedFrameList extends LabeledComponent {
     private static final long serialVersionUID = 8889044179950621525L;
-    private static final transient Logger log = Log.getLogger(PagedFrameList.class);
+
+
     
     private int pageSize = 50;
     private List<FrameWithBrowserText> allFrames;
@@ -33,6 +32,24 @@ public class PagedFrameList extends LabeledComponent {
     private SelectableList framesList;
     private JButton scrollBack;
     private JButton scrollForward;
+    private SearchType searchType;
+    
+    public enum SearchType {
+    	STARTS_WITH, ENDS_WITH, CONTAINS;
+    	
+    	public String makeSearchString(String s) {
+    		switch (this) {
+    		case STARTS_WITH:
+    			return s + "*";
+    		case ENDS_WITH:
+    			return "*" + s;
+    		case CONTAINS:
+    			return "*" + s + "*";
+    		default:
+    			throw new IllegalStateException("Programmer error");
+    		}
+    	}
+    }
     
     public PagedFrameList(String title) {
         super(title, new JScrollPane());
@@ -40,6 +57,11 @@ public class PagedFrameList extends LabeledComponent {
         framesList = ComponentFactory.createSelectableList(null);
         scrollable.setViewportView(framesList);
         setFooterComponent(makeFooter());
+        setSearchType(SearchType.CONTAINS);
+    }
+    
+    public void setSearchType(SearchType searchType) {
+    	this.searchType = searchType;
     }
     
     private JComponent makeFooter() {
@@ -64,7 +86,7 @@ public class PagedFrameList extends LabeledComponent {
             
             @Override
             protected List<Frame> getMatches(String text, int maxMatches) {
-                StringMatcher matcher = new SimpleStringMatcher("*" + text + "*");
+                StringMatcher matcher = new SimpleStringMatcher(searchType.makeSearchString(text));
                 int counter = 0;
                 List<Frame> results = new ArrayList<Frame>(); 
                 for (FrameWithBrowserText frame : allFrames) {
