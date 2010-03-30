@@ -10,6 +10,7 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.ListCellRenderer;
 
 import edu.stanford.smi.protege.model.Frame;
 import edu.stanford.smi.protege.resource.Icons;
@@ -24,7 +25,7 @@ import edu.stanford.smi.protege.util.StringMatcher;
 public class PagedFrameList extends LabeledComponent {
     private static final long serialVersionUID = 8889044179950621525L;
 
-
+    private Finder finder;
     
     private int pageSize = 50;
     private List<FrameWithBrowserText> allFrames;
@@ -96,7 +97,7 @@ public class PagedFrameList extends LabeledComponent {
         scrollBack.setEnabled(false);
         footer.add(scrollBack);
         
-        footer.add(new Finder("Find") {
+        finder = new Finder("Find") {
             @Override
             protected int getBestMatch(List matches, String text) {
                 return 0;
@@ -133,7 +134,8 @@ public class PagedFrameList extends LabeledComponent {
                     framesList.setSelectedIndex(selection);
                 }
             }
-        });
+        };
+        footer.add(finder);
         
         scrollForward = new JButton(Icons.getForwardIcon());
         scrollForward.addActionListener(new ActionListener() {
@@ -193,6 +195,9 @@ public class PagedFrameList extends LabeledComponent {
         return framesList;
     }
 
-
+    public void setCellRenderer(ListCellRenderer cellRenderer) {
+        finder.setCellRenderer(cellRenderer);
+        framesList.setCellRenderer(cellRenderer);
+    }
     
 }
