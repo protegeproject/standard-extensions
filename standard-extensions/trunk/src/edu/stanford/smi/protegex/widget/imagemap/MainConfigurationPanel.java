@@ -17,6 +17,8 @@ import edu.stanford.smi.protegex.util.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public class MainConfigurationPanel extends JPanel implements Validatable, Observer {
+    private static final long serialVersionUID = 1585325870972140655L;
+
     private ImageMapState _state;
 
     private URIField _imageLocation;

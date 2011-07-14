@@ -29,6 +29,7 @@ import edu.stanford.smi.protege.model.Slot;
  * @author Jennifer Vendetti
  */
 public class Node extends JGoBasicNode {
+    private static final long serialVersionUID = -5078826264550259620L;
     private Instance instance = null;
     private JGoDrawable drawable = null;
     private NodeLabel label = null;

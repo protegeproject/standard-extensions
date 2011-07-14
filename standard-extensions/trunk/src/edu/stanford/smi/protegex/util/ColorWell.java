@@ -13,6 +13,8 @@ import javax.swing.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public class ColorWell extends JPanel {
+    private static final long serialVersionUID = -1055373818922007854L;
+
     private final static String DEFAULT_DIALOG_LABEL = "Choose a Color";
 
     private ActionListener _okListener;

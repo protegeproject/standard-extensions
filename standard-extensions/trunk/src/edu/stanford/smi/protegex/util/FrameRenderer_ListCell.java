@@ -11,6 +11,8 @@ import javax.swing.*;
  */
 public class FrameRenderer_ListCell extends JLabel implements ListCellRenderer {
 
+    private static final long serialVersionUID = 7396337691367728978L;
+
     public FrameRenderer_ListCell() {
         setOpaque(true);
     }

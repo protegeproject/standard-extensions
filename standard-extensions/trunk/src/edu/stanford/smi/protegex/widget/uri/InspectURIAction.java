@@ -10,6 +10,8 @@ import edu.stanford.smi.protege.util.*;
  * @author    Qi Li <liq@smi.stanford.edu>
  */
 public abstract class InspectURIAction extends AllowableAction {
+    private static final long serialVersionUID = 8840305290335979538L;
+
     public InspectURIAction(String text) {
         super("Inspect URI Site", text, Icons.getInspectIcon(), null);
     }

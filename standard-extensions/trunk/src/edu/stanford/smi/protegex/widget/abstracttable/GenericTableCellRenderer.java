@@ -17,6 +17,8 @@ import edu.stanford.smi.protege.model.Frame;
  */
 public class GenericTableCellRenderer extends JLabel implements TableCellRenderer {
 
+    private static final long serialVersionUID = 4062004666892839353L;
+
     public GenericTableCellRenderer(boolean highlightSelectedRow) {
         super();
         setBorder(null);

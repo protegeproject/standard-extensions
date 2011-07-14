@@ -13,6 +13,7 @@ import edu.stanford.smi.protege.util.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public class AddButton extends ScatterboxAction {
+    private static final long serialVersionUID = 4063798177558405497L;
     private String _dialogTitle;
 
     public AddButton(

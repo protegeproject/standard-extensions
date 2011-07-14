@@ -5,6 +5,8 @@ import com.nwoods.jgo.*;
 
 public class SimpleLink extends JGoLabeledLink {
 
+    private static final long serialVersionUID = 1693064977873440928L;
+
     public SimpleLink() {
         super();
     }

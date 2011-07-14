@@ -17,6 +17,7 @@ import edu.stanford.smi.protege.widget.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public abstract class ScatterboxWidget extends AbstractSlotWidget {
+    private static final long serialVersionUID = 3432901280334140433L;
     protected ScatterboxWidgetState _state;
     protected ScatterboxTable _table;
     protected ScatterboxTableModel _model;

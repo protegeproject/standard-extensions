@@ -73,6 +73,7 @@ import edu.stanford.smi.protege.util.SystemUtilities;
  * @author Jennifer Vendetti
  */
 public class HTMLExportConfigDialog extends JDialog {
+    private static final long serialVersionUID = 6135579028602268526L;
     JButton cancelButton = new JButton("Cancel", Icons.getCancelIcon());
     JButton checkAllFacetsButton = new JButton("Check All");
     JButton checkAllSlotsButton = new JButton("Check All");
@@ -752,6 +753,8 @@ public class HTMLExportConfigDialog extends JDialog {
 
     private Action createAddClsAction() {
         return new AddAction(ResourceKey.CLASS_ADD) {
+            private static final long serialVersionUID = -3744951205356444658L;
+
             @Override
 			public void onAdd() {
                 Collection c = DisplayUtilities.pickClses(generalPanel,
@@ -765,6 +768,8 @@ public class HTMLExportConfigDialog extends JDialog {
 
     private Action createRemoveClsAction() {
         return new RemoveAction(ResourceKey.CLASS_REMOVE, classesList) {
+            private static final long serialVersionUID = 4188446620166264499L;
+
             @Override
 			public void onRemove(Collection values) {
                 ComponentUtilities.removeListValues(classesList, values);

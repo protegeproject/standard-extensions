@@ -13,6 +13,7 @@ import edu.stanford.smi.protege.model.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public abstract class ContainsWidget_AbstractAction extends AbstractAction {
+    private static final long serialVersionUID = -718905515021290019L;
     protected ContainsWidget _widget;
     protected Project _project;
     protected KnowledgeBase _kb;

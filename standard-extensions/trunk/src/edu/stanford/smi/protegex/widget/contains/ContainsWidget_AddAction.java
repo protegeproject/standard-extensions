@@ -13,6 +13,7 @@ import edu.stanford.smi.protege.ui.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public class ContainsWidget_AddAction extends ContainsWidget_AbstractAction {
+    private static final long serialVersionUID = 4571238097082821522L;
     private String _dialogTitle;
 
     public ContainsWidget_AddAction(ContainsWidget widget) {

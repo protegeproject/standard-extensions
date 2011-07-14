@@ -14,6 +14,8 @@ import edu.stanford.smi.protege.util.*;
  */
 public class Action_MoveUp extends Action_AbstractTableListener {
 
+    private static final long serialVersionUID = 3299485715199010663L;
+
     public Action_MoveUp(InstanceTableWidget widget, InstanceTable table) {
         super((widget.getState()).getMoveInstanceUpTooltip(), Icons.getUpIcon(), widget, table);
     }

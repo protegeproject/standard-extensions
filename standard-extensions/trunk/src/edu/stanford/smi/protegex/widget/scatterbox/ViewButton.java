@@ -10,6 +10,8 @@ import edu.stanford.smi.protege.resource.*;
  */
 public class ViewButton extends ScatterboxAction {
 
+    private static final long serialVersionUID = -2702244290272808217L;
+
     public ViewButton(
         ScatterboxWidget widget,
         ScatterboxTable table,

@@ -12,6 +12,7 @@ import edu.stanford.smi.protege.util.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public class InPlaceEditingConfigurationPanel extends AbstractTableWidgetConfigurationSubPanel implements Validatable {
+    private static final long serialVersionUID = 2131089154655761041L;
     private UseDialogPanel _useDialogForClasses;
     private UseDialogPanel _useDialogForInstances;
     private JCheckBox _inPlaceEditingCheckBox;

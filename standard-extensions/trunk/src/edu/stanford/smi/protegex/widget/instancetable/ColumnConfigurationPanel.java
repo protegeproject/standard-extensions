@@ -17,12 +17,15 @@ import edu.stanford.smi.protege.util.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public class ColumnConfigurationPanel extends JPanel implements Validatable {
+    private static final long serialVersionUID = 4398950154292954702L;
     private ConfigTable _underlyingTable;
     private InstanceTableWidgetState _state;
     private AddSlot _slotAdder;
     private RemoveSlot _slotRemover;
 
     private class AddSlot extends AbstractAction {
+        private static final long serialVersionUID = 4388173307102002986L;
+
         public AddSlot() {
             super("Add one or more slots to the list of columns", Icons.getAddIcon());
         }
@@ -43,6 +46,8 @@ public class ColumnConfigurationPanel extends JPanel implements Validatable {
     }
 
     private class RemoveSlot extends AbstractAction {
+        private static final long serialVersionUID = 6596049371835880091L;
+
         public RemoveSlot() {
             super("Remove the currently selected column", Icons.getRemoveIcon());
         }

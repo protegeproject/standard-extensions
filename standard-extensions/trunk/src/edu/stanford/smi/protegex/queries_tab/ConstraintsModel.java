@@ -3,7 +3,8 @@ package edu.stanford.smi.protegex.queries_tab;
 import javax.swing.*;
 
 public class ConstraintsModel extends DefaultComboBoxModel{
-   private static final String[] types = {"null","BOOLEAN","CLS", "FLOAT", "INSTANCE", "INTEGER", "STRING", "SYMBOL"};
+   private static final long serialVersionUID = 5312915838647751993L;
+private static final String[] types = {"null","BOOLEAN","CLS", "FLOAT", "INSTANCE", "INTEGER", "STRING", "SYMBOL"};
    private static final String[] booleanConstraints = {"is" };
    private static final String[] clsConstraints = {"contains", "does not contain"};
    private static final String[] floatConstraints = {"is", "is greater than", "is less than"};

@@ -9,6 +9,8 @@ import edu.stanford.smi.protege.model.*;
  */
 public class DomainRangeObjectPairEntryScatterboxWidget extends ScatterboxWidget {
 
+    private static final long serialVersionUID = -2938578903728571674L;
+
     protected KBQueryUtils getQueryUtilsObject() {
         return new DomainRangeObjectPairEntry();
     }

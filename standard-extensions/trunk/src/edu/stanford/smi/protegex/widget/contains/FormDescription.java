@@ -12,6 +12,7 @@ import edu.stanford.smi.protege.model.*;
  */
 public abstract class FormDescription extends JLabel {
 
+    private static final long serialVersionUID = 2951715720232312763L;
     protected Instance _instance;
     private SentenceUpdater _sentenceUpdater;
     private String _description;

@@ -5,7 +5,8 @@ import java.util.*;
 import javax.swing.*;
 
 public class SlotsModel extends DefaultComboBoxModel{
-   private Collection slots;
+   private static final long serialVersionUID = 2585523361788138059L;
+private Collection slots;
    private String[] slotNames;
    private String[] slotTypes;
    private String type;

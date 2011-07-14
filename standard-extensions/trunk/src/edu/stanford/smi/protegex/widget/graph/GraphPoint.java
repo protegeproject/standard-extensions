@@ -3,6 +3,7 @@ package edu.stanford.smi.protegex.widget.graph;
 import java.awt.Point;
 
 public class GraphPoint extends Point {
+    private static final long serialVersionUID = -9007357250148307210L;
     private int x;
     private int y;
 

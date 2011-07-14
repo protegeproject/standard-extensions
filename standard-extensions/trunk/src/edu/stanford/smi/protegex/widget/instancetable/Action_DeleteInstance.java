@@ -12,6 +12,7 @@ import edu.stanford.smi.protege.resource.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public class Action_DeleteInstance extends Action_AbstractTableListener {
+    private static final long serialVersionUID = 2846989099625618392L;
     private KnowledgeBase _kb;
 
     public Action_DeleteInstance(InstanceTableWidget widget, InstanceTable table) {

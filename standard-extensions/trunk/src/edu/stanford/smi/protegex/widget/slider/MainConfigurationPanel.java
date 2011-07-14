@@ -16,6 +16,7 @@ import edu.stanford.smi.protege.util.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public class MainConfigurationPanel extends JPanel implements Validatable {
+    private static final long serialVersionUID = 1337777428551820435L;
     private SliderProperties _properties;
     private JTextField _tickIncrement;
     private JCheckBox _displayTicks;

@@ -16,6 +16,7 @@ import edu.stanford.smi.protegex.widget.abstracttable.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public class ScatterboxTable extends AbstractTable {
+    private static final long serialVersionUID = -4998649260240980508L;
     private ScatterboxWidget _widget;
     private ScatterboxWidgetState _state;
     private RowHeader _rowHeader;

@@ -8,6 +8,7 @@ import edu.stanford.smi.protege.util.PropertyList;
 import edu.stanford.smi.protege.widget.WidgetConfigurationPanel;
 
 public class GraphConfigurationPanel extends WidgetConfigurationPanel {
+    private static final long serialVersionUID = 2522822069038437603L;
     private NodeConfigurationPanel nodePanel;
     private RelationConfigurationPanel relationPanel;
     private ViewConfigurationPanel viewPanel;

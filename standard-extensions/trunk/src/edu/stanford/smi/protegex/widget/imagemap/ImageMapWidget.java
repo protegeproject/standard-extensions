@@ -14,6 +14,7 @@ import edu.stanford.smi.protege.widget.*;
  */
 public class ImageMapWidget extends AbstractSlotWidget implements Observer {
 
+    private static final long serialVersionUID = -5993694705929138540L;
     // actual instance code begins here
     private ImageMapState _state;
     private String _currentValue;

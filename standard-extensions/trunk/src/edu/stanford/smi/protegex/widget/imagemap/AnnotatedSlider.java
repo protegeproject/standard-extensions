@@ -13,6 +13,7 @@ import javax.swing.event.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 class AnnotatedSlider extends JPanel {
+    private static final long serialVersionUID = -5194436711487711835L;
     public final static int LINE_VIEW = 0;
     public final static int TEXT_VIEW = 1;
 

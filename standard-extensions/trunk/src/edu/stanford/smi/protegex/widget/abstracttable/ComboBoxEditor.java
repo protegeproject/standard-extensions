@@ -10,6 +10,7 @@ import edu.stanford.smi.protege.model.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public abstract class ComboBoxEditor extends JComboBox implements TableEditorInterface {
+    private static final long serialVersionUID = 5512576126000550787L;
     protected Instance _instance;
     protected Slot _slot;
     protected boolean _readingFromModel;

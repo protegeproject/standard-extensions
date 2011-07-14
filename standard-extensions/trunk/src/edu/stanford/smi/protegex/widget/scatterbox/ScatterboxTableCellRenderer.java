@@ -15,6 +15,7 @@ import edu.stanford.smi.protegex.widget.abstracttable.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public class ScatterboxTableCellRenderer extends GenericTableCellRenderer implements Constants {
+    private static final long serialVersionUID = 4411051146754958894L;
     private AbstractTableWidgetValue _abstractTableWidgetValue;
     private ScatterboxWidget _widget;
     private ScatterboxWidgetState _widgetState;

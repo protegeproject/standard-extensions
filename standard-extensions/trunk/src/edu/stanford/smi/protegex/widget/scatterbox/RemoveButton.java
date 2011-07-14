@@ -10,6 +10,8 @@ import edu.stanford.smi.protege.resource.*;
  */
 public class RemoveButton extends ScatterboxAction {
 
+    private static final long serialVersionUID = 6499022347146079472L;
+
     public RemoveButton(
         ScatterboxWidget widget,
         ScatterboxTable table,

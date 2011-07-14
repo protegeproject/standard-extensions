@@ -13,6 +13,7 @@ import edu.stanford.smi.protegex.util.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public class SymbolEditor extends ComboBoxEditor {
+    private static final long serialVersionUID = 4447324250250517518L;
     protected AlphabeticalComboBoxModel _model;
 
     public SymbolEditor() {

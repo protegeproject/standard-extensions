@@ -13,6 +13,7 @@ import javax.swing.table.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public abstract class AbstractTable extends JTable {
+    private static final long serialVersionUID = -8120613409704165834L;
     protected TableModel _model;
     protected AbstractTableWidgetCellEditor _editor;
 

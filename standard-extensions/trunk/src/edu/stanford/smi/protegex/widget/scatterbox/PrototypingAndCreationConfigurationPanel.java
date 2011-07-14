@@ -8,6 +8,7 @@ import edu.stanford.smi.protegex.util.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public class PrototypingAndCreationConfigurationPanel extends AbstractWidgetConfigurationPanel {
+    private static final long serialVersionUID = 2332324786346910115L;
     private ScatterboxWidgetState _scatterboxWidgetState;
 
     public PrototypingAndCreationConfigurationPanel(ScatterboxWidgetState state) {

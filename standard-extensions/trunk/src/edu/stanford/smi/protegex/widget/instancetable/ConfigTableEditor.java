@@ -19,6 +19,7 @@ import edu.stanford.smi.protegex.widget.abstracttable.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public class ConfigTableEditor extends JTextField implements TableCellEditor {
+    private static final long serialVersionUID = 5818774260021722810L;
     private JTable _underlyingTable;
     private ColorWell _colorWell;
     private boolean _editingUsingColorWell;

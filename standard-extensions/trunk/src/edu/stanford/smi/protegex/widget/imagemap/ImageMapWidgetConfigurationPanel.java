@@ -9,6 +9,8 @@ import edu.stanford.smi.protege.widget.*;
  */
 public class ImageMapWidgetConfigurationPanel extends WidgetConfigurationPanel {
 
+    private static final long serialVersionUID = -4435140494098000371L;
+
     public ImageMapWidgetConfigurationPanel(ImageMapWidget widget) {
         super(widget);
         addTab("Configure ImageMap", new MainConfigurationPanel(widget));

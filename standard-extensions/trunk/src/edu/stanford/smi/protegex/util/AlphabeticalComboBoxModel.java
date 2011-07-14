@@ -10,6 +10,7 @@ import javax.swing.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public class AlphabeticalComboBoxModel extends AbstractListModel implements ComboBoxModel {
+    private static final long serialVersionUID = 6716420400889974829L;
     private ArrayList _contents;
     private Object _selectedItem;
     private int _selectionIndex;

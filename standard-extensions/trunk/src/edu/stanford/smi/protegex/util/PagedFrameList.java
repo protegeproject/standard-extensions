@@ -98,6 +98,8 @@ public class PagedFrameList extends LabeledComponent {
         footer.add(scrollBack);
         
         finder = new Finder("Find") {
+            private static final long serialVersionUID = -2476008720600394755L;
+
             @Override
             protected int getBestMatch(List matches, String text) {
                 return 0;

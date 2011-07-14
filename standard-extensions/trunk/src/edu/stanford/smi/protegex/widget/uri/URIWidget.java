@@ -22,6 +22,8 @@ import edu.stanford.smi.protege.widget.*;
  */
 
 public class URIWidget extends AbstractSlotWidget {
+    private static final long serialVersionUID = 5935821209965384422L;
+
     private final static String SLOT_NAME = "uri-value";
 
     private JTextField itsTextField;
@@ -135,6 +137,8 @@ public class URIWidget extends AbstractSlotWidget {
     private Action getCheckURIAction() {
 
         itsCheckAction = new CheckURIAction("Check URI Syntax") {
+            private static final long serialVersionUID = -7276717254833855910L;
+
             public void onCheckURI() {
                 // Since lost focus happens, do nothing here
             }
@@ -144,6 +148,8 @@ public class URIWidget extends AbstractSlotWidget {
 
     private Action getInspectURIAction() {
         itsInspectAction = new InspectURIAction("Inspect URI Site") {
+            private static final long serialVersionUID = -6336498276587786728L;
+
             public void onInspectURI() {
                 String URIstring = itsTextField.getText();
                 String response = checkURLWeb(URIstring);
@@ -161,6 +167,8 @@ public class URIWidget extends AbstractSlotWidget {
 
     private Action getRemoveInstanceAction() {
         itsRemoveAction = new RemoveAction("Remove Instance", this) {
+            private static final long serialVersionUID = -1080506743274821865L;
+
             public void onRemove(Object o) {
                 removeDisplayedInstance();
             }
@@ -170,6 +178,8 @@ public class URIWidget extends AbstractSlotWidget {
 
     private Action getSelectInstanceAction() {
         itsAddAction = new AddAction("Add Instance") {
+            private static final long serialVersionUID = -4002345467039679996L;
+
             public void onAdd() {
                 Collection clses = getCls().getTemplateSlotAllowedClses(getSlot());
                 Instance instance = DisplayUtilities.pickInstance(URIWidget.this, clses);
@@ -223,6 +233,8 @@ public class URIWidget extends AbstractSlotWidget {
 
     private Action getViewInstanceAction() {
         return new ViewAction("View Instance", this) {
+            private static final long serialVersionUID = -4064551812371783604L;
+
             public void onView(Object o) {
                 showInstance((Instance) o);
             }

@@ -15,6 +15,7 @@ import edu.stanford.smi.protege.widget.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public class WidgetWrapper extends JPanel implements WidgetWrapperActionProcessor {
+    private static final long serialVersionUID = -5606596964642743694L;
     private Instance _instance;
     private ClsWidget _centerWidget;
     private WidgetWrapperPool _widgetWrapperPool;

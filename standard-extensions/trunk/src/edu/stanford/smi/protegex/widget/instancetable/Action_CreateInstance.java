@@ -15,6 +15,7 @@ import edu.stanford.smi.protege.ui.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public class Action_CreateInstance extends AbstractAction {
+    private static final long serialVersionUID = 2118792969566825716L;
     private String _dialogTitle;
     private InstanceTableWidget _widget;
     private InstanceTableWidgetState _widgetState;

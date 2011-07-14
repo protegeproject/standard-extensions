@@ -10,6 +10,8 @@ import edu.stanford.smi.protegex.util.*;
  */
 public class ContainsWidgetConfigurationPanel extends WidgetConfigurationPanel {
 
+    private static final long serialVersionUID = -4300073822249980383L;
+
     public ContainsWidgetConfigurationPanel(ContainsWidget widget) {
         super(widget);
         addTab("Action Buttons", new SixButtonsConfigurationPanel(widget.getState()));

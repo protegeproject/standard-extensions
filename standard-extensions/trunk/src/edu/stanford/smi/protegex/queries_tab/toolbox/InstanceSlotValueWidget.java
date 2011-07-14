@@ -169,6 +169,8 @@ public class InstanceSlotValueWidget extends AbstractListValueWidget implements 
 
     private Action getRemoveInstanceAction() {
         return new AbstractAction("Remove Instance", Icons.getRemoveIcon()) {
+            private static final long serialVersionUID = 2336157783718392174L;
+
             public void actionPerformed(ActionEvent event) {
                 removeInstance();
             }
@@ -196,6 +198,8 @@ public class InstanceSlotValueWidget extends AbstractListValueWidget implements 
     /** Get Select(+) Instance Action. */
     private Action getSelectInstanceAction() {
         return new AbstractAction("Select Instance", Icons.getAddIcon()) {
+            private static final long serialVersionUID = -4394082638906363413L;
+
             public void actionPerformed(ActionEvent event) {
                 if (instanceSlot == null)
                     return;
@@ -218,6 +222,8 @@ public class InstanceSlotValueWidget extends AbstractListValueWidget implements 
     /** Get Select(+) Instance Action. */
     private Action getSelectQueryAction() {
         return new AbstractAction("Select Query", Icons.getQueryIcon()) {
+            private static final long serialVersionUID = 7027854156120432988L;
+
             public void actionPerformed(ActionEvent event) {
 
                 Collection queries;
@@ -287,6 +293,8 @@ public class InstanceSlotValueWidget extends AbstractListValueWidget implements 
     /** View the instance. */
     private Action getViewInstanceAction() {
         return new AbstractAction("View Instance(Query)", Icons.getViewQueryIcon()) {
+            private static final long serialVersionUID = -8190257224012166433L;
+
             public void actionPerformed(ActionEvent event) {
                 viewObject();
             }

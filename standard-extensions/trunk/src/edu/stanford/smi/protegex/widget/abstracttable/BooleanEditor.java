@@ -13,6 +13,7 @@ import edu.stanford.smi.protegex.util.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public class BooleanEditor extends ComboBoxEditor {
+    private static final long serialVersionUID = -1174955571929718873L;
     private ArrayList _choices;
     protected EditableComboBoxModel _model;
     protected Boolean _value;

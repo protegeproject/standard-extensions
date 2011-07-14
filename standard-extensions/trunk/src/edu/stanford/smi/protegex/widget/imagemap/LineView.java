@@ -10,6 +10,7 @@ import java.awt.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public class LineView extends JPanel implements SecondaryView {
+    private static final long serialVersionUID = 4138435177070044265L;
     private Color _color;
     private Insets _insets;
     private Dimension _size;

@@ -10,6 +10,8 @@ import edu.stanford.smi.protegex.widget.abstracttable.*;
  */
 public class InstanceTableConfigurationPanel extends WidgetConfigurationPanel {
 
+    private static final long serialVersionUID = 8389072612663409637L;
+
     public InstanceTableConfigurationPanel(InstanceTableWidget widget) {
         super(widget);
         InstanceTableWidgetState state = widget.getState();

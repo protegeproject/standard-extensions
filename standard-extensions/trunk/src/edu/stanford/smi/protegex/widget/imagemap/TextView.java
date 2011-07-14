@@ -8,6 +8,7 @@ import javax.swing.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public class TextView extends JTextField implements SecondaryView {
+    private static final long serialVersionUID = 8561936628672501463L;
     private final static int DEFAULT_WIDTH = 2;
 
     public TextView() {

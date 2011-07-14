@@ -46,6 +46,7 @@ import edu.stanford.smi.protege.util.PropertyList;
  * @author Jennifer Vendetti
  */
 public class RelationConfigurationPanel extends JPanel {
+    private static final long serialVersionUID = 5926236617361266217L;
     JPanel mainPanel = new JPanel(new BorderLayout());
     JPanel northPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
     JPanel centerPanel = new JPanel(new BorderLayout());
@@ -269,6 +270,8 @@ public class RelationConfigurationPanel extends JPanel {
 
     private void initializeTable() {
         model = new DefaultTableModel() {
+            private static final long serialVersionUID = -6768188093993056061L;
+
             public boolean isCellEditable(int row, int col) {
                 return false;
             }
@@ -530,7 +533,9 @@ public class RelationConfigurationPanel extends JPanel {
  */
 class RRSlotListComboBoxModel extends DefaultComboBoxModel {
 
-	public RRSlotListComboBoxModel(Vector<Slot> slots) {
+	private static final long serialVersionUID = 788864595580300033L;
+
+    public RRSlotListComboBoxModel(Vector<Slot> slots) {
 		int size = slots.size();
 		
 		for (int i=0; i<size; i++) {

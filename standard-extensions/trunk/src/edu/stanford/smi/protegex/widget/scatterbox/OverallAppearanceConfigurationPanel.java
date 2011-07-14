@@ -17,6 +17,7 @@ import edu.stanford.smi.protegex.util.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public class OverallAppearanceConfigurationPanel extends AbstractWidgetConfigurationPanel {
+    private static final long serialVersionUID = -3617237608221617990L;
     private ScatterboxWidgetState _scatterboxWidgetState;
     private ScatterboxWidget _widget;
     private JComboBox _horizontalComboBox;

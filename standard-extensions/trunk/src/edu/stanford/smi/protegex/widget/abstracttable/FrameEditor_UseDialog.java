@@ -13,6 +13,8 @@ import edu.stanford.smi.protege.model.*;
  */
 public abstract class FrameEditor_UseDialog extends FrameEditor implements TableEditorInterface {
 
+    private static final long serialVersionUID = 3748743384297653356L;
+
     public FrameEditor_UseDialog(JComponent onScreenComponent, Project project) {
         this(onScreenComponent, project, null, null);
     }

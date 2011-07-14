@@ -14,7 +14,9 @@ class SteppedComboBoxUI extends MetalComboBoxUI {
 	protected ComboPopup createPopup() {
 		BasicComboPopup popup = new BasicComboPopup(comboBox) {
 
-			public void show() {
+			private static final long serialVersionUID = -7237135938400811647L;
+
+            public void show() {
 				Dimension popupSize = ((SteppedComboBox) comboBox)
 						.getPopupSize();
 				popupSize
@@ -45,7 +47,8 @@ class SteppedComboBoxUI extends MetalComboBoxUI {
 }
 
 public class SteppedComboBox extends JComboBox {
-	protected int popupWidth;
+	private static final long serialVersionUID = -8498968151364698342L;
+    protected int popupWidth;
 
 	public SteppedComboBox(ComboBoxModel aModel) {
 		super(aModel);

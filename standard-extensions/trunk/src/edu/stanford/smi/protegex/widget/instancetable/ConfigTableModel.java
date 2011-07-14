@@ -10,6 +10,7 @@ import javax.swing.table.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public class ConfigTableModel extends AbstractTableModel implements Observer {
+    private static final long serialVersionUID = 8392619663766943396L;
     private InstanceTableWidgetState _state;
 
     public ConfigTableModel(InstanceTableWidgetState state) {

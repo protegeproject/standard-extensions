@@ -10,6 +10,7 @@ import javax.swing.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public class WidgetBox extends JPanel implements WidgetWrapperActionProcessor {
+    private static final long serialVersionUID = 6391893168211273958L;
     protected WidgetBoxLayoutManager _layoutManager;
     protected LinkedList _widgetWrappers;
     protected LinkedList _widgetSeparators;

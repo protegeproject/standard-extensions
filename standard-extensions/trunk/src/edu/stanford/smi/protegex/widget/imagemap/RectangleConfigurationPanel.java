@@ -14,6 +14,7 @@ import edu.stanford.smi.protege.util.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public class RectangleConfigurationPanel extends JPanel implements Observer, Validatable {
+    private static final long serialVersionUID = 4984035057541146673L;
     private final static int MAX_PREFERRED_WIDTH = 350;
     private final static int MAX_PREFERRED_HEIGHT = 350;
     private ImageMapPanel _imageMapPanel;

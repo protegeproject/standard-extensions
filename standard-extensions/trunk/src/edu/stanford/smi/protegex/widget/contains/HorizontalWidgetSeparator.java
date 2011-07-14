@@ -9,6 +9,8 @@ import java.awt.*;
  */
 public class HorizontalWidgetSeparator extends WidgetSeparator {
 
+    private static final long serialVersionUID = 8406596363131244697L;
+
     public HorizontalWidgetSeparator(int divisor) {
         super(divisor);
     }

@@ -93,6 +93,8 @@ public class SlotSelectWidget extends AbstractListValueWidget {
 
     private Action getRemoveClsAction() {
         return new AbstractAction("Remove Slot", Icons.getRemoveIcon()) {
+            private static final long serialVersionUID = 805818470296863993L;
+
             public void actionPerformed(ActionEvent event) {
                 removeSlot();
                 itsTab.enableSearch();
@@ -103,6 +105,8 @@ public class SlotSelectWidget extends AbstractListValueWidget {
     /** Get Select(+) Instance Action. */
     private Action getSelectClsAction() {
         return new AbstractAction("Select Slot", Icons.getAddIcon()) {
+            private static final long serialVersionUID = 8290962569203091305L;
+
             public void actionPerformed(ActionEvent event) {
                 Slot tmpSlot = itsSlot;
                 Collection itsSlots = itsWidget.getSlotsModel().getSlots();
@@ -169,6 +173,8 @@ public class SlotSelectWidget extends AbstractListValueWidget {
     /** View the instance. */
     private Action getViewClsAction() {
         return new AbstractAction("View Slot", Icons.getViewSlotIcon()) {
+            private static final long serialVersionUID = 5263314092168527383L;
+
             public void actionPerformed(ActionEvent event) {
                 viewObject();
             }

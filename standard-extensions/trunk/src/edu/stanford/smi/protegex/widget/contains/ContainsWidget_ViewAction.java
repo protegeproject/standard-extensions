@@ -12,6 +12,8 @@ import edu.stanford.smi.protege.resource.*;
  */
 public class ContainsWidget_ViewAction extends ContainsWidget_AbstractAction {
 
+    private static final long serialVersionUID = -6653118272086189140L;
+
     public ContainsWidget_ViewAction(ContainsWidget widget) {
         super(widget, (widget.getState()).getViewInstanceButtonTooltip(), Icons.getViewIcon());
         _project = widget.getProject();

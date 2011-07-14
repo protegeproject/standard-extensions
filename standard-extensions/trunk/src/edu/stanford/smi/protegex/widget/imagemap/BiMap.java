@@ -11,6 +11,7 @@ import edu.stanford.smi.protege.util.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public class BiMap extends HashMap {
+    private static final long serialVersionUID = -6723081838808663581L;
     private HashMap _backwardsMap;
 
     public BiMap() {

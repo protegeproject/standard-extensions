@@ -15,6 +15,7 @@ import edu.stanford.smi.protegex.util.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public class ClassTermPropertiesConfigurationPanel extends AbstractWidgetConfigurationPanel implements Constants {
+    private static final long serialVersionUID = -5521386916964263303L;
     private ScatterboxWidgetState _scatterboxWidgetState;
     private ScatterboxWidget _widget;
     private JCheckBox _includeAbstractClassesInTermListCheckBox;

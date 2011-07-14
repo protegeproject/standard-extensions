@@ -12,6 +12,7 @@ import edu.stanford.smi.protege.util.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public class WarningsConfigurationPanel extends JPanel implements Validatable {
+    private static final long serialVersionUID = -5303790631546834064L;
     private InstanceTableWidget _widget;
 
     public WarningsConfigurationPanel(InstanceTableWidget widget) {

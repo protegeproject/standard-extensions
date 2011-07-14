@@ -233,7 +233,9 @@ public class EditorPaneLinkDetector extends JEditorPane implements Disposable {
 
 		if (!detectEnter) {
 			Action doNothing = new AbstractAction() {
-				public void actionPerformed(ActionEvent e) {
+				private static final long serialVersionUID = 3324100681335212165L;
+
+                public void actionPerformed(ActionEvent e) {
 					;// do nothing
 				}
 			};
@@ -244,7 +246,9 @@ public class EditorPaneLinkDetector extends JEditorPane implements Disposable {
 
 	protected class HTMLDocLinkDetector extends HTMLDocument {
 
-		public HTMLDocLinkDetector(StyleSheet ss) {
+		private static final long serialVersionUID = 5354086875595780200L;
+
+        public HTMLDocLinkDetector(StyleSheet ss) {
 			super(ss);
 			// p - the new asynchronous loading priority;
 			// a value less than zero indicates that the document

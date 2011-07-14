@@ -9,6 +9,8 @@ import java.awt.*;
  */
 public class HorizontalTextPanel extends AbstractTextPanel {
 
+    private static final long serialVersionUID = -6833422957783450287L;
+
     public HorizontalTextPanel(String text) {
         super(text);
     }

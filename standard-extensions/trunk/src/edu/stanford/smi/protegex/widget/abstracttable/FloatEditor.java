@@ -9,6 +9,8 @@ import edu.stanford.smi.protege.model.*;
  */
 public class FloatEditor extends TextFieldEditor {
 
+    private static final long serialVersionUID = 7833132423488507390L;
+
     public FloatEditor() {
         super(null, null);
     }

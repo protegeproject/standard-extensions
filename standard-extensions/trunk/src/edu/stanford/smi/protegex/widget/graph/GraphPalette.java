@@ -9,6 +9,7 @@ import com.nwoods.jgo.JGoObject;
 import com.nwoods.jgo.JGoPalette;
 
 public class GraphPalette extends JGoPalette {
+    private static final long serialVersionUID = -5555348486316683836L;
     final static BufferedImage gBuffer = new BufferedImage(1, 1,
         BufferedImage.TYPE_INT_ARGB);
 

@@ -33,6 +33,7 @@ import edu.stanford.smi.protege.model.ValueType;
 import edu.stanford.smi.protege.util.PropertyList;
 
 public class NodeConfigurationPanel extends JPanel {
+    private static final long serialVersionUID = 498531733601866872L;
     JCheckBox italic = new JCheckBox("Italic");
     JCheckBox bold = new JCheckBox("Bold");
     JCheckBox displayText = new JCheckBox("Display text for connectors");
@@ -74,6 +75,7 @@ public class NodeConfigurationPanel extends JPanel {
     ArrayList allowedClsProperties = new ArrayList();
     
     class ClsTableModel extends AbstractTableModel {
+        private static final long serialVersionUID = 8445278922388372474L;
         final String[] columnNames = { "Class", "Shape", "Shape Color" };
         Object[][] data = new Object[allowedClsMap.size()][3];
 

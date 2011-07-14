@@ -8,6 +8,7 @@ import com.nwoods.jgo.JGoText;
 import edu.stanford.smi.protege.model.Instance;
 
 public class ComplexLink extends JGoLabeledLink {
+    private static final long serialVersionUID = -912304129823993806L;
     private Instance instance = null;
 
     public ComplexLink() {

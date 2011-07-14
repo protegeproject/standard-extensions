@@ -48,6 +48,7 @@ import edu.stanford.smi.protege.widget.AbstractSlotWidget;
 import edu.stanford.smi.protege.widget.WidgetConfigurationPanel;
 
 public class GraphWidget extends AbstractSlotWidget {
+    private static final long serialVersionUID = 2477178513378531790L;
     private JPanel mainPanel = new JPanel(new BorderLayout(0, 2));
     private JSplitPane splitPane;
 
@@ -425,6 +426,8 @@ public class GraphWidget extends AbstractSlotWidget {
     private void addButtons(LabeledComponent lb) {
         // View button.
         viewSelectedInstancesAction = new AllowableAction("View Selected Instances", Icons.getViewIcon(), null) {
+            private static final long serialVersionUID = -6193263294392134272L;
+
             public void actionPerformed(ActionEvent ae) {
                 handleViewSelectedInstances();
             }
@@ -433,6 +436,8 @@ public class GraphWidget extends AbstractSlotWidget {
 
         // Create button.
         createInstanceAction = new CreateAction("Create Instance") {
+            private static final long serialVersionUID = 988603930111433107L;
+
             public void onCreate() {
                 handleCreateInstance();
             }
@@ -441,6 +446,8 @@ public class GraphWidget extends AbstractSlotWidget {
 
         // Add button.
         addExistingInstancesAction = new AddAction("Add Existing Instance") {
+            private static final long serialVersionUID = -8807236727985505247L;
+
             public void onAdd() {
                 handleAddExistingInstance();
             }
@@ -449,6 +456,8 @@ public class GraphWidget extends AbstractSlotWidget {
 
         // Remove button.
         removeSelectedInstancesAction = new AllowableAction("Remove Selected Instances", Icons.getRemoveIcon(), null) {
+            private static final long serialVersionUID = 8700189658589727138L;
+
             public void actionPerformed(ActionEvent ae) {
                 handleRemoveSelectedInstances();
             }
@@ -457,6 +466,8 @@ public class GraphWidget extends AbstractSlotWidget {
 
         // Delete button.
         deleteSelectedInstancesAction = new AllowableAction("Delete Selected Instances", Icons.getDeleteIcon(), null) {
+            private static final long serialVersionUID = -7604214621333820316L;
+
             public void actionPerformed(ActionEvent ae) {
                 handleDeleteSelectedInstances();
             }
@@ -466,6 +477,8 @@ public class GraphWidget extends AbstractSlotWidget {
         URL url = GraphWidget.class.getResource("images/Flowchart.gif");
         ImageIcon icon = new ImageIcon(url);
         performAutomaticLayoutAction = new AllowableAction("Perform Automatic Layout", icon, null) {
+            private static final long serialVersionUID = -8322822436017562431L;
+
             public void actionPerformed(ActionEvent ae) {
                 handlePerformAutomaticLayout(JGoLayeredDigraphAutoLayout.LD_DIRECTION_DOWN);
             }
@@ -475,6 +488,8 @@ public class GraphWidget extends AbstractSlotWidget {
         url = GraphWidget.class.getResource("images/FlowchartRight.gif");
         icon = new ImageIcon(url);
         performAutomaticLayoutRightAction = new AllowableAction("Perform Automatic Layout", icon, null) {
+            private static final long serialVersionUID = 1791867481226925910L;
+
             public void actionPerformed(ActionEvent ae) {
                 handlePerformAutomaticLayout(JGoLayeredDigraphAutoLayout.LD_DIRECTION_RIGHT);
             }
@@ -482,6 +497,8 @@ public class GraphWidget extends AbstractSlotWidget {
         lb.addHeaderButton(performAutomaticLayoutRightAction);
 
         saveAsImageAction = new AllowableAction("Save Graph As Image", Icons.getSaveProjectIcon(), null) {
+            private static final long serialVersionUID = 2986631040749830377L;
+
             public void actionPerformed(ActionEvent ae) {
                 handleSaveAsImage();
             }

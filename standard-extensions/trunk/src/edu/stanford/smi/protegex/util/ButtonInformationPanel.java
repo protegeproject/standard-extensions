@@ -13,6 +13,7 @@ import javax.swing.event.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public class ButtonInformationPanel extends JComponent {
+    private static final long serialVersionUID = -2832265903191689840L;
     private JTextField _tooltipTextField;
     private JCheckBox _inUseCheckBox;
     private ArrayList _actionListeners;

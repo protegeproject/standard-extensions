@@ -10,6 +10,8 @@ import edu.stanford.smi.protegex.util.*;
  */
 public class ScatterboxWidgetConfigurationPanel extends WidgetConfigurationPanel {
 
+    private static final long serialVersionUID = 2311558746294517379L;
+
     public ScatterboxWidgetConfigurationPanel(ScatterboxWidget widget) {
         super(widget);
         ScatterboxWidgetState widgetState = widget.getState();

@@ -21,6 +21,7 @@ import edu.stanford.smi.protege.model.Slot;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public class ConfigTable extends JTable {
+    private static final long serialVersionUID = -4473085117179805038L;
     private InstanceTableWidgetState _state;
 
     private class CaptureSlides implements TableColumnModelListener {

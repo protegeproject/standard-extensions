@@ -13,6 +13,7 @@ import edu.stanford.smi.protege.util.*;
  * @author William Grosso <grosso@smi.stanford.edu>
  */
 public class FourButtonsConfigurationPanel extends AbstractWidgetConfigurationPanel {
+    private static final long serialVersionUID = -5087960442487257766L;
     protected ButtonInformationPanel _addInstancePanel;
     protected ButtonInformationPanel _createInstancePanel;
     protected ButtonInformationPanel _removeInstancePanel;

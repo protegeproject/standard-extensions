@@ -9,6 +9,8 @@ import edu.stanford.smi.protege.model.*;
  */
 public class StringEditor extends TextFieldEditor {
 
+    private static final long serialVersionUID = -1519954546868633717L;
+
     public StringEditor() {
         super(null, null);
     }
