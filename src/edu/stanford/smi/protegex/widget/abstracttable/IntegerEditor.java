@@ -9,6 +9,8 @@ import edu.stanford.smi.protege.model.*;
  */
 public class IntegerEditor extends TextFieldEditor {
 
+    private static final long serialVersionUID = 2585803814489149210L;
+
     public IntegerEditor() {
         super(null, null);
     }

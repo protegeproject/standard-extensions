@@ -13,6 +13,7 @@ import edu.stanford.smi.protege.model.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public class ScatterboxTableModel extends AbstractTableModel {
+    private static final long serialVersionUID = 2959699668282175639L;
     private Order _rowOrder;
     private Order _columnOrder;
     private Order _orderOne;

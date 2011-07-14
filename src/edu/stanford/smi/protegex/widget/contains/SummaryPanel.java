@@ -13,6 +13,7 @@ import edu.stanford.smi.protege.util.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public class SummaryPanel extends LabeledComponent {
+    private static final long serialVersionUID = -8822928563474441108L;
     private ContainsWidget _widget;
     private ContainsWidgetState _state;
     private JPanel _interior;

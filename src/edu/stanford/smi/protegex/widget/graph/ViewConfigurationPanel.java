@@ -16,6 +16,8 @@ import edu.stanford.smi.protege.model.Cls;
 import edu.stanford.smi.protege.util.PropertyList;
 
 public class ViewConfigurationPanel extends JPanel {
+    private static final long serialVersionUID = -977147442622417584L;
+
     private JPanel gridPropsPnl = new JPanel();
 
     // UI for grid style.  Right now this is just for setting the style

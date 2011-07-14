@@ -12,6 +12,7 @@ import javax.swing.event.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public abstract class Action_AbstractTableListener extends AbstractAction {
+    private static final long serialVersionUID = -1796739862338195073L;
     protected InstanceTableWidget _widget;
     protected InstanceTable _table;
 

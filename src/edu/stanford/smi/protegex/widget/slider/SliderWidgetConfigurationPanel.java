@@ -9,6 +9,8 @@ import edu.stanford.smi.protege.widget.*;
  */
 public class SliderWidgetConfigurationPanel extends WidgetConfigurationPanel {
 
+    private static final long serialVersionUID = 2237293333225627340L;
+
     public SliderWidgetConfigurationPanel(SliderWidget widget) {
         super(widget);
         addTab("Configure Slider", new MainConfigurationPanel(widget));

@@ -12,6 +12,8 @@ import edu.stanford.smi.protege.resource.*;
  */
 public class ContainsWidget_RemoveAction extends ContainsWidget_AbstractAction {
 
+    private static final long serialVersionUID = 8737706740969152578L;
+
     public ContainsWidget_RemoveAction(ContainsWidget widget) {
         super(widget, (widget.getState()).getRemoveInstanceButtonTooltip(), Icons.getRemoveIcon());
     }

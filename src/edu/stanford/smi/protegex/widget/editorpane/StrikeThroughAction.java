@@ -10,7 +10,9 @@ import javax.swing.text.StyledEditorKit;
 
 class StrikeThroughAction extends StyledEditorKit.StyledTextAction{
 	
-	public StrikeThroughAction(){
+	private static final long serialVersionUID = -2891339664649725938L;
+
+    public StrikeThroughAction(){
 		super(StyleConstants.StrikeThrough.toString());
 	}
 

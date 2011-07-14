@@ -12,6 +12,7 @@ import edu.stanford.smi.protege.util.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public abstract class AbstractTableWidgetConfigurationSubPanel extends JPanel implements Validatable {
+    private static final long serialVersionUID = 5151088168773573859L;
     public AbstractTableWidgetState _state;
 
     public AbstractTableWidgetConfigurationSubPanel(AbstractTableWidgetState state) {

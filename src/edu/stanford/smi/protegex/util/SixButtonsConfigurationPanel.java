@@ -8,6 +8,7 @@ import java.awt.event.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public class SixButtonsConfigurationPanel extends FourButtonsConfigurationPanel {
+    private static final long serialVersionUID = -2663184231079075632L;
     protected ButtonInformationPanel _prototypeInstancePanel;
 
     private class DisplayPrototypeButtonListener implements ActionListener {

@@ -13,6 +13,7 @@ import edu.stanford.smi.protege.model.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public abstract class ScatterboxAction extends AbstractAction implements ScatterboxWidgetListener {
+    private static final long serialVersionUID = 2122902219757205850L;
     protected ScatterboxWidget _widget;
     protected Project _project;
     protected KnowledgeBase _kb;

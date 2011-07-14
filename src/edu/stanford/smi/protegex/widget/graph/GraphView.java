@@ -38,6 +38,7 @@ import edu.stanford.smi.protege.util.ComponentFactory;
 import edu.stanford.smi.protege.util.PropertyList;
 
 public class GraphView extends JGoView {
+    private static final long serialVersionUID = 6869305676538645015L;
     private JPopupMenu popupMenu = new JPopupMenu();
     private Point mouseUpDocPoint = new Point();
 
@@ -49,14 +50,20 @@ public class GraphView extends JGoView {
     private Color myHighlightColor;
 
     AbstractAction insertPointAction = new AbstractAction("Insert Point") {
+        private static final long serialVersionUID = 8382382001535570478L;
+
         public void actionPerformed(ActionEvent ae) { insertPointIntoLink(); }
     };
 
     AbstractAction removeSegmentAction = new AbstractAction("Remove Segment") {
+        private static final long serialVersionUID = -3664006420155825391L;
+
         public void actionPerformed(ActionEvent ae) { removeSegmentFromLink(); }
     };
 
     AbstractAction makeAllNodesDefaultSizeAction = new AbstractAction("Make All Nodes Default Size") {
+        private static final long serialVersionUID = -5148414796518922332L;
+
         public void actionPerformed(ActionEvent ae) { makeAllNodesDefaultSize(); }
     };
 

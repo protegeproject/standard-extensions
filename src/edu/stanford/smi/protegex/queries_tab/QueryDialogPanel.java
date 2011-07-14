@@ -11,7 +11,8 @@ import edu.stanford.smi.protege.util.*;
 import edu.stanford.smi.protegex.queries_tab.toolbox.*;
 
 public class QueryDialogPanel extends JPanel {
-   final static int WIDTH = 690;
+   private static final long serialVersionUID = 6776188343618931182L;
+final static int WIDTH = 690;
    final static int HEIGHT = 70;
    private KnowledgeBase itsKB;
    private QueriesTab itsTab;

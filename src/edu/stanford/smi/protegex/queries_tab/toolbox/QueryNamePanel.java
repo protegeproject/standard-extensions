@@ -5,6 +5,7 @@ import java.awt.*;
 import javax.swing.*;
 
 public class QueryNamePanel extends JComponent {
+    private static final long serialVersionUID = 2436706248586452049L;
     private JLabel label;
     private JTextField nameField;
 

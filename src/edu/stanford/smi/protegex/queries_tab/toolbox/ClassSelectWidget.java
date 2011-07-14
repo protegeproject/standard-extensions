@@ -91,6 +91,8 @@ public class ClassSelectWidget extends AbstractListValueWidget {
 
     private Action getRemoveClsAction() {
         return new AbstractAction("Remove Cls", Icons.getRemoveIcon()) {
+            private static final long serialVersionUID = 2927328134386784008L;
+
             public void actionPerformed(ActionEvent event) {
                 removeInstance();
             }
@@ -100,6 +102,8 @@ public class ClassSelectWidget extends AbstractListValueWidget {
     /** Get Select(+) Instance Action. */
     private Action getSelectClsAction() {
         return new AbstractAction("Select Cls", Icons.getAddIcon()) {
+            private static final long serialVersionUID = -4144795581426016980L;
+
             public void actionPerformed(ActionEvent event) {
                 Instance instance;
                 instanceSlot = getSlot();
@@ -160,6 +164,8 @@ public class ClassSelectWidget extends AbstractListValueWidget {
     /** View the instance. */
     private Action getViewClsAction() {
         return new AbstractAction("View Cls", Icons.getViewClsIcon()) {
+            private static final long serialVersionUID = 3929681094374282192L;
+
             public void actionPerformed(ActionEvent event) {
                 viewObject();
             }

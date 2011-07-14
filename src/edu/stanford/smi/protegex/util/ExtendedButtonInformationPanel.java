@@ -13,6 +13,7 @@ import java.util.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public class ExtendedButtonInformationPanel extends LabeledComponent {
+    private static final long serialVersionUID = -647877972193739246L;
     private JTextField _tooltipTextField;
     private JTextField _dialogTitleTextField;
     private JCheckBox _inUseCheckBox;

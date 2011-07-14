@@ -6,6 +6,9 @@ import edu.stanford.smi.protegex.queries_tab.toolbox.*;
 
 public class QueriesTabRenderer extends FrameRenderer {
 
+    private static final long serialVersionUID = -7829846814998551251L;
+
+
     public void load(Object value) {
         if (value instanceof InstancesQuery) {
             loadQuery((InstancesQuery) value);

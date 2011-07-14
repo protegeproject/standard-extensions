@@ -10,6 +10,7 @@ import edu.stanford.smi.protege.model.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public class RowHeaderTableModel extends AbstractTableModel {
+    private static final long serialVersionUID = -8825063708542403637L;
     private Order _underlyingOrder;
 
     public RowHeaderTableModel(Order order) {

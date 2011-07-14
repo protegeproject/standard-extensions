@@ -13,6 +13,7 @@ import edu.stanford.smi.protege.ui.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public class ClassEditor_UseDialog extends FrameEditor_UseDialog {
+    private static final long serialVersionUID = 8042563874400528713L;
     private String _dialogTitle;
 
     public ClassEditor_UseDialog(String dialogTitle, JComponent onScreenComponent, Project project) {

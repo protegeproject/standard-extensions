@@ -11,6 +11,7 @@ import edu.stanford.smi.protegex.util.*;
  * @author    Ray Fergerson <fergerson@smi.stanford.edu>
  */
 public class InstanceTableButtonsConfigurationPanel extends SixButtonsConfigurationPanel {
+    private static final long serialVersionUID = -1185312545818121677L;
     private ButtonInformationPanel _moveInstancePanel;
 
     private class DisplayMoveButtonsListener implements ActionListener {

@@ -17,6 +17,7 @@ import edu.stanford.smi.protegex.widget.abstracttable.*;
  */
 public class InstanceTableWidget extends AbstractSlotWidget {
 
+    private static final long serialVersionUID = -5891429734972868167L;
     protected InstanceTableWidgetState _state;
     protected InstanceTable _displayTable;
     protected InstanceTableModel _tableModel;

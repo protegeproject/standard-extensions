@@ -9,6 +9,7 @@ import edu.stanford.smi.protege.util.*;
 import edu.stanford.smi.protegex.queries_tab.*;
 
 public abstract class AbstractQueryListWidget extends JComponent {
+    private static final long serialVersionUID = 3030054171940539496L;
     protected JList itsList;
     protected LabeledComponent itsLabeledComponent;
 

@@ -4,7 +4,8 @@ import javax.swing.*;
 
 public class SymbolSlotModel extends DefaultComboBoxModel{
 
-   private String[] slotValues;
+   private static final long serialVersionUID = 8952292919566362546L;
+private String[] slotValues;
 
     public SymbolSlotModel() {
         super();

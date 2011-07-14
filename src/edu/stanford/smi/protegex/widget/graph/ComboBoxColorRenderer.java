@@ -10,6 +10,7 @@ import javax.swing.ListCellRenderer;
 import javax.swing.border.Border;
 
 public class ComboBoxColorRenderer extends JLabel implements ListCellRenderer {
+    private static final long serialVersionUID = 885811465600454837L;
     private ColorIcon icon = new ColorIcon();
     private Border emptyBorder = BorderFactory.createEmptyBorder(2, 2, 2, 2);
 

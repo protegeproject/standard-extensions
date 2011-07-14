@@ -11,6 +11,7 @@ import edu.stanford.smi.protege.model.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public class NumberOfSlotValuesComponent extends JLabel {
+    private static final long serialVersionUID = 1219832772674332489L;
     private Instance _instance;
     private Slot _slot;
     private CountChangeChecker _listener;

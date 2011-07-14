@@ -11,6 +11,7 @@ import edu.stanford.smi.protege.resource.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public class ContainsWidget_DeleteAction extends ContainsWidget_AbstractAction {
+    private static final long serialVersionUID = 2067682992509572087L;
     private KnowledgeBase _kb;
 
     public ContainsWidget_DeleteAction(ContainsWidget widget) {

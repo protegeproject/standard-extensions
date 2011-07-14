@@ -8,6 +8,8 @@ import com.nwoods.jgo.*;
 
 public class NodePort extends JGoPort {
 
+    private static final long serialVersionUID = -4067234535541350894L;
+
     public NodePort() {
         super();
         setSelectable(false);

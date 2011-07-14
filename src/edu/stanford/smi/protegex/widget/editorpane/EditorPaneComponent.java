@@ -102,7 +102,9 @@ public class EditorPaneComponent {
 		}
 
 		internalLinkTo.setRenderer(new FrameRenderer() {
-			@Override
+			private static final long serialVersionUID = 2908749286411682298L;
+
+            @Override
 			public void load(Object value) {
 				if (value.equals("Class")) {
 					setMainIcon(Icons.getClsIcon());
@@ -139,7 +141,9 @@ public class EditorPaneComponent {
 
 	protected Action createILAction() {
 		return new ConfigureAction() {
-			@Override
+			private static final long serialVersionUID = -2073953813575426441L;
+
+            @Override
 			public void loadPopupMenu(JPopupMenu menu) {
 				// menu.add(createSetDisplaySlotAction());
 				menu.add(createShowAllInstancesAction());
@@ -149,7 +153,9 @@ public class EditorPaneComponent {
 
 	protected JMenuItem createShowAllInstancesAction() {
 		Action action = new AbstractAction("Class") {
-			public void actionPerformed(ActionEvent event) {
+			private static final long serialVersionUID = -1581681076251717145L;
+
+            public void actionPerformed(ActionEvent event) {
 				KnowledgeBase kb = ProjectManager.getProjectManager()
 				.getCurrentProject().getKnowledgeBase();
 				Instance cls = DisplayUtilities.pickCls(e, kb, kb.getClses());
@@ -219,7 +225,9 @@ public class EditorPaneComponent {
 	public AllowableAction getHTMLHighlightAction() {
 		return new AllowableAction("Highlight", ComponentUtilities.loadImageIcon(EditorPaneComponent.class,
 		"images/text_htmlhighlight.gif"), null) {
-			public void actionPerformed(ActionEvent arg0) {
+			private static final long serialVersionUID = 6800135092366317185L;
+
+            public void actionPerformed(ActionEvent arg0) {
 
 				try {
 					e.getDocument().insertString(e.getSelectionStart(),
@@ -253,7 +261,9 @@ public class EditorPaneComponent {
 		return new AllowableAction("Highlight", ComponentUtilities
 				.loadImageIcon(EditorPaneComponent.class,
 				"images/text_highlight.gif"), null) {
-			public void actionPerformed(ActionEvent arg0) {
+			private static final long serialVersionUID = -1717578477901220417L;
+
+            public void actionPerformed(ActionEvent arg0) {
 
 				try {
 					e.getDocument().insertString(e.getSelectionStart(),
@@ -313,7 +323,9 @@ public class EditorPaneComponent {
 		return new AllowableAction("Unhighlight", ComponentUtilities
 				.loadImageIcon(EditorPaneComponent.class,
 				"images/text_unhighlight.gif"), null) {
-			public void actionPerformed(ActionEvent arg0) {
+			private static final long serialVersionUID = 5978503892815299632L;
+
+            public void actionPerformed(ActionEvent arg0) {
 
 				try {
 					e.getDocument().insertString(e.getSelectionStart(),
@@ -359,7 +371,9 @@ public class EditorPaneComponent {
 		return new AllowableAction("Highlight", ComponentUtilities
 				.loadImageIcon(EditorPaneComponent.class,
 				"images/text_highlight.gif"), null) {
-			public void actionPerformed(ActionEvent arg0) {
+			private static final long serialVersionUID = 3409061654966089792L;
+
+            public void actionPerformed(ActionEvent arg0) {
 				/*
 				 * if(bold.isSelected()) bold.setSelected(false); else
 				 * bold.setSelected(true);
@@ -410,7 +424,9 @@ public class EditorPaneComponent {
 	public AllowableAction getBoldAction() {
 		return new AllowableAction("Bold", ComponentUtilities.loadImageIcon(
 				EditorPaneComponent.class, "images/text_bold.gif"), null) {
-			public void actionPerformed(ActionEvent arg0) {
+			private static final long serialVersionUID = 1294177624137798115L;
+
+            public void actionPerformed(ActionEvent arg0) {
 				new StyledEditorKit.BoldAction().actionPerformed(arg0);
 			}
 		};
@@ -421,7 +437,9 @@ public class EditorPaneComponent {
 
 		return new AllowableAction("Italics", ComponentUtilities.loadImageIcon(
 				EditorPaneComponent.class, "images/text_italic.gif"), null) {
-			public void actionPerformed(ActionEvent arg0) {
+			private static final long serialVersionUID = 6782336002666970878L;
+
+            public void actionPerformed(ActionEvent arg0) {
 				new StyledEditorKit.ItalicAction().actionPerformed(arg0);
 			}
 		};
@@ -431,7 +449,9 @@ public class EditorPaneComponent {
 		return new AllowableAction("Underline", ComponentUtilities
 				.loadImageIcon(EditorPaneComponent.class,
 				"images/text_underline.gif"), null) {
-			public void actionPerformed(ActionEvent arg0) {
+			private static final long serialVersionUID = 492531846281451286L;
+
+            public void actionPerformed(ActionEvent arg0) {
 				new StyledEditorKit.UnderlineAction().actionPerformed(arg0);
 			}
 		};
@@ -440,7 +460,9 @@ public class EditorPaneComponent {
 	public AllowableAction getEditorPaneHelpAction() {
 		return new AllowableAction("Help", ComponentUtilities.loadImageIcon(
 				EditorPaneComponent.class, "images/Help.gif"), null) {
-			public void actionPerformed(ActionEvent arg0) {
+			private static final long serialVersionUID = 6461423862725443416L;
+
+            public void actionPerformed(ActionEvent arg0) {
 				try {
 					BrowserLauncher.openURL(EditorPaneHelpURL);
 				} catch (IOException e1) {
@@ -454,7 +476,9 @@ public class EditorPaneComponent {
 		return new AllowableAction("StrikeThrough", ComponentUtilities
 				.loadImageIcon(EditorPaneComponent.class,
 				"images/text_strike.gif"), null) {
-			public void actionPerformed(ActionEvent arg0) {
+			private static final long serialVersionUID = -23800044774747999L;
+
+            public void actionPerformed(ActionEvent arg0) {
 				new StrikeThroughAction().actionPerformed(arg0);
 			}
 		};
@@ -464,7 +488,9 @@ public class EditorPaneComponent {
 		return new AllowableAction("Insert Image", ComponentUtilities
 				.loadImageIcon(EditorPaneComponent.class,
 				"images/imagegallery.gif"), null) {
-			public void actionPerformed(ActionEvent arg0) {
+			private static final long serialVersionUID = -6648915966951648767L;
+
+            public void actionPerformed(ActionEvent arg0) {
 				insertImage();
 			}
 		};

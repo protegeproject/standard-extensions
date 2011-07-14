@@ -11,6 +11,7 @@ import edu.stanford.smi.protege.util.*;
 import edu.stanford.smi.protegex.queries_tab.toolbox.*;
 
 public class SearchWidget extends JPanel {
+    private static final long serialVersionUID = 2233362708903288610L;
     private final int mWIDTH = 580;
     private final int mHEIGHT = 70;
     private KnowledgeBase itsKB;

@@ -13,6 +13,8 @@ import edu.stanford.smi.protege.resource.*;
  */
 public class Action_ViewInstance extends Action_AbstractTableListener {
 
+    private static final long serialVersionUID = 7413170893236775224L;
+
     public Action_ViewInstance(InstanceTableWidget widget, InstanceTable table) {
         super((widget.getState()).getViewInstanceButtonTooltip(), Icons.getViewIcon(), widget, table);
     }

@@ -20,6 +20,8 @@ import edu.stanford.smi.protege.model.ValueType;
 
 public class ComplexLinkLabel extends JGoLinkLabel {
 
+    private static final long serialVersionUID = -3345846393267642643L;
+
     public ComplexLinkLabel() {
         setAlignment(JGoText.ALIGN_CENTER);
         setDraggable(false);

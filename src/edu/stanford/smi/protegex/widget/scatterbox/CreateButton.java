@@ -9,6 +9,7 @@ import edu.stanford.smi.protege.resource.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public class CreateButton extends ScatterboxAction {
+    private static final long serialVersionUID = -6759963854059203158L;
     private String _dialogTitle;
     private ScatterboxTableModel _model;
 

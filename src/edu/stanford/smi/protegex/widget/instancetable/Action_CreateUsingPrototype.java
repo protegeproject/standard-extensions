@@ -14,6 +14,8 @@ import edu.stanford.smi.protegex.util.*;
  */
 public class Action_CreateUsingPrototype extends Action_AbstractTableListener {
 
+    private static final long serialVersionUID = -4297575243479509311L;
+
     public Action_CreateUsingPrototype(InstanceTableWidget widget, InstanceTable table) {
         super((widget.getState()).getPrototypeButtonTooltip(), Icons.getCopyIcon(), widget, table);
     }

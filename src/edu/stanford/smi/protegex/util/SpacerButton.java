@@ -11,6 +11,8 @@ import javax.swing.*;
  */
 public class SpacerButton extends AbstractAction {
 
+    private static final long serialVersionUID = 3657692226483257780L;
+
     public SpacerButton() {
         super("");
         setEnabled(false);

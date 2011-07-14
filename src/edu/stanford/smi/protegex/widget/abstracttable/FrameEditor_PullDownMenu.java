@@ -13,6 +13,8 @@ import edu.stanford.smi.protege.model.*;
  */
 public abstract class FrameEditor_PullDownMenu extends FrameEditor implements TableEditorInterface {
 
+    private static final long serialVersionUID = 1708695684789857341L;
+
     public FrameEditor_PullDownMenu(JComponent onScreenComponent, Project project) {
         this(onScreenComponent, project, null, null);
     }

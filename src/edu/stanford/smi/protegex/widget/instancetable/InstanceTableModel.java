@@ -14,6 +14,7 @@ import edu.stanford.smi.protegex.widget.abstracttable.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public class InstanceTableModel extends AbstractTableModel implements Observer {
+    private static final long serialVersionUID = -52922615179005755L;
     private ArrayList _values;
     // <Instance>
     private InstanceTableWidgetState _state;

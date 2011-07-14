@@ -9,7 +9,8 @@ import edu.stanford.smi.protege.util.*;
 import edu.stanford.smi.protegex.queries_tab.*;
 
 public class SelectPanel extends JComponent {
-     private JList itsList;
+     private static final long serialVersionUID = -8070662094281974006L;
+    private JList itsList;
 
     public SelectPanel(Collection slots) {
         ArrayList slotList = new ArrayList(slots);

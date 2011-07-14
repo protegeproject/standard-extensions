@@ -11,7 +11,8 @@ import edu.stanford.smi.protege.util.*;
 import edu.stanford.smi.protegex.queries_tab.*;
 
 public class QueryListWidget extends AbstractQueryListWidget{
-  private Action itsLoadQueryAction;
+  private static final long serialVersionUID = 903696432612020961L;
+private Action itsLoadQueryAction;
   private Action itsViewQueryAction;
   private Action itsDeleteQueryAction;
 
@@ -226,6 +227,8 @@ public class QueryListWidget extends AbstractQueryListWidget{
     //private Action getDeleteQueryAction() {
     private Action getDeleteQueryAction() {
         return new AbstractAction("Delete Query", Icons.getDeleteQueryIcon()) {
+            private static final long serialVersionUID = 4537581912418530922L;
+
             public void actionPerformed(ActionEvent event) {
 
                 int index = itsList.getSelectedIndex();
@@ -253,6 +256,8 @@ public class QueryListWidget extends AbstractQueryListWidget{
     /** Load the existing query to the search panel */
     private Action getLoadQueryAction() {
         return new AbstractAction("Retrieve Query", Icons.getRetrieveQueryLibraryIcon()) {
+            private static final long serialVersionUID = 3954405178351744665L;
+
             public void actionPerformed(ActionEvent event) {
                 int index = itsList.getSelectedIndex();
                 if (index < 0)
@@ -269,6 +274,8 @@ public class QueryListWidget extends AbstractQueryListWidget{
 
     private Action getViewQueryAction() {
         return new AbstractAction("View Query", Icons.getViewQueryIcon()) {
+            private static final long serialVersionUID = 4092658981529047521L;
+
             public void actionPerformed(ActionEvent event) {
 
                 int index = itsList.getSelectedIndex();

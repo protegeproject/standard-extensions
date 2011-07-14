@@ -10,6 +10,7 @@ import java.awt.event.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public class ScatterboxInPlaceEditingConfigurationPanel extends InPlaceEditingConfigurationPanel {
+    private static final long serialVersionUID = 7559504023488627682L;
     private ScatterboxWidgetState _scatterboxWidgetState;
     private JCheckBox _autocreateEntriesCheckbox;
     private JCheckBox _autoDisplayInstancesCheckbox;

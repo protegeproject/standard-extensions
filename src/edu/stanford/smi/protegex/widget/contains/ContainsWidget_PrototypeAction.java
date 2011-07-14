@@ -12,6 +12,7 @@ import edu.stanford.smi.protegex.util.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public class ContainsWidget_PrototypeAction extends ContainsWidget_AbstractAction {
+    private static final long serialVersionUID = 7517380533925014719L;
     private int _depth = 1;
 
     public ContainsWidget_PrototypeAction(ContainsWidget widget, int depth) {

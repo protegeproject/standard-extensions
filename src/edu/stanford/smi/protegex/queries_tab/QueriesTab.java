@@ -15,6 +15,7 @@ import edu.stanford.smi.protegex.queries_tab.toolbox.*;
 import edu.stanford.smi.protegex.util.LocalizedText;
 
 public class QueriesTab extends AbstractTabWidget implements Observer {
+    private static final long serialVersionUID = -779726134174743621L;
     private static final String QUERYNAME = "SearchTab_Query";
     final static int WIDTH = 690;
     final static int HEIGHT = 70;

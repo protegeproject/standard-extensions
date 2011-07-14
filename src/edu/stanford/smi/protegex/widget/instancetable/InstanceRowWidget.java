@@ -15,6 +15,8 @@ import edu.stanford.smi.protege.widget.*;
  */
 public class InstanceRowWidget extends InstanceTableWidget {
 
+    private static final long serialVersionUID = 3954972619518577290L;
+
     public InstanceRowWidget() {
         setPreferredRows(1);
         setPreferredColumns(2);

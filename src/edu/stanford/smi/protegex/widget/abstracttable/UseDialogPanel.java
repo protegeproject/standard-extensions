@@ -15,6 +15,7 @@ import edu.stanford.smi.protege.util.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public class UseDialogPanel extends LabeledComponent {
+    private static final long serialVersionUID = -3878123383704391330L;
     private JTextField _dialogTitleTextField;
     private JCheckBox _useDialogCheckBox;
     private ArrayList _actionListeners;

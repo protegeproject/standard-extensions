@@ -10,6 +10,7 @@ import javax.swing.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public class EditableComboBoxModel extends AbstractListModel implements ComboBoxModel {
+    private static final long serialVersionUID = 454792201352890366L;
     private ArrayList _contents;
     private Object _selectedItem;
     private int _oldSize;

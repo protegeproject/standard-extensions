@@ -13,6 +13,7 @@ import edu.stanford.smi.protegex.util.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public abstract class FrameEditor extends ComboBoxEditor {
+    private static final long serialVersionUID = -1637769648570262739L;
     protected Frame _value;
     protected Project _project;
     protected JComponent _onScreenComponent;

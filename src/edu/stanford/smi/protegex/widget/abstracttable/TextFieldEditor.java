@@ -11,6 +11,7 @@ import edu.stanford.smi.protege.model.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public abstract class TextFieldEditor extends JTextField implements TableEditorInterface {
+    private static final long serialVersionUID = -7688416828964424490L;
     protected Instance _instance;
     protected Slot _slot;
     private boolean _hasBeenEdited;

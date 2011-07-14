@@ -14,6 +14,7 @@ import edu.stanford.smi.protegex.util.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public class KAPanel extends JPanel {
+    private static final long serialVersionUID = -7458973299124364416L;
     private ImageMapPanel _imageMapPanel;
     private ImageMapWidget _widget;
     private ImageMapState _state;

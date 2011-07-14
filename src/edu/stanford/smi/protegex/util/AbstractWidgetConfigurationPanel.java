@@ -12,6 +12,7 @@ import edu.stanford.smi.protege.util.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public abstract class AbstractWidgetConfigurationPanel extends JPanel implements Validatable {
+    private static final long serialVersionUID = -8593772017355647904L;
     public AbstractWidgetState _state;
 
     // "public" is a necessary hack because the language spec is messed up

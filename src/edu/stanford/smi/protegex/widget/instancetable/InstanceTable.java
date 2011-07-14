@@ -11,6 +11,7 @@ import edu.stanford.smi.protegex.widget.abstracttable.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public class InstanceTable extends AbstractTable {
+    private static final long serialVersionUID = -3747746131691986890L;
     private InstanceTableModel _instanceTableModel;
 
     public InstanceTable(InstanceTableModel model, AbstractTableWidgetCellEditor editor, boolean highlightSelectedRow) {

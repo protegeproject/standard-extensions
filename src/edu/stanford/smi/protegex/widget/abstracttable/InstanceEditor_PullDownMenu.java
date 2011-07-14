@@ -13,6 +13,8 @@ import edu.stanford.smi.protege.model.*;
  */
 public class InstanceEditor_PullDownMenu extends FrameEditor_PullDownMenu {
 
+    private static final long serialVersionUID = 5427494373272302420L;
+
     public InstanceEditor_PullDownMenu(JComponent onScreenComponent, Project project) {
         this(onScreenComponent, project, null, null);
     }

@@ -15,6 +15,7 @@ import edu.stanford.smi.protege.resource.Icons;
  * @author Jennifer Vendetti
  */
 public class ChooseRelationDialog extends JDialog {
+    private static final long serialVersionUID = -6318247802884438267L;
     private JPanel mainPanel = new JPanel(new BorderLayout());
     private JPanel relationsPanel = new JPanel();
     private JPanel buttonPanel = new JPanel();

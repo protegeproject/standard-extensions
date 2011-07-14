@@ -10,6 +10,8 @@ import edu.stanford.smi.protege.util.*;
  * @author    Qi Li <liq@smi.stanford.edu>
  */
 public abstract class CheckURIAction extends AllowableAction {
+    private static final long serialVersionUID = 1274239534707522703L;
+
     public CheckURIAction(String text) {
         super("Check URI Syntax", text, Icons.getCheckIcon(), null);
     }

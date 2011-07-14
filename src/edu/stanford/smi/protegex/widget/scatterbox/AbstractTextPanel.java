@@ -10,6 +10,7 @@ import javax.swing.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public abstract class AbstractTextPanel extends JPanel implements Constants {
+    private static final long serialVersionUID = 4647457494783249198L;
     protected String _text;
     protected Rectangle _bounds;
 

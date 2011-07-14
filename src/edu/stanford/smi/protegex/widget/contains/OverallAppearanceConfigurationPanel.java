@@ -14,6 +14,7 @@ import edu.stanford.smi.protegex.util.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public class OverallAppearanceConfigurationPanel extends AbstractWidgetConfigurationPanel {
+    private static final long serialVersionUID = 8583384001885181114L;
     private ContainsWidgetState _containsWidgetState;
     private JCheckBox _subwidgetSelectionAllowed;
     private JCheckBox _putSeparatorBetweenSubwidgets;

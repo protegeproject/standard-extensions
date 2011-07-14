@@ -14,7 +14,9 @@ import edu.stanford.smi.protege.util.*;
 
 public class GraphDocument extends JGoDocument {
 	
-	public static final String POSITION_PREFIX = "InstanceGraphWidget.";
+	private static final long serialVersionUID = -2178989375861620481L;
+
+    public static final String POSITION_PREFIX = "InstanceGraphWidget.";
 	
     /**
      * Added transient keywords here to prevent serialization of certain

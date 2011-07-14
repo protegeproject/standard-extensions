@@ -15,6 +15,8 @@ import edu.stanford.smi.protegex.widget.abstracttable.*;
  */
 public class NewInstanceConfigurationPanel extends AbstractTableWidgetConfigurationSubPanel {
 
+    private static final long serialVersionUID = 4833874581581708715L;
+
     private class SelectNewlyCreatedOrAddedInstanceCheckBoxListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             ((InstanceTableWidgetState) _state).setAutoSelectInsertions(((JCheckBox) e.getSource()).isSelected());

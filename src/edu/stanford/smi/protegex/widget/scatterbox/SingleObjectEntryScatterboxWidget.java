@@ -9,6 +9,8 @@ import edu.stanford.smi.protege.model.*;
  */
 public class SingleObjectEntryScatterboxWidget extends ScatterboxWidget {
 
+    private static final long serialVersionUID = 5461223076708179834L;
+
     protected KBQueryUtils getQueryUtilsObject() {
         return new SingleObjectEntry();
     }

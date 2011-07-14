@@ -16,6 +16,7 @@ import edu.stanford.smi.protege.resource.Icons;
  * @author Jennifer Vendetti
  */
 public class ChooseLinkDialog extends JDialog {
+    private static final long serialVersionUID = -3146895752548347363L;
     private JPanel mainPanel = new JPanel();
     private JPanel linkTypePanel = new JPanel(new GridBagLayout());
     private JPanel buttonPanel = new JPanel();

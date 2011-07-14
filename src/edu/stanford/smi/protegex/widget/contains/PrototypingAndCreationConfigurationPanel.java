@@ -14,6 +14,7 @@ import edu.stanford.smi.protegex.util.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public class PrototypingAndCreationConfigurationPanel extends AbstractWidgetConfigurationPanel {
+    private static final long serialVersionUID = -776962789147038109L;
     private ContainsWidgetState _containsWidgetState;
     private JCheckBox _displayNewInstanceForms;
     private JCheckBox _selectNewInsertions;

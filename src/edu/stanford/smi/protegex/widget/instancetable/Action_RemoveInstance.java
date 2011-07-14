@@ -11,6 +11,8 @@ import edu.stanford.smi.protege.resource.*;
  */
 public class Action_RemoveInstance extends Action_AbstractTableListener {
 
+    private static final long serialVersionUID = 9178660748954395973L;
+
     public Action_RemoveInstance(InstanceTableWidget widget, InstanceTable table) {
         super((widget.getState()).getRemoveInstanceButtonTooltip(), Icons.getRemoveIcon(), widget, table);
     }

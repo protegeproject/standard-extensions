@@ -82,7 +82,9 @@ public class EditorPaneWidget extends TextComponentWidget {
 		}
 
 		internalLinkTo.setRenderer(new FrameRenderer() {
-			@Override
+			private static final long serialVersionUID = -6665828965048673792L;
+
+            @Override
 			public void load(Object value) {
 				if (value.equals("Class")) {
 					setMainIcon(Icons.getClsIcon());

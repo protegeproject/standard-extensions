@@ -14,6 +14,7 @@ import edu.stanford.smi.protegex.util.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public class ConfigTableRenderer extends JTextField implements TableCellRenderer {
+    private static final long serialVersionUID = -4212694010918756148L;
     private ColorPanel _colorPanel;
 
     public ConfigTableRenderer() {

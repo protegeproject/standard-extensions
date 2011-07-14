@@ -9,6 +9,7 @@ import java.awt.geom.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public class VerticalTextPanel extends AbstractTextPanel {
+    private static final long serialVersionUID = -837027690458755678L;
     private AffineTransform _rotation;
     private AffineTransform _rotationBack;
     private AffineTransform _translation;

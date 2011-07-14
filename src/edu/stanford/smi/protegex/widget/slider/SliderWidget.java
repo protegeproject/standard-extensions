@@ -18,6 +18,7 @@ import edu.stanford.smi.protege.widget.*;
  */
 public class SliderWidget extends AbstractSlotWidget implements Observer {
 
+    private static final long serialVersionUID = 1996046640830744112L;
     // actual instance code begins here
     private SliderProperties _properties;
     private JSlider _slider;

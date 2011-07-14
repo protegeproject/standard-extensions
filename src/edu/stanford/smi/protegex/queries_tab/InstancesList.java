@@ -38,7 +38,8 @@ import edu.stanford.smi.protege.util.ViewAction;
  */
 
 public class InstancesList extends SelectableContainer implements Disposable {
-	private Project itsProject;
+	private static final long serialVersionUID = 7235075988010484643L;
+    private Project itsProject;
     private LabeledComponent c;
     private SelectableList itsList;
 
@@ -72,6 +73,8 @@ public class InstancesList extends SelectableContainer implements Disposable {
 
     private Action createViewAction() {
         return new ViewAction("View Instance", this, Icons.getViewInstanceIcon()) {
+            private static final long serialVersionUID = 6623885256271126189L;
+
             @Override
 			public void onView(Object o) {
                 itsProject.show((Instance) o);
@@ -124,7 +127,9 @@ public class InstancesList extends SelectableContainer implements Disposable {
      */
     private Action createExportAction() {
 		return new ExportToCsvAction(itsProject.getKnowledgeBase()) {
-			@Override
+			private static final long serialVersionUID = -1864487535530038067L;
+
+            @Override
 			public void actionPerformed(ActionEvent arg0) {
 				setInstancesToExport(getModel().getValues());
 				super.actionPerformed(arg0);

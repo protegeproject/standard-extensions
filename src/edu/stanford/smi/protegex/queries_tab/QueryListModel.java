@@ -7,7 +7,8 @@ import javax.swing.*;
 import edu.stanford.smi.protegex.queries_tab.toolbox.*;
 
 public class QueryListModel extends AbstractListModel{
-   private Vector data = new Vector();
+   private static final long serialVersionUID = -4730000527615542083L;
+private Vector data = new Vector();
 
     public QueryListModel() {
     }

@@ -10,6 +10,7 @@ import javax.swing.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public class ColorPanel extends JPanel {
+    private static final long serialVersionUID = -8752534214056126080L;
     private Insets _insets;
     private Rectangle _rect;
     private Color _color;

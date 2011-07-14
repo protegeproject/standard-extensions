@@ -16,6 +16,7 @@ import edu.stanford.smi.protege.widget.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public class ContainsWidget extends AbstractSlotWidget implements WidgetWrapperActionListener {
+    private static final long serialVersionUID = -7974410907279569510L;
     private LabeledComponent _mainComponent;
     private ArrayList _displayedInstances;
     private Instance _selection;

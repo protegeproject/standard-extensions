@@ -25,6 +25,7 @@ import edu.stanford.smi.protege.model.ValueType;
 import edu.stanford.smi.protege.resource.Text;
 
 public class NodeLabel extends JGoText {
+    private static final long serialVersionUID = -6286813020026246705L;
     private String myOldText;
     private GraphDocument myDoc;
     final static BufferedImage gBuffer = new BufferedImage(1, 1,

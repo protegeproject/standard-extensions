@@ -13,6 +13,7 @@ import javax.swing.*;
  * @author    William Grosso <grosso@smi.stanford.edu>
  */
 public class ImageMapPanel extends JPanel {
+    private static final long serialVersionUID = 6481052313012821946L;
     protected Map _colorsToRectangles;
     protected HashMap _logicalRectanglesToCoordinateRectangles;
     protected JScrollPane _container;
