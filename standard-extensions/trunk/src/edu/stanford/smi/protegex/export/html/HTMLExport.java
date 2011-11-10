@@ -476,7 +476,7 @@ public class HTMLExport {
         String pageTitleText = config.getProjectName() + " Project: " + frameName;
         pw.println("<title>" + pageTitleText + "</title>");
 
-        pw.println("<meta http-equiv=\"content-type\" content=\"text/html; charset=iso-8859-1\"/>");
+        pw.println("<meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\"/>");
 
         String cssFileName = getCSSFileName();
         pw.println("<link rel=\"stylesheet\" type=\"text/css\" href=\"" + pathToRoot + cssFileName + "\"/>");
