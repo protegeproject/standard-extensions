@@ -125,13 +125,13 @@
 	<target name = "dist" depends = "init">
 
 		<!-- source distribution - gets copied out to the protege web site on deploy -->
-		<zip zipfile = "${dist.dir}/${project.name}-src-${version}.zip" update = "no">
+		<zip zipfile = "${dist.dir}/${project.name}-src-${version}-${status}.zip" update = "no">
 			<zipfileset dir = "${build.src}" prefix = "${Name}/src"/>
 			<zipfileset dir = "${build.javadoc}" prefix = "${Name}/docs/apidocs"/>
 		</zip>
 		
 		<!-- binary distribution -->
-		<zip zipfile = "${dist.dir}/${project.name}-bin-${version}.zip" update = "no">
+		<zip zipfile = "${dist.dir}/${project.name}-bin-${version}-${status}.zip" update = "no">
 			<zipfileset dir = "${dist.dir}" includes = "${project.name}.jar" prefix = "edu.stanford.smi.protegex.standard-extensions"/>
 			<zipfileset dir = "." includes = "standard_extensions_text.properties" prefix = "edu.stanford.smi.protegex.standard-extensions"/>
 			<zipfileset dir = "${lib.dir}" includes = "JGo.jar" prefix = "edu.stanford.smi.protegex.standard-extensions"/>
