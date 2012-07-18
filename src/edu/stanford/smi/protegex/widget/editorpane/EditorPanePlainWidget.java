@@ -1,15 +1,18 @@
 package edu.stanford.smi.protegex.widget.editorpane;
 
 import java.util.Collection;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.JComponent;
 import javax.swing.JEditorPane;
 import javax.swing.text.JTextComponent;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
 import edu.stanford.smi.protege.util.CollectionUtilities;
 import edu.stanford.smi.protege.util.ComponentFactory;
 import edu.stanford.smi.protege.widget.TextComponentWidget;
-
 
 /**
  * Slot widget for detecting hyperlinks in entered text and opening 
@@ -19,6 +22,10 @@ import edu.stanford.smi.protege.widget.TextComponentWidget;
  */
 
 public class EditorPanePlainWidget extends TextComponentWidget {
+
+	private static final String HTML_HEADER = "<html> \n <head> \n <style type=\"text/css\"> \n <!-- \n body { font-family: arial; font-size: 12pt } \n  p { margin-top: 2; margin-bottom: 2; margin-left: 2; margin-right: 2; font-family: arial } \n  --> \n  </style> \n </head> \n  <body> \n";
+	private static final String HTML_FOOTER = "\n </body> \n  </html>";
+	private static final String INTERNAL_LINK_PATTERN = EditorPaneLinkDetector.ONTOLOGY_COMPONENT_LINK_PREFIX + "'.+?'" + "(" + EditorPaneLinkDetector.PATTERN_ONTOLOGY_COMPONENT_LINK_SEP + ")";
 
 	private static final long serialVersionUID = -179982525529844650L;
 	
@@ -45,6 +52,11 @@ public class EditorPanePlainWidget extends TextComponentWidget {
 		 super.initialize(true, 2, 2);
 	}
 	
+	
+	/* override TextComponentWidget.getText() which would remove trailing spaces*/
+	public String getText() {
+		return getTextComponent().getText();
+	}
 	
 	public Collection getValues() {
         String s = getText();
@@ -80,7 +92,7 @@ public class EditorPanePlainWidget extends TextComponentWidget {
 	    }
         else
         {// knowledgebase had html text when we read from it.
-        	htmlFoundInKnowledgebase = true;
+        	htmlFoundInKnowledgebase = (text == null ? false : true);
         	setText(text);
         }
     }
@@ -100,10 +112,10 @@ public class EditorPanePlainWidget extends TextComponentWidget {
 	    String s1 = s.substring(0, beginIndex);
 	    
 	    // s2 contains the user entered text along with intermediate html tags
-	    String s2 = s.substring(beginIndex, s.indexOf("</body>") - 1);
+	    String s2 = s.substring(beginIndex, s.lastIndexOf("</body>") - 1);
 	    
 	    // s3 contains finishing html tags after the user entered text
-	    String s3 = s.substring(s.indexOf("</body>"));
+	    String s3 = s.substring(s.lastIndexOf("</body>"));
 	    
 	    String modifiedS2;
 	    
@@ -144,8 +156,8 @@ public class EditorPanePlainWidget extends TextComponentWidget {
 	    	
 	    	// since we are writing html to the pins file, we don't need any \n. We
 	    	// already have put <br> wherever newlines were starting
-	    	modifiedS2 = modifiedS2.replaceAll("\n    ","");
-	    	modifiedS2 = modifiedS2.replaceAll("\n","");
+	    	modifiedS2 = modifiedS2.replaceAll("[\r]?\n[\r]?    ","");
+	    	modifiedS2 = modifiedS2.replaceAll("[\r]?\n[\r]?","");
 	    	    	        	
 	    }
 	    else
@@ -153,8 +165,8 @@ public class EditorPanePlainWidget extends TextComponentWidget {
 	    	// this means that editor pane has not accounted for the new lines
 	    	// which the user might have entered and hence we need to replace
 	    	// all \n with <br>
-	    	s2 = s2.replaceAll("\n    ", "");   
-	    	modifiedS2 = s2.replaceAll("\n", "<br>");
+	    	s2 = s2.replaceAll("[\r]?\n[\r]?    ", "");   
+	    	modifiedS2 = s2.replaceAll("[\r]?\n[\r]?", "<br>");
 	    	
 	    }
 	    
@@ -227,8 +239,8 @@ public class EditorPanePlainWidget extends TextComponentWidget {
         	}
         		        
         }
-    	modifiedS2 = modifiedS2.replaceAll("\n    ","");
-    	modifiedS2 = modifiedS2.replaceAll("\n","");
+    	modifiedS2 = modifiedS2.replaceAll("[\r]?\n[\r]?    ","");
+    	modifiedS2 = modifiedS2.replaceAll("[\r]?\n[\r]?","");
     	   	        	
         return modifiedS2;
 		
@@ -251,7 +263,7 @@ public class EditorPanePlainWidget extends TextComponentWidget {
         	beginIndex = beginIndex + 1;  // we add this 1 to move past the \n
              
         // here we find index of end of text (closing html tags start here)
-        int endIndex = s.indexOf("</body>", beginIndex) - 1;
+        int endIndex = s.lastIndexOf("</body>");
         
         // we get the text to be operated on in a seperate string htmltext
         String htmltext = s.substring(beginIndex, endIndex);
@@ -320,78 +332,69 @@ public class EditorPanePlainWidget extends TextComponentWidget {
         	}
         }
         // to remove the last \n from this string. otherwise extra \n shows up in the end
-        int length = modifiedText.length();
-        
-        while(length >= 0)
-        {
-        	if(modifiedText.substring(length-1).indexOf("\n") != -1)
-        		break;
-        	else
-        		length = length-1;
-        	
-        }
+        int length = findMin(modifiedText.length(), modifiedText.lastIndexOf("\n"));
        
         // here we obtain the part which we will be removing in "remainder" string
         // and check that it doesn't contain any actual text apart from \n and spaces
-        String remainder = modifiedText.substring(length-1);
-        remainder = remainder.replaceAll("\n","");
+        String remainder = modifiedText.substring(length);
+        remainder = remainder.replaceAll("[\r]?\n[\r]?","");
         remainder = remainder.replaceAll(" ","");
         if(remainder.length() == 0) // this means that the part we are removing from
         {  							// modifiedText just contains one \n and some spaces
-        	modifiedText = modifiedText.substring(0, length-1);
+        	modifiedText = modifiedText.substring(0, length);
         }
         //else the part we want to remove also contains some other characters
         // and we don't change modifiedText since we don't want to get into trouble
         // by removing anything other than spaces and \n.
                
+        modifiedText = StringEscapeUtils.unescapeHtml(modifiedText);
+        
         return modifiedText;
 	}
 	
 	private int findMin(int a, int b, int c)
 	{
-		if(a < b && a < c && a != -1)
-			return a;
-		if(b < a && b < c && b != -1)
-			return b;
-		if(c < a && c < b && c != -1)
-			return c;
-		if(a == -1)
-			return findMin(b, c);
-		if(b == -1)
-			return findMin(a, c);
-		if(c == -1)
-			return findMin(a, b);
-		return -1;
+		return findMin(a, findMin(b,c));
 	}
 	
 	private int findMin(int a, int b)
 	{
-		if(a < b && a != -1)
+		if (a == b)
 			return a;
-		if(b < a && b != -1)
+		if (a == -1)
 			return b;
-		if(a == -1 && b != -1)
-			return b;
-		if(b == -1 && a != -1)
+		if (b == -1)
 			return a;
-		return -1;
+		return a < b ? a : b;
 	}
 	
 	private String enableLinkInPlainText(String text)
 	{
 		// text is plain text. so it has \n to represent new lines. but 
 		// html doesnt understand \n. so we replace all \n with <br>
-	    String htmltext = text.replaceAll("\n", "<br>");
-        
+	    String htmltext = text;
+	    htmltext = StringEscapeUtils.escapeHtml(htmltext);
+	    htmltext = htmltext.replaceAll("(\\b) (\\b)", "$1&SingleSp;$2");
+	    htmltext = htmltext.replaceAll(" ", "&nbsp;");
+	    htmltext = htmltext.replaceAll("&SingleSp;", " ");
+	    htmltext = htmltext.replaceAll("(\\b)\t(\\b)", "$1&SingleTab;$2");
+	    htmltext = htmltext.replaceAll("\t", "&#09;");
+	    htmltext = htmltext.replaceAll("&SingleTab;", "\t");
+	    htmltext = htmltext.replaceAll("[\r]?\n[\r]?", "<br>");
+	    
 	    int startSearch = 0;
 	    int linkIndex;
-        int linkIndex1, linkIndex2, linkIndex3, linkIndex4, linkIndex5, linkEnds, linkEnds1, linkEnds2;
+        int linkIndex1, linkIndex2, linkIndex3, linkIndex4, linkIndex5, linkIndex6, linkEnds, linkEnds1, linkEnds2, linkEnds3;
         boolean linkPresent = false;
         
+        Matcher internalLinkMatcher = Pattern.compile(INTERNAL_LINK_PATTERN).matcher(htmltext);
         // if there is no link in this plain text, we dont have to do anything
         // else we need to parse links and enable them
-        if(htmltext.indexOf("http:") != -1 || htmltext.indexOf("www.") != -1 || htmltext.indexOf("mailto:") != -1 || htmltext.indexOf("ftp://") != -1 || htmltext.indexOf("file:/") != -1 )
-        		linkPresent = true;
+        if(htmltext.indexOf("http:") != -1 || htmltext.indexOf("www.") != -1 || 
+        		htmltext.indexOf("mailto:") != -1 || htmltext.indexOf("ftp://") != -1 || 
+        		htmltext.indexOf("file:/") != -1 || internalLinkMatcher.find()) {
+        	linkPresent = true;
+        }
         
         while(linkPresent)
         {
@@ -411,7 +414,11 @@ public class EditorPanePlainWidget extends TextComponentWidget {
 	        // if ftp:// is present then find its index
 	        linkIndex5 = htmltext.indexOf("ftp:/", startSearch);
 	        
-	        if(linkIndex1 == -1 && linkIndex2 == -1 && linkIndex3 == -1 && linkIndex4 == -1 && linkIndex5 == -1)
+	        // if internal link (@'xyz') is present then find its index
+	        internalLinkMatcher.reset();
+	        linkIndex6 = internalLinkMatcher.find(startSearch) ? internalLinkMatcher.start() : -1 ;
+	        
+	        if(linkIndex1 == -1 && linkIndex2 == -1 && linkIndex3 == -1 && linkIndex4 == -1 && linkIndex5 == -1 && linkIndex6 == -1)
 	        {
 	        	// how can we land here! we shouldnt be in this while loop
 	        	linkIndex = 0;
@@ -429,52 +436,53 @@ public class EditorPanePlainWidget extends TextComponentWidget {
 	        else
 	        	linkIndex = linkIndex2;
 	        */
-	        if(linkIndex1 != -1 || linkIndex2 != -1 || linkIndex3 != -1 )
-	        	linkIndex = findMin(linkIndex1, linkIndex2, linkIndex3);
-	        if(linkIndex != -1 || linkIndex4 != -1 || linkIndex5 != -1 )
-	        	linkIndex = findMin(linkIndex, linkIndex4, linkIndex5);
+	        linkIndex = findMin( 
+	        		findMin(linkIndex1, linkIndex2, linkIndex3), 
+	        		findMin(linkIndex4, linkIndex5, linkIndex6));
 	        
 	        // now we have in the variable linkIndex the place where first link
 	        // starts so we now find the place where link ends (either link 
 	        // ends with a space or newline
 	        linkEnds1 = htmltext.indexOf(" ", linkIndex);
 	        linkEnds2 = htmltext.indexOf("<br>", linkIndex);
+	        linkEnds3 = htmltext.indexOf("&nbsp;", linkIndex);
 	        
-	        if(linkEnds2 == -1 && linkEnds1 == -1)
+	        if(linkEnds1 == -1 && linkEnds2 == -1 && linkEnds3 == -1)
 	        {
-	        	// this means that the link doesnt end! 
-	        	// we avoid enabling such links
-	        
-	        	linkEnds = 0;
-	        	linkPresent = false;
-	        	break;
+	        	linkEnds = htmltext.length();
 	        }
-	        /*
-	        else if(linkEnds1 == -1 && linkEnds2 != -1)
-	        	linkEnds = linkEnds2;
-	        else if(linkEnds2 == -1 && linkEnds1 != -1)
-	        	linkEnds = linkEnds1;
-	        else if(linkEnds1 < linkEnds2)
-	        	linkEnds = linkEnds1;
-	        else
-	        	linkEnds = linkEnds2;
-	        */
-	        linkEnds = findMin(linkEnds1, linkEnds2);
+	        else {
+	        	linkEnds = findMin(linkEnds1, linkEnds2, linkEnds3);
+	        }
 	        
-	   
-	        
+        	//if we found an internal reference use the pattern matching to locate the end of the reference 
+        	if (linkIndex == linkIndex6) {
+        		linkEnds = findMin(linkEnds, internalLinkMatcher.start(1));
+        	}
+        	
+        	String tentativeUrl = htmltext.substring(linkIndex, linkEnds);
+        	String dotEndPattern = (linkIndex == linkIndex6 ? 
+        			EditorPaneLinkDetector.PATTERN_DOT_END_ONTOLOGY_COMPONENT_LINK : EditorPaneLinkDetector.PATTERN_DOT_END_EXTERNAL_LINK);
+        	Matcher dotEndMatcher = Pattern.compile(dotEndPattern).matcher(tentativeUrl);
+        	if (dotEndMatcher.find()) {
+        		linkEnds = linkIndex + dotEndMatcher.start(1);
+        	}
+        	
 	        // now we have start and end indexes of the first link.
 	        // we add tags around this link and get new htmltext with first link tagged
 	        htmltext = htmltext.substring(0, linkIndex) +
-	        "<a href='" + htmltext.substring(linkIndex, linkEnds) + 
+	        "<a href='" + (linkIndex == linkIndex6 ? "internalLink" : htmltext.substring(linkIndex, linkEnds)) + 
 	        "'>" + htmltext.substring(linkIndex, linkEnds)+ "</a>" +
 	        htmltext.substring(linkEnds);
 	    
 	        // now next link should be searched only after the place where first link ends
 	        startSearch = htmltext.indexOf("</a>", linkEnds) + "</a>".length();
 	        
+	        internalLinkMatcher = Pattern.compile(INTERNAL_LINK_PATTERN).matcher(htmltext);
 	        // here we check whether there is next link in the remaining text or not.
-	        if(htmltext.indexOf("http:",startSearch) == -1 && htmltext.indexOf("www.",startSearch) == -1 && htmltext.indexOf("mailto:",startSearch) == -1 && htmltext.indexOf("ftp://",startSearch) == -1 && htmltext.indexOf("file:/",startSearch) == -1)
+	        if(htmltext.indexOf("http:",startSearch) == -1 && htmltext.indexOf("www.",startSearch) == -1 && 
+	        		htmltext.indexOf("mailto:",startSearch) == -1 && htmltext.indexOf("ftp://",startSearch) == -1 && 
+	        		htmltext.indexOf("file:/",startSearch) == -1 && (!internalLinkMatcher.find(startSearch)) )
 	        {	
 	           	linkPresent = false;
 	           	break;
@@ -482,7 +490,7 @@ public class EditorPanePlainWidget extends TextComponentWidget {
 	                
         } 
         // add higher level html tags and body
-        htmltext = "<html> \n <head> \n <style type=\"text/css\"> \n <!-- \n body { font-family: arial; font-size: 12pt } \n  p { margin-top: 2; margin-bottom: 2; margin-left: 2; margin-right: 2; font-family: arial } \n  --> \n  </style> \n </head> \n  <body> \n" + htmltext + "\n </body> \n  </html>";
+        htmltext = HTML_HEADER + htmltext + HTML_FOOTER;
         return htmltext;
 	}
 	
