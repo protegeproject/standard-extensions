@@ -8,11 +8,10 @@ import javax.swing.JComponent;
 import javax.swing.JEditorPane;
 import javax.swing.text.JTextComponent;
 
-import org.apache.commons.lang.StringEscapeUtils;
-
 import edu.stanford.smi.protege.util.CollectionUtilities;
 import edu.stanford.smi.protege.util.ComponentFactory;
 import edu.stanford.smi.protege.widget.TextComponentWidget;
+import edu.stanford.smi.protegex.util.commons.lang.BasicStringEscapeUtils;
 
 /**
  * Slot widget for detecting hyperlinks in entered text and opening 
@@ -347,7 +346,7 @@ public class EditorPanePlainWidget extends TextComponentWidget {
         // and we don't change modifiedText since we don't want to get into trouble
         // by removing anything other than spaces and \n.
                
-        modifiedText = StringEscapeUtils.unescapeHtml(modifiedText);
+        modifiedText = BasicStringEscapeUtils.unescapeHtml(modifiedText);
         
         return modifiedText;
 	}
@@ -373,7 +372,7 @@ public class EditorPanePlainWidget extends TextComponentWidget {
 		// text is plain text. so it has \n to represent new lines. but 
 		// html doesnt understand \n. so we replace all \n with <br>
 	    String htmltext = text;
-	    htmltext = StringEscapeUtils.escapeHtml(htmltext);
+	    htmltext = BasicStringEscapeUtils.escapeHtml(htmltext);
 	    htmltext = htmltext.replaceAll("(\\b) (\\b)", "$1&SingleSp;$2");
 	    htmltext = htmltext.replaceAll(" ", "&nbsp;");
 	    htmltext = htmltext.replaceAll("&SingleSp;", " ");
