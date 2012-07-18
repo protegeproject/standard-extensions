@@ -28,7 +28,6 @@ import javax.swing.text.html.parser.ParserDelegator;
 
 import edu.stanford.smi.protege.model.Instance;
 import edu.stanford.smi.protege.model.KnowledgeBase;
-import edu.stanford.smi.protege.model.Project;
 import edu.stanford.smi.protege.ui.ProjectManager;
 import edu.stanford.smi.protege.util.BrowserLauncher;
 import edu.stanford.smi.protege.util.Disposable;
@@ -53,8 +52,8 @@ public class EditorPaneLinkDetector extends JEditorPane implements Disposable {
 	public static final String PATTERN_DOT_END_EXTERNAL_LINK = "([\\W&&[^/]]+)$";
 	public static final String PATTERN_DOT_END_ONTOLOGY_COMPONENT_LINK = "([\\W&&[^']]+)$";
 
-	private final static int EDITOR_PANE_BROWSER_TEXT_DEFAULT_FRAME_LIMIT = 10000;
-	private final static String EDITOR_PANE_BROWSER_TEXT_FRAME_LIMIT_PROPERTY = "editor.pane.browsertext.frame.limit";
+//	private final static int EDITOR_PANE_BROWSER_TEXT_DEFAULT_FRAME_LIMIT = 10000;
+//	private final static String EDITOR_PANE_BROWSER_TEXT_FRAME_LIMIT_PROPERTY = "editor.pane.browsertext.frame.limit";
 
 	private String linkActive;
 	private boolean editable;
@@ -231,8 +230,6 @@ public class EditorPaneLinkDetector extends JEditorPane implements Disposable {
 		addMouseListener(ml);
 		addMouseMotionListener(mml);
 
-		Project p = ProjectManager.getProjectManager().getCurrentProject();
-		KnowledgeBase kb = p.getKnowledgeBase();
 		setEditable(editable);
 
 		if (!detectEnter) {
