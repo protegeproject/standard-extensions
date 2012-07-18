@@ -47,7 +47,11 @@ public class EditorPaneLinkDetector extends JEditorPane implements Disposable {
 
 	private static final long serialVersionUID = 6879261696169758008L;
 
-	private final static String ONTOLOGY_COMPONENT_LINK_PREFIX = "@";
+	public final static String ONTOLOGY_COMPONENT_LINK_PREFIX = "@";
+	public final static String PATTERN_ONTOLOGY_COMPONENT_LINK_SEP = "\\s+|&#?\\w{2,8};|\\p{Punct}|$";
+
+	public static final String PATTERN_DOT_END_EXTERNAL_LINK = "([\\W&&[^/]]+)$";
+	public static final String PATTERN_DOT_END_ONTOLOGY_COMPONENT_LINK = "([\\W&&[^']]+)$";
 
 	private final static int EDITOR_PANE_BROWSER_TEXT_DEFAULT_FRAME_LIMIT = 10000;
 	private final static String EDITOR_PANE_BROWSER_TEXT_FRAME_LIMIT_PROPERTY = "editor.pane.browsertext.frame.limit";
@@ -338,7 +342,7 @@ public class EditorPaneLinkDetector extends JEditorPane implements Disposable {
 				// sequence matches this matcher's pattern
 				String endingSpaces = spaceMatcher.group(1);
 				insertString(Math.min(getLength(), e.getEndOffset()),
-						endingSpaces, null);
+						endingSpaces.replaceAll(" ", "&nbsp;").replaceAll("\t", "&#09;"), null);
 			}
 		}
 
@@ -383,10 +387,10 @@ public class EditorPaneLinkDetector extends JEditorPane implements Disposable {
 			// matcher detects external links
 			Matcher matcher = Pattern
 					.compile(
-							"(?i)(\\b(http://|https://|www.|ftp://|file:/|mailto:)\\S+)(\\s+)")
+							"(?i)(\\b(http://|https://|www.|ftp://|file:/|mailto:)\\S+?)(\\s+|&#?\\w{2,8};|$)")
 					.matcher(text);
 
-			String str = "((" + ONTOLOGY_COMPONENT_LINK_PREFIX + "').+)(')";
+			String str = "((" + ONTOLOGY_COMPONENT_LINK_PREFIX + "').+?')(" + PATTERN_ONTOLOGY_COMPONENT_LINK_SEP + ")";
 			// matcherInternal detects internal links
 			Matcher matcherInternal = Pattern.compile(str).matcher(text);
 
@@ -399,14 +403,14 @@ public class EditorPaneLinkDetector extends JEditorPane implements Disposable {
 			String endingSpaces = null;
 
 			if (matcherInternal.find()) {
-				url = matcherInternal.group(1) + "'";
-				endingSpaces = "";
+				url = matcherInternal.group(1);
+				endingSpaces = matcherInternal.group(3);
 				linkfound = 0;
 			} else if (matcher.find()) {
 				// if we find a hyperlink in given text
 				url = matcher.group(1);
-				endingSpaces = " ";
-				// endingSpaces = matcher.group(3);
+				//endingSpaces = " ";
+				endingSpaces = matcher.group(3);
 				// Example: if user types "this is a hyperlink www.google.com"
 				// then following would be the conents of above String variables
 				// url: www.google.com prefix: www. endingSpaces:
@@ -422,13 +426,13 @@ public class EditorPaneLinkDetector extends JEditorPane implements Disposable {
 					if (validPos > caretPos) {
 						return;
 					}
-					dotEndMatcher = Pattern.compile("([\\W&&[^/]]+)$").matcher(url);
+					dotEndMatcher = Pattern.compile(PATTERN_DOT_END_EXTERNAL_LINK).matcher(url);
 				} else {
-					validPos = startOffset + matcherInternal.start(3) + 1;
+					validPos = startOffset + matcherInternal.start(3);
 					if (validPos > caretPos) {
 						return;
 					}
-					dotEndMatcher = Pattern.compile("([\\W&&[^/]]+)$").matcher(url);
+					dotEndMatcher = Pattern.compile(PATTERN_DOT_END_ONTOLOGY_COMPONENT_LINK).matcher(url);
 				}
 
 				// Ending non alpha characters like [.,?%] shouldn't be included
@@ -448,7 +452,7 @@ public class EditorPaneLinkDetector extends JEditorPane implements Disposable {
 				// href='www.google.com'>www.google.com</a>
 				if (linkfound == 1) {
 					text = matcher.replaceFirst("<a href='" + url + "'>" + url
-							+ "</a>" + endingDots + endingSpaces);
+							+ "</a>" + endingDots + endingSpaces.replaceAll(" ", "&nbsp;").replaceAll("\t", "&#09;"));
 				} else {
 					String showString = url;
 					//TODO: Vivek, please take a look at this code
@@ -466,7 +470,8 @@ public class EditorPaneLinkDetector extends JEditorPane implements Disposable {
 						Log.emptyCatchBlock(e2);
 					}
 */
-					text = matcherInternal.replaceFirst("<a href='internalLink'>" + showString + "</a> " + endingDots);
+					text = matcherInternal.replaceFirst("<a href='internalLink'>" + showString
+							+ "</a>" + endingDots + endingSpaces.replaceAll(" ", "&nbsp;").replaceAll("\t", "&#09;"));
 				}
 
 
