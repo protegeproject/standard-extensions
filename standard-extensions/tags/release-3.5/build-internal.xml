@@ -1,0 +1,179 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<project name = "standard-extensions" basedir = ".">
+
+	<property name = "project.name" value = "standard-extensions"/>
+	<property name = "Name" value = "Standard Extensions"/>
+	<property name = "build.dir" value = "./build"/>
+	<property name = "build.src" value = "${build.dir}/src"/>
+	<property name = "build.dest" value = "${build.dir}/classes"/>
+	<property name = "docs.dir" value = "./docs"/>
+	<property name = "build.javadoc" value = "${docs.dir}/apidocs"/>
+	<property name = "lib.dir" value = "./lib"/>
+	<property name = "image.dir" value = "c:/build_svn/protege-core/build/src/edu/stanford/smi/protege/resource/image"/>
+	<property name = "deprecation" value = "on"/>    
+	<property name = "debug" value = "off"/>
+	<property name = "includeAntRuntime" value = "no"/>
+	<property name = "optimize" value = "on"/>
+	<property name = "packages" value = "edu.*"/>
+	<property name = "dist.dir" value = "./dist"/>
+	<property name = "examples.dir" value = "./examples"/>
+
+	<property file = "../global.properties"/>
+
+	<target name = "init">
+		<tstamp/>
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- PREPARE-SRC -->
+	<!-- =================================================================== -->
+	<target name = "prepare-src" depends = "init">
+		<mkdir dir = "${build.src}"/>
+		<mkdir dir = "${build.dest}"/>
+		<mkdir dir = "${dist.dir}"/>
+		<mkdir dir = "${build.javadoc}"/>
+
+		<!-- get source code from subversion repository -->
+		<exec executable = "cmd.exe" dir = "${batch.files}" os = "${os}">
+			<arg line = "/c checkout ${svn.core.url}/${project.name}/trunk/src ../${project.name}/build/src"/>
+		</exec>
+		<exec executable = "cmd.exe" dir = "${batch.files}" os = "${os}">
+			<arg line = "/c checkout ${svn.core.url}/${project.name}/trunk/lib ../${project.name}/lib"/>
+		</exec>
+		<exec executable = "cmd.exe" dir = "${batch.files}" os = "${os}">
+			<arg line = "/c checkout ${svn.core.url}/${project.name}/trunk ../${project.name} --non-recursive"/>
+		</exec>
+		<exec executable = "cmd.exe" dir = "${batch.files}" os = "${os}">
+			<arg line = "/c checkout ${svn.core.url}/${project.name}/trunk/docs ../${project.name}/docs"/>
+		</exec>
+		<exec executable = "cmd.exe" dir = "${batch.files}" os = "${os}">
+			<arg line = "/c checkout ${svn.core.url}/${project.name}/trunk/examples ../${project.name}/examples"/>
+		</exec>
+
+		<!-- add license text to top of source files -->
+		<exec executable = "cmd.exe" dir = "${batch.files}" os = "${os}">
+			<arg line = "/c merge_license_with_source ../${project.name}/build/src"/>
+		</exec>
+	</target>
+	
+	<!-- =================================================================== -->
+	<!-- COMPILE -->
+	<!-- =================================================================== -->
+	<target name = "compile" depends = "prepare-src">
+		<!-- compile source code -->
+		<javac srcdir = "${build.src}" destdir = "${build.dest}" deprecation = "${deprecation}" debug = "${debug}" optimize = "${optimize}" includeAntRuntime = "${includeAntRuntime}">
+			<classpath>
+				<pathelement path = "${protege.jar}"/>
+				<pathelement path = "${protege-owl.jar}"/>
+				<fileset dir = "${lib.dir}">
+					<include name = "**/*.jar"/>
+				</fileset>
+			</classpath>
+		</javac>
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- JAR -->
+	<!-- =================================================================== -->
+	<target name = "jar" depends = "compile">
+
+		<copy todir = "${build.dest}/edu/stanford/smi/protegex/widget/uri/images">
+			<fileset dir = "${build.src}/edu/stanford/smi/protegex/widget/uri/images"/>
+		</copy>
+
+		<copy todir = "${build.dest}/edu/stanford/smi/protegex/widget/graph/images">
+			<fileset dir = "${build.src}/edu/stanford/smi/protegex/widget/graph/images"/>
+		</copy>
+
+		<copy todir = "${build.dest}/edu/stanford/smi/protegex/widget/editorpane/images">
+			<fileset dir = "${build.src}/edu/stanford/smi/protegex/widget/editorpane/images"/>
+		</copy>
+
+		<copy file = "${build.src}/edu/stanford/smi/protegex/queries_tab/toolbox/Query.gif" todir = "${build.dest}/edu/stanford/smi/protegex/queries_tab/toolbox"/>
+		<copy file = "${build.src}/edu/stanford/smi/protegex/queries_tab/toolbox/LoadQuery.gif" todir = "${build.dest}/edu/stanford/smi/protegex/queries_tab/toolbox"/>
+		<copy file = "${build.src}/edu/stanford/smi/protegex/queries_tab/toolbox/SaveQuery.gif" todir = "${build.dest}/edu/stanford/smi/protegex/queries_tab/toolbox"/>
+		<jar jarfile = "${dist.dir}/${project.name}.jar" basedir = "${build.dest}" manifest = "${build.src}/META-INF//MANIFEST.MF"/>
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- JAVADOC -->
+	<!-- =================================================================== -->
+	<target name = "javadoc" depends = "prepare-src" unless = "testbuild">
+		<javadoc packagenames = "${packages}" 
+		              sourcepath = "${build.src}" 
+		              destdir = "${build.javadoc}" 
+		              doctitle = "${Name}" 
+		              header = "${Name}" 
+		              footer = "${Name}" 
+		              windowtitle = "${Name}" 
+		              author = "true"
+		              maxmemory = "256M">
+			<bottom><![CDATA[<small><a href=mailto:protege-discussion@lists.stanford.edu>Submit a bug report or feature request</a></small>]]></bottom>
+			<link href = "${jdk.javadoc}"/>
+			<link href = "${protege.javadoc}"/>
+			<classpath>
+				<pathelement path = "${protege.jar}"/>
+				<pathelement location = "${lib.dir}/jgo.jar"/>
+				<pathelement location = "${lib.dir}/jgolayout.jar"/>
+			</classpath>
+		</javadoc>
+	</target>
+	
+	<!-- =================================================================== -->
+	<!-- DIST -->
+	<!-- =================================================================== -->
+	<target name = "dist" depends = "init">
+
+		<!-- source distribution - gets copied out to the protege web site on deploy -->
+		<zip zipfile = "${dist.dir}/${project.name}-src-${version}-${status}.zip" update = "no">
+			<zipfileset dir = "${build.src}" prefix = "${Name}/src"/>
+			<zipfileset dir = "${build.javadoc}" prefix = "${Name}/docs/apidocs"/>
+		</zip>
+		
+		<!-- binary distribution -->
+		<zip zipfile = "${dist.dir}/${project.name}-bin-${version}-${status}.zip" update = "no">
+			<zipfileset dir = "${dist.dir}" includes = "${project.name}.jar" prefix = "edu.stanford.smi.protegex.standard-extensions"/>
+			<zipfileset dir = "." includes = "standard_extensions_text.properties" prefix = "edu.stanford.smi.protegex.standard-extensions"/>
+			<zipfileset dir = "${lib.dir}" includes = "JGo.jar" prefix = "edu.stanford.smi.protegex.standard-extensions"/>
+			<zipfileset dir = "${lib.dir}" includes = "JGoLayout.jar" prefix = "edu.stanford.smi.protegex.standard-extensions"/>
+			<zipfileset dir = "${lib.dir}" includes = "xalan.jar" prefix = "edu.stanford.smi.protegex.standard-extensions"/>
+			<zipfileset dir = "${lib.dir}" includes = "xercesImpl.jar" prefix = "edu.stanford.smi.protegex.standard-extensions"/>
+			<zipfileset dir = "${lib.dir}" includes = "xml-apis.jar" prefix = "edu.stanford.smi.protegex.standard-extensions"/>
+			<zipfileset dir = "${docs.dir}" includes = "plugin.properties" prefix = "edu.stanford.smi.protegex.standard-extensions"/>
+			<zipfileset dir = "${docs.dir}" includes = "footer.html" prefix = "edu.stanford.smi.protegex.standard-extensions/html_export"/>
+			<zipfileset dir = "${docs.dir}" includes = "header.html" prefix = "edu.stanford.smi.protegex.standard-extensions/html_export"/>
+			<zipfileset dir = "${docs.dir}" includes = "htmlexport.css" prefix = "edu.stanford.smi.protegex.standard-extensions/html_export"/>
+			<zipfileset dir = "${docs.dir}" includes = "htmlexport.properties" prefix = "edu.stanford.smi.protegex.standard-extensions/html_export"/>
+			<zipfileset dir = "${docs.dir}" includes = "HTMLExportConfigurations.xml" prefix = "edu.stanford.smi.protegex.standard-extensions/html_export"/>
+			<zipfileset dir = "${docs.dir}" includes = "ProtegeLogo.gif" prefix = "edu.stanford.smi.protegex.standard-extensions/html_export/images"/>
+			<zipfileset dir = "${image.dir}" includes = "class.abstract.gif" prefix = "edu.stanford.smi.protegex.standard-extensions/html_export/images"/>
+			<zipfileset dir = "${image.dir}" includes = "class.gif" prefix = "edu.stanford.smi.protegex.standard-extensions/html_export/images"/>
+			<zipfileset dir = "${image.dir}" includes = "class.metaclass.abstract.gif" prefix = "edu.stanford.smi.protegex.standard-extensions/html_export/images"/>
+			<zipfileset dir = "${image.dir}" includes = "class.metaclass.gif" prefix = "edu.stanford.smi.protegex.standard-extensions/html_export/images"/>
+			<zipfileset dir = "${image.dir}" includes = "facet.gif" prefix = "edu.stanford.smi.protegex.standard-extensions/html_export/images"/>
+			<zipfileset dir = "${image.dir}" includes = "instance.gif" prefix = "edu.stanford.smi.protegex.standard-extensions/html_export/images"/>
+			<zipfileset dir = "${image.dir}" includes = "slot.gif" prefix = "edu.stanford.smi.protegex.standard-extensions/html_export/images"/>
+			<zipfileset dir = "${image.dir}" includes = "slot.inherited.gif" prefix = "edu.stanford.smi.protegex.standard-extensions/html_export/images"/>
+			<zipfileset dir = "${image.dir}" includes = "slot.inherited.overridden.gif" prefix = "edu.stanford.smi.protegex.standard-extensions/html_export/images"/>
+			<zipfileset dir = "${image.dir}" includes = "slot.overridden.gif" prefix = "edu.stanford.smi.protegex.standard-extensions/html_export/images"/>
+			<zipfileset dir = "${text.files}" includes = "readme" prefix = "edu.stanford.smi.protegex.standard-extensions"/>
+		</zip>
+	</target>
+	
+	<!-- =================================================================== -->
+	<!-- CLEAN -->
+	<!-- =================================================================== -->
+	<target name = "clean" depends = "init">
+		<delete dir = "${build.dir}"/>
+		<delete dir = "${docs.dir}"/>
+		<delete dir = "${dist.dir}"/>
+		<delete dir = "${examples.dir}"/>
+		<delete dir = "${lib.dir}"/>
+		<delete file = "standard_extensions_text.properties"/>
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- ALL -->
+	<!-- =================================================================== -->
+	<target name = "all" depends = "jar,javadoc,dist"/>
+</project>

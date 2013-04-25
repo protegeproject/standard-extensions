@@ -1,0 +1,48 @@
+Manifest-Version: 1.0
+
+Name: edu/stanford/smi/protegex/widget/uri/URIWidget.class
+Slot-Widget: True
+Default-Widget: True
+Default-Widget-For-Cardinality: Single
+Default-Widget-For-Type: Instance
+Default-Widget-For-Allowed-Class: URI
+
+Name: edu/stanford/smi/protegex/widget/imagemap/ImageMapWidget.class
+Slot-Widget: True
+
+Name: edu/stanford/smi/protegex/widget/contains/ContainsWidget.class
+Slot-Widget: True
+
+Name: edu/stanford/smi/protegex/widget/slider/SliderWidget.class
+Slot-Widget: True
+
+Name: edu/stanford/smi/protegex/widget/instancetable/InstanceTableWidget.class
+Slot-Widget: True
+
+Name: edu/stanford/smi/protegex/widget/instancetable/InstanceRowWidget.class
+Slot-Widget: True
+
+Name: edu/stanford/smi/protegex/widget/scatterbox/DomainRangeObjectPairEntryScatterboxWidget.class
+Slot-Widget: True
+
+Name: edu/stanford/smi/protegex/widget/scatterbox/SingleObjectEntryScatterboxWidget.class
+Slot-Widget: True
+
+Name: edu/stanford/smi/protegex/widget/graph/GraphWidget.class
+Slot-Widget: True
+
+Name: edu/stanford/smi/protegex/queries_tab/QueriesTab.class
+Tab-Widget: True
+
+Name: edu/stanford/smi/protegex/export/html/HTMLExportPlugin.class
+Export-Plugin: True
+
+Name: edu/stanford/smi/protegex/widget/editorpane/EditorPaneWidget.class
+Slot-Widget: True
+
+Name: edu/stanford/smi/protegex/widget/editorpane/EditorPanePlainWidget.class
+Slot-Widget: True
+
+Name: edu.stanford.smi.protegex.widget.combobox.ComboBoxInstanceWidget
+Slot-Widget: True
+
